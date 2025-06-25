@@ -4,9 +4,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Production builds
-# dist/
-# build/
+
 
 # Environment variables
 .env
@@ -55,8 +53,7 @@ jspm_packages/
 # Optional eslint cache
 .eslintcache
 
-# Supabase
-.supabase/
+
 
 # Playwright
 test-results/
