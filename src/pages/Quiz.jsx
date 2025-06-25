@@ -2,8 +2,16 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
-import { QuestionService } from '../services/questionService';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, Check, X, Wifi, WifiOff } from 'lucide-react';
+import { 
+  useQuestions, 
+  useCreateQuizSession, 
+  useRecordQuizResponse, 
+  useUpdateQuestionHistory, 
+  useCompleteQuizSession,
+  usePrefetchQuestions,
+  useCacheManager
+} from '../hooks/useQuestionQueries';
 
 const Quiz = () => {
   const location = useLocation();
@@ -11,47 +19,67 @@ const Quiz = () => {
   const { user } = useAuth();
   const { categoryId, categoryName, questionCount } = location.state || { categoryId: null, categoryName: null, questionCount: 10 };
 
-  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [quizSession, setQuizSession] = useState(null);
 
+  // React Query hooks for optimized data fetching
+  const { 
+    data: questions = [], 
+    isLoading: questionsLoading, 
+    error: questionsError,
+    isError: hasQuestionsError,
+    isFetching
+  } = useQuestions(categoryId, questionCount, {
+    enabled: !!user && !!categoryId,
+    retry: (failureCount, error) => {
+      // Don't retry if we have cached data
+      const { getOfflineData } = useCacheManager();
+      const offlineData = getOfflineData(categoryId, questionCount);
+      return !offlineData && failureCount < 2;
+    }
+  });
+
+  const createSessionMutation = useCreateQuizSession();
+  const recordResponseMutation = useRecordQuizResponse();
+  const updateHistoryMutation = useUpdateQuestionHistory();
+  const completeSessionMutation = useCompleteQuizSession();
+  const { prefetchCategory } = usePrefetchQuestions();
+  const { getOfflineData } = useCacheManager();
+
+  // Check if we're using offline data
+  const isOffline = hasQuestionsError && questions.length > 0;
+
+  // Create quiz session when questions are loaded
   useEffect(() => {
-    const fetchQuestions = async () => {
-      if (!user) {
-        setError('Please log in to take a quiz.');
-        setLoading(false);
-        return;
-      }
-
-      if (!categoryId) {
-        setError('No category selected.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // Create a new quiz session for tracking
-        const sessionData = await QuestionService.createQuizSession(user.id, categoryId, questionCount);
-        setQuizSession(sessionData);
-
-        // Fetch questions for the category
-        const questionsData = await QuestionService.fetchQuestions(categoryId, questionCount);
-        setQuestions(questionsData);
-      } catch (err) {
-        setError(err.message || 'Error loading quiz. Please try again.');
-        console.error('Quiz loading error:', err);
-      } finally {
-        setLoading(false);
+    const createSession = async () => {
+      if (user && categoryId && questions.length > 0 && !quizSession) {
+        try {
+          const sessionData = await createSessionMutation.mutateAsync({
+            userId: user.id,
+            categoryId,
+            questionCount
+          });
+          setQuizSession(sessionData);
+        } catch (err) {
+          console.error('Error creating quiz session:', err);
+          // Continue with quiz even if session creation fails
+        }
       }
     };
 
-    fetchQuestions();
-  }, [categoryId, questionCount, user]);
+    createSession();
+  }, [user, categoryId, questions.length, questionCount, quizSession, createSessionMutation]);
+
+  // Prefetch next category questions for better UX
+  useEffect(() => {
+    if (questions.length > 0 && currentQuestionIndex === Math.floor(questions.length * 0.7)) {
+      // When 70% through quiz, prefetch questions for popular categories
+      prefetchCategory('mixed', 15).catch(console.warn);
+    }
+  }, [currentQuestionIndex, questions.length, prefetchCategory]);
 
   const handleOptionSelect = (optionId) => {
     if (isAnswered) return;
@@ -59,7 +87,7 @@ const Quiz = () => {
   };
 
   const handleSubmitAnswer = async () => {
-    if (selectedOption === null || !quizSession) return;
+    if (selectedOption === null) return;
 
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = selectedOption === currentQuestion.correct_option_id;
@@ -70,24 +98,26 @@ const Quiz = () => {
     
     setIsAnswered(true);
 
+    // Use React Query mutations with optimistic updates
     try {
-      // Record the quiz response
-      await QuestionService.recordQuizResponse(
-        quizSession.id,
-        currentQuestion.id,
-        selectedOption,
-        isCorrect,
-        currentQuestionIndex + 1
-      );
+      // Record the quiz response (only if we have a session and not offline)
+      if (quizSession && !isOffline) {
+        recordResponseMutation.mutate({
+          sessionId: quizSession.id,
+          questionId: currentQuestion.id,
+          selectedOptionId: selectedOption,
+          isCorrect,
+          responseOrder: currentQuestionIndex + 1
+        });
 
-      // Update user question history
-      await QuestionService.updateUserQuestionHistory(
-        user.id,
-        currentQuestion.id,
-        selectedOption,
-        isCorrect
-      );
-
+        // Update user question history
+        updateHistoryMutation.mutate({
+          userId: user.id,
+          questionId: currentQuestion.id,
+          selectedOptionId: selectedOption,
+          isCorrect
+        });
+      }
     } catch (err) {
       console.error('Error recording answer:', err);
       // Continue anyway - don't block user experience
@@ -104,13 +134,20 @@ const Quiz = () => {
       const finalScore = selectedOption === questions[currentQuestionIndex].correct_option_id ? score + 1 : score;
       
       try {
-        await QuestionService.completeQuizSession(quizSession.id, user.id, finalScore);
+        if (quizSession && !isOffline) {
+          await completeSessionMutation.mutateAsync({
+            sessionId: quizSession.id,
+            userId: user.id,
+            finalScore
+          });
+        }
 
         navigate('/results', { 
           state: { 
             score: finalScore,
             totalQuestions: questions.length,
-            sessionId: quizSession.id
+            sessionId: quizSession?.id,
+            isOffline
           } 
         });
       } catch (err) {
@@ -119,7 +156,8 @@ const Quiz = () => {
         navigate('/results', { 
           state: { 
             score: finalScore,
-            totalQuestions: questions.length 
+            totalQuestions: questions.length,
+            isOffline: true
           } 
         });
       }
@@ -141,21 +179,51 @@ const Quiz = () => {
     );
   }
 
-  if (loading) {
+  if (!categoryId) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-lg text-gray-600 mb-4">No category selected.</p>
+        <button 
+          onClick={() => navigate('/categories')}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+        >
+          Select Category
+        </button>
       </div>
     );
   }
 
-  if (error) {
+  if (questionsLoading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+        <p className="text-gray-600">Loading quiz questions...</p>
+        {isFetching && <p className="text-sm text-gray-500">Fetching latest questions</p>}
+      </div>
+    );
+  }
+
+  if (hasQuestionsError && questions.length === 0) {
+    const offlineQuestions = getOfflineData(categoryId, questionCount);
+    
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <p className="text-lg text-red-600 mb-4">{error}</p>
+        <WifiOff className="h-12 w-12 text-red-500 mb-4" />
+        <p className="text-lg text-red-600 mb-4">
+          {offlineQuestions ? 'Network error, but offline questions available' : 'Error loading quiz questions'}
+        </p>
+        <p className="text-sm text-gray-500 mb-4">{questionsError?.message}</p>
+        {offlineQuestions ? (
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg mb-2"
+          >
+            Use Offline Questions
+          </button>
+        ) : null}
         <button 
           onClick={() => navigate('/categories')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg"
+          className="bg-gray-600 text-white px-6 py-2 rounded-lg"
         >
           Back to Categories
         </button>
@@ -188,7 +256,19 @@ const Quiz = () => {
             <ArrowLeft size={20} />
           </button>
           <div className="text-center">
-            <div className="text-base font-bold">{categoryName || 'Quiz'}</div>
+            <div className="text-base font-bold flex items-center gap-2">
+              {categoryName || 'Quiz'}
+              {isOffline && (
+                <div className="flex items-center text-orange-500" title="Using offline questions">
+                  <WifiOff size={16} />
+                </div>
+              )}
+              {isFetching && (
+                <div className="flex items-center text-blue-500" title="Updating questions">
+                  <Wifi size={16} className="animate-pulse" />
+                </div>
+              )}
+            </div>
             <div className="text-xs text-gray-500 dark:text-gray-400">
               Question {currentQuestionIndex + 1} / {questions.length}
             </div>

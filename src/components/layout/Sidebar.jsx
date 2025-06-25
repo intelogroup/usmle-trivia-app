@@ -61,19 +61,17 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
   const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Student'
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ x: -280, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -280, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className={`fixed left-0 top-0 h-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-700/50 z-50 ${
-            isTablet ? 'w-72' : 'w-64'
-          }`}
-        >
+    <motion.div
+      initial={{ x: -20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -20, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      className={`h-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/50 dark:border-gray-700/50 flex flex-col w-full ${
+        isTablet ? 'fixed left-0 top-0 z-50 w-72' : ''
+      }`}
+    >
           {/* Brand Header */}
-          <div className="p-4 border-b border-gray-200/30 dark:border-gray-700/30">
+          <div className="p-3 border-b border-gray-200/30 dark:border-gray-700/30">
             <motion.div
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -95,9 +93,9 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
             {isTablet && (
               <button
                 onClick={onToggle}
-                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="absolute top-3 right-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
-                <X size={20} className="text-gray-500 dark:text-gray-400" />
+                <X size={18} className="text-gray-500 dark:text-gray-400" />
               </button>
             )}
           </div>
@@ -105,8 +103,8 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
 
 
           {/* Navigation Items */}
-          <nav className="flex-1 p-4">
-            <div className="space-y-2">
+          <nav className="flex-1 p-3">
+            <div className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const active = isActive(item.path)
@@ -115,28 +113,22 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
                   <motion.button
                     key={item.path}
                     onClick={() => navigate(item.path)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    className={`w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                       active 
-                        ? `${item.color} bg-gradient-to-r ${item.gradient}/10 border border-current/20` 
+                        ? 'text-gray-900 dark:text-white bg-gray-100/50 dark:bg-gray-800/50' 
                         : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200'
                     }`}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                   >
-                    <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    <div className={`p-1.5 rounded-md transition-all duration-200 ${
                       active 
-                        ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg` 
+                        ? `${item.color} bg-gray-200 dark:bg-gray-700` 
                         : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-gray-200 dark:group-hover:bg-gray-600'
                     }`}>
-                      <Icon size={18} />
+                      <Icon size={16} />
                     </div>
-                    <span className="font-semibold">{item.label}</span>
-                    {active && (
-                      <motion.div
-                        layoutId="activeIndicator"
-                        className="ml-auto w-2 h-2 rounded-full bg-current"
-                      />
-                    )}
+                    <span className="font-medium text-sm">{item.label}</span>
                   </motion.button>
                 )
               })}
@@ -144,22 +136,20 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
           </nav>
 
           {/* Profile Button */}
-          <div className="p-4 border-t border-gray-200/30 dark:border-gray-700/30">
+          <div className="p-3 border-t border-gray-200/30 dark:border-gray-700/30">
             <motion.button
               onClick={() => navigate('/profile')}
-              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-all duration-200"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="w-full flex items-center space-x-2 px-3 py-2.5 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-all duration-200"
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
             >
-              <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700">
-                <User size={18} />
+              <div className="p-1.5 rounded-md bg-gray-100 dark:bg-gray-700">
+                <User size={16} />
               </div>
-              <span className="font-semibold">Profile</span>
+              <span className="font-medium text-sm">Profile</span>
             </motion.button>
           </div>
         </motion.div>
-      )}
-    </AnimatePresence>
   )
 }
 

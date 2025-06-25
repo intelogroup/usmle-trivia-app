@@ -59,16 +59,20 @@ const Layout = ({ children }) => {
         </div>
       ) : (
         /* Desktop/Tablet Layout */
-        <div className="flex min-h-screen">
-          {/* Sidebar */}
-          <Sidebar 
-            isOpen={isSidebarOpen} 
-            onToggle={toggleSidebar}
-            isTablet={window.innerWidth < 1024}
-          />
+        <div className="flex min-h-screen w-full overflow-hidden">
+          {/* Sidebar - Fixed percentage width */}
+          {isSidebarOpen && (
+            <div className="w-[15%] min-w-[180px] max-w-[200px] flex-shrink-0">
+              <Sidebar 
+                isOpen={isSidebarOpen} 
+                onToggle={toggleSidebar}
+                isTablet={window.innerWidth < 1024}
+              />
+            </div>
+          )}
           
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col">
+          {/* Main Content Area - Takes remaining width */}
+          <div className={`${isSidebarOpen ? 'w-[85%]' : 'w-full'} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
             {/* Keep Header as top bar with profile on far right */}
             <Header 
               onSidebarToggle={toggleSidebar}
@@ -77,7 +81,7 @@ const Layout = ({ children }) => {
             />
             
             {/* Main content area - theater of the app */}
-            <main className="flex-1 transition-all duration-300">
+            <main className="flex-1 overflow-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -85,9 +89,11 @@ const Layout = ({ children }) => {
                   duration: 0.4, 
                   ease: [0.25, 0.46, 0.45, 0.94]
                 }}
-                className="container mx-auto px-4 py-4 max-w-full lg:max-w-7xl min-h-full"
+                className="h-full px-4 py-4"
               >
-                {children}
+                <div className="max-w-full h-full">
+                  {children}
+                </div>
               </motion.div>
             </main>
           </div>
@@ -98,7 +104,7 @@ const Layout = ({ children }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              className="fixed inset-0 bg-black/50 z-50"
               onClick={() => setIsSidebarOpen(false)}
             />
           )}

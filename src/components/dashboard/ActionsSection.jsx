@@ -48,14 +48,9 @@ const ActionCard = ({ icon: Icon, title, subtitle, color, iconColor, onPress, de
       whileHover={{ scale: 1.01, y: -1 }}
       whileTap={{ scale: 0.99 }}
       onClick={onPress}
-      className={`bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-3 md:p-4 lg:p-5 shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer group relative overflow-hidden h-[120px] sm:h-[90px] md:h-[110px] lg:h-[130px] ${recommended ? 'ring-2 ring-blue-200 dark:ring-blue-800/50' : ''}`}
+      className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-3 md:p-4 lg:p-5 shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer group relative overflow-hidden h-[120px] sm:h-[90px] md:h-[110px] lg:h-[130px]"
     >
-      {/* Recommended badge */}
-      {recommended && (
-        <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-blue-500 text-white text-xs px-2 py-1 md:px-3 md:py-1.5 rounded-full font-medium z-10">
-          Recommended
-        </div>
-      )}
+
       
       {/* Progress background */}
       {progress > 0 && (
