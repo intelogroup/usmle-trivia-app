@@ -5,7 +5,12 @@ import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      // Enable React Fast Refresh
+      fastRefresh: true,
+      // Ensure JSX runtime is properly configured
+      jsxRuntime: 'automatic'
+    }),
 
     // **Bundle Analysis (Optional but Recommended)**
     // This plugin generates an interactive treemap of your bundle contents.
@@ -51,6 +56,12 @@ export default defineConfig({
     // This is enabled by default. CSS imported in async chunks will be inlined
     // into the chunk and loaded only when the chunk is needed, preventing render-blocking.
     cssCodeSplit: true,
+
+    // **Target modern browsers to use native ES modules**
+    target: 'esnext',
+    
+    // **Ensure consistent builds**
+    sourcemap: false,
 
     rollupOptions: {
       output: {
