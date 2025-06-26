@@ -44,13 +44,199 @@ import {
   Thermometer,
   Baby,
   Bone,
-  Wind as Lungs, // For respiratory system
-  Droplets as Kidneys, // For renal system  
-  Zap,
-  Zap as Dna,
   Bandage as FirstAid,
   AlertCircle
 } from 'lucide-react';
+
+// Import health-specific icons from healthicons-react
+import { 
+  Lungs,
+  Kidneys, 
+  Dna,
+  BloodBag,
+  Stomach,
+  FemaleReproductiveSystem,
+  Virus,
+  Bacteria,
+  Thyroid,
+  Pancreas,
+  BloodCells,
+  Liver,
+  Spine
+} from 'healthicons-react';
+
+// Import FontAwesome icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faUserMd, 
+  faHospital, 
+  faPills, 
+  faHeartbeat,
+  faMicroscope,
+  faXRay,
+  faAmbulance,
+  faBrain,
+  faEye
+} from '@fortawesome/free-solid-svg-icons';
+
+// Import Iconify icons
+import { Icon } from '@iconify/react';
+
+// FontAwesome wrapper components for consistency - convert numeric size to FA size
+const convertSizeToFA = (size) => {
+  if (typeof size === 'number') {
+    if (size <= 12) return 'xs';
+    if (size <= 16) return 'sm';
+    if (size <= 20) return 'lg';
+    if (size <= 24) return 'xl';
+    if (size <= 32) return '2xl';
+    return '2xl';
+  }
+  return size;
+};
+
+const FAUserMd = ({ size, ...props }) => <FontAwesomeIcon icon={faUserMd} size={convertSizeToFA(size)} {...props} />;
+const FAHospital = ({ size, ...props }) => <FontAwesomeIcon icon={faHospital} size={convertSizeToFA(size)} {...props} />;
+const FAPills = ({ size, ...props }) => <FontAwesomeIcon icon={faPills} size={convertSizeToFA(size)} {...props} />;
+const FAHeartbeat = ({ size, ...props }) => <FontAwesomeIcon icon={faHeartbeat} size={convertSizeToFA(size)} {...props} />;
+const FAMicroscope = ({ size, ...props }) => <FontAwesomeIcon icon={faMicroscope} size={convertSizeToFA(size)} {...props} />;
+const FAXRay = ({ size, ...props }) => <FontAwesomeIcon icon={faXRay} size={convertSizeToFA(size)} {...props} />;
+const FAAmbulance = ({ size, ...props }) => <FontAwesomeIcon icon={faAmbulance} size={convertSizeToFA(size)} {...props} />;
+
+// Iconify wrapper components for consistency
+const IconifyCardiology = (props) => <Icon icon="medical-icon:i-cardiology" {...props} />;
+const IconifyNeurology = (props) => <Icon icon="medical-icon:i-neurology" {...props} />;
+const IconifyRadiology = (props) => <Icon icon="medical-icon:i-radiology" {...props} />;
+const IconifyPharmacy = (props) => <Icon icon="medical-icon:i-pharmacy" {...props} />;
+const IconifyEmergency = (props) => <Icon icon="medical-icon:i-emergency" {...props} />;
+
+// Medical icon mapping based on category names - overrides database icons
+const medicalIconMapping = {
+  // Cardiovascular
+  'Cardiovascular System': FAHeartbeat,
+  'Cardiology': FAHeartbeat,
+  'Myocardial Infarction': FAHeartbeat,
+  'Heart': FAHeartbeat,
+  
+  // Respiratory
+  'Pulmonary & Critical Care': Lungs,
+  'Respiratory System': Lungs,
+  'Pulmonology': Lungs,
+  'Asthma': Lungs,
+  'Pneumonia': Lungs,
+  'COPD': Lungs,
+  
+  // Neurological
+  'Nervous System': Brain,
+  'Neurology': Brain,
+  'Stroke': Brain,
+  'Ischemic Stroke': Brain,
+  'Hemorrhagic Stroke': Brain,
+  'Behavioral science': Brain,
+  'Psychiatry': Brain,
+  'Psychiatric/Behavioral & Substance Use Disorder': Brain,
+  
+  // Gastrointestinal
+  'Gastrointestinal & Nutrition': Stomach,
+  'Gastrointestinal System': Stomach,
+  'Gastroenterology': Stomach,
+  'Peptic Ulcer Disease': Stomach,
+  'GERD': Stomach,
+  
+  // Renal/Urinary
+  'Renal, Urinary Systems & Electrolytes': Kidneys,
+  'Renal System': Kidneys,
+  'Urology': Kidneys,
+  'Acute Kidney Injury': Kidneys,
+  'Glomerulonephritis': Kidneys,
+  
+  // Endocrine
+  'Endocrine, Diabetes & Metabolism': Thyroid,
+  'Endocrinology': Thyroid,
+  
+  // Hematology
+  'Hematology & Oncology': BloodBag,
+  'Hematology': BloodBag,
+  'Oncology': BloodBag,
+  
+  // Infectious Diseases
+  'Infectious Diseases': Virus,
+  'Infectious disease': Virus,
+  'Microbiology': Bacteria,
+  'Microbiology (General Principles)': Bacteria,
+  
+  // Pharmacology
+  'Pharmacology (General Principles)': FAPills,
+  'Pharmacology': FAPills,
+  
+  // Pathology
+  'Pathology (General Principles)': FAMicroscope,
+  'Pathology': FAMicroscope,
+  'Histology': FAMicroscope,
+  
+  // Reproductive
+  'Female Reproductive System & Breast': FemaleReproductiveSystem,
+  'Male Reproductive System': FAUserMd,
+  'Obstetrics and gynecology': FemaleReproductiveSystem,
+  'Pregnancy, Childbirth & Puerperium': Baby,
+  
+  // Musculoskeletal
+  'Rheumatology/Orthopedics & Sports': Bone,
+  'Orthopedics': Bone,
+  'Rheumatology': Bone,
+  
+  // Specialized
+  'Ophthalmology': Eye,
+  'Dermatology': IconifyRadiology,
+  'Radiology': IconifyRadiology,
+  'Surgery': IconifyEmergency,
+  'Pediatrics': Baby,
+  'Ear, Nose & Throat (ENT)': IconifyEmergency,
+  
+  // Basic Sciences
+  'Anatomy': Brain,
+  'Physiology': Heart,
+  'Biochemistry': TestTube,
+  'Biochemistry (General Principles)': TestTube,
+  'Genetics': Dna,
+  'Genetics (General Principles)': Dna,
+  'Immunology': Shield,
+  'Allergy & Immunology': Shield,
+  'Pathophysiology': Activity,
+  'Embryology': Baby,
+  'Biostatistics': TrendingUp,
+  'Biostatistics & Epidemiology': TrendingUp,
+  
+  // General/Other
+  'Social Sciences (Ethics/Legal/Professional)': BookOpen,
+  'Miscellaneous (Multisystem)': Stethoscope,
+  'Poisoning & Environmental Exposure': AlertCircle
+};
+
+// Function to get the appropriate medical icon
+const getMedicalIcon = (categoryName, databaseIcon) => {
+  // First check if we have a specific medical mapping
+  const medicalIcon = medicalIconMapping[categoryName];
+  if (medicalIcon) {
+    return medicalIcon;
+  }
+  
+  // Check for partial matches (for topics that might have longer names)
+  for (const [key, icon] of Object.entries(medicalIconMapping)) {
+    if (categoryName.toLowerCase().includes(key.toLowerCase()) || 
+        key.toLowerCase().includes(categoryName.toLowerCase())) {
+      return icon;
+    }
+  }
+  
+  // Fall back to database icon if available in iconMap
+  if (databaseIcon && iconMap[databaseIcon]) {
+    return iconMap[databaseIcon];
+  }
+  
+  // Default fallback
+  return Stethoscope;
+};
 
 const iconMap = {
   // Cardiovascular
@@ -76,8 +262,14 @@ const iconMap = {
   // Body Systems
   Eye,
   Bone,
-  Lungs, // Represents respiratory system
-  Kidneys, // Represents renal system
+  Lungs,
+  Kidneys,
+  Stomach,
+  Liver,
+  Thyroid,
+  Pancreas,
+  Spine,
+  FemaleReproductiveSystem,
   
   // Pediatrics/Development
   Baby,
@@ -87,14 +279,37 @@ const iconMap = {
   TestTube,
   Dna,
   
+  // Infectious Diseases
+  Virus,
+  Bacteria,
+  
+  // Hematology
+  BloodBag,
+  BloodCells,
+  
   // General/Academic
   BookOpen,
   Book,
   Target,
-  Atom,
   LayoutGrid,
   Waves,
-  Shield
+  Shield,
+  
+  // FontAwesome Icons
+  FAUserMd,
+  FAHospital,
+  FAPills,
+  FAHeartbeat,
+  FAMicroscope,
+  FAXRay,
+  FAAmbulance,
+  
+  // Iconify Icons
+  IconifyCardiology,
+  IconifyNeurology,
+  IconifyRadiology,
+  IconifyPharmacy,
+  IconifyEmergency
 };
 
 const QuizTab = () => {
@@ -108,6 +323,7 @@ const QuizTab = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [selectedQuestionCount, setSelectedQuestionCount] = useState(10);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(null);
 
   const filterOptions = [
     { value: 'all', label: 'All', icon: LayoutGrid },
@@ -117,6 +333,7 @@ const QuizTab = () => {
   ];
 
   const questionCountOptions = [5, 10, 15, 20, 25, 30];
+  const difficultyOptions = ['Easy', 'Medium', 'Hard'];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -145,7 +362,7 @@ const QuizTab = () => {
             id: category.id,
             title: category.name || 'Unknown Category',
             description: category.description || `Study ${(category.name || '').toLowerCase()} concepts and practice questions`,
-            icon: iconMap[category.icon_name] || Atom,
+            icon: getMedicalIcon(category.name, category.icon_name) || Stethoscope,
             color: category.color_code || category.color || '#6B7280',
             type: category.type || 'subject',
             questionCount: category.question_count || 0,
@@ -213,7 +430,8 @@ const QuizTab = () => {
       state: { 
         categoryId, 
         categoryName,
-        questionCount: selectedQuestionCount 
+        questionCount: selectedQuestionCount,
+        difficulty: selectedDifficulty,
       } 
     });
   };
@@ -224,7 +442,8 @@ const QuizTab = () => {
       state: { 
         categoryId: 'mixed', 
         categoryName: 'Mixed Practice',
-        questionCount: selectedQuestionCount 
+        questionCount: selectedQuestionCount,
+        difficulty: selectedDifficulty,
       } 
     });
   };
@@ -243,13 +462,13 @@ const QuizTab = () => {
   };
 
   const handleCustomQuiz = () => {
-    // Navigate to custom quiz setup where user chooses subject and system (topic optional)
-    navigate('/custom-quiz-setup');
+    // Temporary implementation - will be replaced with full setup page
+    alert('Custom Quiz setup coming soon! For now, use the category selection below to choose specific topics.');
   };
 
   const handleBlockTest = () => {
-    // Navigate to block test setup - 40 questions, user specifies blocks and timed/self-paced
-    navigate('/block-test-setup');
+    // Temporary implementation - will be replaced with full setup page  
+    alert('Block Test setup coming soon! This will allow multi-block exams with persistence and detailed analytics.');
   };
 
   if (loading) {
@@ -361,31 +580,69 @@ const QuizTab = () => {
         </motion.div>
       </div>
 
+      {/* Difficulty Picker */}
+      <div className="px-3 pb-3">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                <Star size={14} className="text-gray-500" />
+                Difficulty:
+              </h3>
+              <div className="flex gap-1 overflow-x-auto scrollbar-hide">
+                {difficultyOptions.map((difficulty) => (
+                  <button
+                    key={difficulty}
+                    onClick={() => setSelectedDifficulty(difficulty)}
+                    className={`py-1.5 px-3 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      selectedDifficulty === difficulty
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {difficulty}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
       {/* Quiz Type Buttons */}
       <div className="px-3 pb-3">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 mb-3">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/quiz', { 
-              state: { 
-                categoryId: 'mixed', 
-                categoryName: 'Quick Practice', 
-                questionCount: selectedQuestionCount 
-              } 
+            onClick={() => navigate('/quiz', {
+              state: {
+                categoryId: 'mixed',
+                categoryName: 'Quick Quiz',
+                questionCount: 10,
+                quizType: 'quick',
+                isAutoAdvance: true,
+                showExplanations: false,
+                isTimed: false,
+                difficulty: selectedDifficulty,
+              },
             })}
             className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all"
           >
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
+                <Play className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Quick Quiz</span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">{selectedQuestionCount} random questions</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">10 random questions, auto-advance</p>
           </motion.button>
 
           <motion.button
@@ -394,13 +651,18 @@ const QuizTab = () => {
             transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate('/quiz', { 
-              state: { 
-                categoryId: 'mixed', 
-                categoryName: 'Timed Challenge', 
+            onClick={() => navigate('/quiz', {
+              state: {
+                categoryId: 'mixed',
+                categoryName: 'Timed Test',
                 questionCount: 20,
-                isTimedMode: true
-              } 
+                quizType: 'timed',
+                isAutoAdvance: false,
+                showExplanations: true,
+                isTimed: true,
+                timeLimit: 1800,
+                difficulty: selectedDifficulty,
+              },
             })}
             className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all"
           >
@@ -410,7 +672,45 @@ const QuizTab = () => {
               </div>
               <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Timed Test</span>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">20 questions, 30 min</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">20 questions, 30 min total</p>
+          </motion.button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => alert('Custom Quiz setup coming soon! This will allow you to select difficulty, number of questions, subjects, and more.')}
+            className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <Settings className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Custom Quiz</span>
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">Custom difficulty & topics</p>
+          </motion.button>
+
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => alert('Block Test setup coming soon! This will allow you to take multi-block exams with persistence and detailed analytics.')}
+            className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                <Target className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Block Test</span>
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-left">Multi-block exam, timed</p>
           </motion.button>
         </div>
       </div>

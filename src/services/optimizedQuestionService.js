@@ -7,38 +7,54 @@ export class OptimizedQuestionService {
   /**
    * Fetch questions with minimal fields and optimized queries
    */
-  static async fetchQuestions(categoryId, questionCount = 10) {
+  static async fetchQuestions(categoryId, questionCount = 10, difficulty = null) {
     try {
       // Start with base query selecting only essential fields
-      let query = supabase
-        .from('questions')
-        .select(`
-          id,
-          question_text,
-          option_a,
-          option_b,
-          option_c,
-          option_d,
-          correct_option_id,
-          explanation,
-          difficulty,
-          created_at
-        `);
+      let query = supabase.from('questions');
 
       // Optimize for mixed vs specific category
       if (categoryId !== 'mixed') {
-        // Use EXISTS for better performance with large datasets
-        query = query.filter(
-          'id',
-          'in',
-          `(SELECT question_id FROM question_tags WHERE tag_id = ${categoryId})`
-        );
+        // Join with question_tags for specific categories
+        query = query
+          .select(`
+            id,
+            question_text,
+            options,
+            correct_option_id,
+            explanation,
+            difficulty,
+            created_at,
+            question_tags!inner(
+              tag_id,
+              tags(name)
+            )
+          `)
+          .eq('question_tags.tag_id', categoryId);
+      } else {
+        // For mixed category, get all questions
+        query = query
+          .select(`
+            id,
+            question_text,
+            options,
+            correct_option_id,
+            explanation,
+            difficulty,
+            created_at,
+            question_tags(
+              tag_id,
+              tags(name)
+            )
+          `);
+      }
+
+      if (difficulty) {
+        query = query.eq('difficulty', difficulty);
       }
 
       // Apply random sampling at database level for better performance
       const { data, error } = await query
-        .limit(questionCount * 2) // Get more questions for better randomization
-        .order('random()'); // PostgreSQL random ordering
+        .limit(questionCount * 2); // Get more questions for better randomization
 
       if (error) {
         console.error('Supabase error fetching questions:', error);
@@ -109,7 +125,6 @@ export class OptimizedQuestionService {
         .select(`
           id,
           name,
-          slug,
           icon_name,
           color_code,
           question_count

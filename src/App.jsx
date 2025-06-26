@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoadingIndicator from './components/ui/LoadingIndicator';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { QuizProvider } from './context/QuizContext';
@@ -12,7 +13,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Main Pages
 const Home = lazy(() => import('./pages/Home'));
-const Quiz = lazy(() => import('./pages/Quiz'));
+const QuickQuiz = lazy(() => import('./pages/QuickQuiz'));
+const TimedTest = lazy(() => import('./pages/TimedTest'));
 const QuizTab = lazy(() => import('./pages/QuizTab'));
 const Results = lazy(() => import('./pages/Results'));
 
@@ -20,6 +22,7 @@ const Results = lazy(() => import('./pages/Results'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
 const Learn = lazy(() => import('./pages/Learn'));
+const DatabaseTest = lazy(() => import('./pages/DatabaseTest'));
 
 // Auth Pages
 const Welcome = lazy(() => import('./pages/auth/Welcome'));
@@ -31,14 +34,18 @@ const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 
+// Demo/Showcase Pages
+const IconShowcase = lazy(() => import('./components/ui/IconShowcase'));
+
 function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <Router>
-        <div className="min-h-screen bg-gray-50 dark:bg-expo-950 scrollbar-hide">
-          <Suspense fallback={<LoadingIndicator />}>
-            <Routes>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <Router>
+          <div className="min-h-screen bg-gray-50 dark:bg-expo-950 scrollbar-hide">
+            <Suspense fallback={<LoadingIndicator />}>
+              <Routes>
               {/* Public Authentication Routes */}
               <Route path="/auth/welcome" element={<Welcome />} />
               <Route path="/auth/login" element={<Login />} />
@@ -56,13 +63,33 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/categories" element={<QuizTab />} />
-                      <Route path="/quiz/:categoryId" element={<QuizProvider><Quiz /></QuizProvider>} />
-                      <Route path="/quiz" element={<QuizProvider><Quiz /></QuizProvider>} />
+                      <Route path="/quick-quiz" element={
+                        <ErrorBoundary>
+                          <QuizProvider><QuickQuiz /></QuizProvider>
+                        </ErrorBoundary>
+                      } />
+                      <Route path="/timed-test" element={
+                        <ErrorBoundary>
+                          <QuizProvider><TimedTest /></QuizProvider>
+                        </ErrorBoundary>
+                      } />
+                      <Route path="/quiz/:categoryId" element={
+                        <ErrorBoundary>
+                          <QuizProvider><QuickQuiz /></QuizProvider>
+                        </ErrorBoundary>
+                      } />
+                      <Route path="/quiz" element={
+                        <ErrorBoundary>
+                          <QuizProvider><QuickQuiz /></QuizProvider>
+                        </ErrorBoundary>
+                      } />
                       <Route path="/results" element={<Results />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/learn" element={<Learn />} />
                       <Route path="/stats" element={<div className="p-6 text-center text-gray-600 dark:text-gray-300">Stats page coming soon!</div>} />
                       <Route path="/leaderboard" element={<Leaderboard />} />
+                      <Route path="/database-test" element={<DatabaseTest />} />
+                      <Route path="/icons" element={<IconShowcase />} />
                     </Routes>
                   </Layout>
                 </ProtectedRoute>
@@ -70,12 +97,13 @@ function App() {
 
               {/* Catch all route - redirect to welcome */}
               <Route path="*" element={<Navigate to="/auth/welcome" replace />} />
-            </Routes>
-          </Suspense>
-        </div>
-        </Router>
-      </ThemeProvider>
-    </AuthProvider>
+              </Routes>
+            </Suspense>
+          </div>
+          </Router>
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

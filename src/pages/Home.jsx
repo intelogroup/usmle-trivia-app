@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { useUserActivity } from '../hooks/useUserActivity'
 import { Lightbulb, Award, Calendar } from 'lucide-react'
-import { Target, Clock, BookOpen, Brain, Trophy, TrendingUp, Play } from 'lucide-react'
+import { Target, Clock, BookOpen, Brain, Trophy, TrendingUp, Play, Zap, Timer, Puzzle, Layers, BarChart3 } from 'lucide-react'
+import { Stethoscope } from 'healthicons-react'
 
 // Import new components
 import WelcomeCard from '../components/dashboard/WelcomeCard'
@@ -117,43 +118,84 @@ const Home = () => {
     if (isNewUser) {
       return [
         {
-          icon: Play,
-          title: 'Start Your First Quiz',
-          subtitle: 'Take 10 practice questions',
+          icon: Zap,
+          title: 'Quick Quiz',
+          subtitle: 'Fast 10-question practice',
           color: 'bg-purple-600',
           iconColor: 'text-purple-600',
-          action: () => navigate('/categories'),
-          timeEstimate: '~15 min',
+          action: () => navigate('/quick-quiz'),
+          timeEstimate: '~5 min',
           difficulty: 'Beginner',
-          description: 'Get familiar with the format and start building confidence',
+          description: 'Perfect introduction with auto-advancing questions',
           progress: 0,
           recommended: true
+        },
+        {
+          icon: Timer,
+          title: 'Timed Test',
+          subtitle: '20 questions, 30 minutes',
+          color: 'bg-blue-600',
+          iconColor: 'text-blue-600',
+          action: () => navigate('/timed-test'),
+          timeEstimate: '30 min',
+          difficulty: 'Mixed',
+          description: 'Practice under time pressure with explanations',
+          progress: 0,
+          recommended: false
         },
         {
           icon: BookOpen,
-          title: 'Learn the Basics',
-          subtitle: 'Start with study materials',
-          color: 'bg-blue-600',
+          title: 'Learn',
+          subtitle: 'Study materials & concepts',
+          color: 'bg-green-600',
           iconColor: 'text-green-600',
           action: () => navigate('/learn'),
-          timeEstimate: '~30 min',
-          difficulty: 'Easy',
-          description: 'Review fundamental concepts and terminology',
+          timeEstimate: 'Self-paced',
+          difficulty: 'All levels',
+          description: 'Review core concepts and explanations',
           progress: 0,
           recommended: true
         },
         {
-          icon: Trophy,
-          title: 'Set Goals',
-          subtitle: 'Plan your study schedule',
+          icon: BarChart3,
+          title: 'My Stats',
+          subtitle: 'View your progress',
           color: 'bg-orange-600',
           iconColor: 'text-orange-600',
           action: () => navigate('/profile'),
-          timeEstimate: '~5 min',
-          difficulty: 'Easy',
-          description: 'Set daily targets and study preferences',
+          timeEstimate: '~2 min',
+          difficulty: null,
+          description: 'Track your performance and achievements',
           progress: 0,
           recommended: false
+        },
+        {
+          icon: Puzzle,
+          title: 'Custom Quiz',
+          subtitle: 'Coming Soon',
+          color: 'bg-gray-400',
+          iconColor: 'text-gray-400',
+          action: () => alert('Custom Quiz feature coming soon! This will allow you to choose difficulty, number of questions (1-40), specific subjects/systems/topics, and timing options.'),
+          timeEstimate: 'Variable',
+          difficulty: 'Custom',
+          description: 'Configure your perfect practice session',
+          progress: 0,
+          recommended: false,
+          disabled: true
+        },
+        {
+          icon: Layers,
+          title: 'Block Test',
+          subtitle: 'Coming Soon',
+          color: 'bg-gray-400',
+          iconColor: 'text-gray-400',
+          action: () => alert('Block Test feature coming soon! This will simulate real exam conditions with 20-50 questions per block, 2-8 blocks, timed sessions, and pause/resume functionality.'),
+          timeEstimate: '1-8 hours',
+          difficulty: 'Advanced',
+          description: 'Full exam simulation with multiple blocks',
+          progress: 0,
+          recommended: false,
+          disabled: true
         }
       ]
     } else {
@@ -161,45 +203,87 @@ const Home = () => {
       
       return [
         {
-          icon: Play,
-          title: 'Quick Practice',
-          subtitle: '10 random questions',
+          icon: Zap,
+          title: 'Quick Quiz',
+          subtitle: '10 questions, auto-advance',
           color: 'bg-purple-600',
           iconColor: 'text-purple-600',
-          action: () => navigate('/quiz', { state: { categoryId: 'mixed', categoryName: 'Mixed Practice', questionCount: 10 } }),
-          timeEstimate: '~12 min',
+          action: () => navigate('/quick-quiz'),
+          timeEstimate: '~5 min',
           difficulty: 'Mixed',
-          description: 'Maintain momentum with focused practice',
+          description: 'Fast-paced quiz with instant feedback',
           progress: Math.round((userStats.totalQuestions % 50) / 50 * 100),
-          recommended: recommendedAction === 'practice',
+          recommended: true,
           lastUsed: '2 hours ago'
+        },
+        {
+          icon: Timer,
+          title: 'Timed Test',
+          subtitle: '20 questions, 30 minutes',
+          color: 'bg-blue-600',
+          iconColor: 'text-blue-600',
+          action: () => navigate('/timed-test'),
+          timeEstimate: '30 min',
+          difficulty: 'Mixed',
+          description: 'Practice with time pressure and explanations',
+          progress: Math.round(userStats.studyTime % 10 / 10 * 100),
+          recommended: recommendedAction === 'practice',
+          lastUsed: '1 day ago'
         },
         {
           icon: BookOpen,
           title: 'Continue Learning',
           subtitle: 'Resume where you left off',
-          color: 'bg-blue-600',
+          color: 'bg-green-600',
           iconColor: 'text-green-600',
           action: () => navigate('/learn'),
           timeEstimate: '~25 min',
-          difficulty: 'Medium',
-          description: 'Strengthen weak areas with targeted study',
+          difficulty: 'Adaptive',
+          description: 'Pick up from your last study session',
           progress: Math.round(userStats.studyTime % 10 / 10 * 100),
           recommended: recommendedAction === 'study',
-          lastUsed: '1 day ago'
+          lastUsed: 'Yesterday'
         },
         {
-          icon: Trophy,
-          title: 'Challenge Mode',
-          subtitle: '20 advanced questions',
-          color: 'bg-red-600',
-          iconColor: 'text-red-600',
-          action: () => navigate('/quiz', { state: { categoryId: 'advanced', categoryName: 'Challenge Mode', questionCount: 20 } }),
-          timeEstimate: '~25 min',
-          difficulty: 'Hard',
-          description: 'Test your knowledge with difficult scenarios',
+          icon: BarChart3,
+          title: 'My Stats',
+          subtitle: 'Performance analytics',
+          color: 'bg-orange-600',
+          iconColor: 'text-orange-600',
+          action: () => navigate('/profile'),
+          timeEstimate: '~2 min',
+          difficulty: null,
+          description: 'View detailed progress and insights',
+          progress: userStats.accuracy,
+          recommended: false,
+          lastUsed: '3 days ago'
+        },
+        {
+          icon: Puzzle,
+          title: 'Custom Quiz',
+          subtitle: 'Coming Soon',
+          color: 'bg-gray-400',
+          iconColor: 'text-gray-400',
+          action: () => alert('Custom Quiz feature coming soon! This will allow you to choose difficulty, number of questions (1-40), specific subjects/systems/topics, and timing options.'),
+          timeEstimate: 'Variable',
+          difficulty: 'Custom',
+          description: 'Configure your perfect practice session',
           progress: 0,
-          recommended: userStats.accuracy > 80,
+          recommended: false,
+          disabled: true
+        },
+        {
+          icon: Layers,
+          title: 'Block Test',
+          subtitle: 'Coming Soon',
+          color: 'bg-gray-400',
+          iconColor: 'text-gray-400',
+          action: () => alert('Block Test feature coming soon! This will simulate real exam conditions with 20-50 questions per block, 2-8 blocks, timed sessions, and pause/resume functionality.'),
+          timeEstimate: '1-8 hours',
+          difficulty: 'Advanced',
+          description: 'Full exam simulation with multiple blocks',
+          progress: 0,
+          recommended: false,
           lastUsed: userStats.accuracy > 75 ? '3 days ago' : null
         }
       ]

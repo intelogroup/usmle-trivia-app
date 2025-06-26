@@ -5,6 +5,11 @@ A modern, mobile-first web application for USMLE (United States Medical Licensin
 ## ✨ Features
 
 - **Mobile-First Design**: Optimized for mobile devices with responsive layout
+- **Multiple Quiz Modes**: 
+  - **Quick Quiz**: Fast 10-question practice with auto-advance and timer
+  - **Timed Test**: 20 questions in 30 minutes with explanations after each answer
+  - **Custom Quiz** (Coming Soon): Configure difficulty, topics, and timing
+  - **Block Test** (Coming Soon): Full exam simulation with multiple blocks
 - **Interactive Quiz System**: Timed questions with immediate feedback
 - **Multiple Categories**: Various medical subjects including Cardiology, Neurology, Pharmacology, etc.
 - **Leaderboard**: Compete with medical students worldwide with profile images and country flags
@@ -81,17 +86,18 @@ src/
 ### Home Page
 - Welcome message and user greeting
 - Quick stats overview (accuracy, study time, streak)
-- Quick action buttons for immediate practice
-- Recent activity timeline
+- Quick action buttons for different quiz modes:
+  - **Quick Quiz**: 10 questions with auto-advance
+  - **Timed Test**: 20 questions in 30 minutes
+  - **Custom Quiz**: Coming soon - flexible configuration
+  - **Block Test**: Coming soon - full exam simulation
+- Recent achievements and study tips
 
-### Quiz Tab (formerly Categories Page)
+### Quiz Tab (Categories Page)
 - Medical subject categories with progress tracking
 - Visual indicators for completion status
-- Three quiz modes:
-  - **Blitz Quiz**: Quick 15-question practice with random selection
-  - **Custom Quiz**: Personalized quiz where users select subjects/systems/topics
-  - **Block Test**: Standardized 40-question blocks with configurable timing
 - Easy navigation to specific topics
+- Category-based quiz selection
 
 ### Leaderboard
 - Global ranking system with real profile pictures

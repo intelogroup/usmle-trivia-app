@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys, cacheUtils } from '../lib/queryClient'
 import { QuestionService } from '../services/questionService'
+import { OptimizedQuestionService } from '../services/optimizedQuestionService'
 
 // Local storage utilities for offline support
 const CACHE_PREFIX = 'usmle_quiz_cache_'
@@ -53,29 +54,25 @@ const localStorageCache = {
 }
 
 // Custom hook for fetching questions with caching
-export function useQuestions(categoryId, questionCount = 10, options = {}) {
-  const cacheKey = `questions_${categoryId}_${questionCount}`
+export function useQuestions(categoryId, questionCount = 10, difficulty = null, options = {}) {
+  const cacheKey = `questions_${categoryId}_${questionCount}_${difficulty}`
   
   return useQuery({
-    queryKey: queryKeys.questionsByCategory(categoryId, questionCount),
+    queryKey: queryKeys.questionsByCategory(categoryId, questionCount, difficulty),
     queryFn: async () => {
-      try {
-        const questions = await QuestionService.fetchQuestions(categoryId, questionCount)
-        
-        // Cache to local storage for offline support
-        localStorageCache.set(cacheKey, questions)
-        
-        return questions
-      } catch (error) {
-        // Try to get from local storage if network fails
-        const cachedQuestions = localStorageCache.get(cacheKey)
-        if (cachedQuestions) {
-          console.info('Using cached questions due to network error')
-          return cachedQuestions
-        }
-        throw error
-      }
+      const questions = await OptimizedQuestionService.fetchQuestions(categoryId, questionCount, difficulty);
+      localStorageCache.set(cacheKey, questions);
+      return questions;
     },
+    initialData: () => {
+      const cached = localStorageCache.get(cacheKey);
+      if (cached) {
+        console.info('Using initialData from cache for', cacheKey);
+        return cached;
+      }
+      return undefined;
+    },
+    initialDataUpdatedAt: () => localStorageCache.get(cacheKey)?.timestamp,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     refetchOnWindowFocus: false,
@@ -89,7 +86,7 @@ export function useCategories(options = {}) {
     queryKey: queryKeys.categories(),
     queryFn: async () => {
       try {
-        const categories = await QuestionService.fetchCategories()
+        const categories = await OptimizedQuestionService.fetchCategories()
         
         // Cache categories locally
         localStorageCache.set('categories', categories)
@@ -179,6 +176,18 @@ export function useCompleteQuizSession() {
       })
     }
   })
+}
+
+export function useRecordQuizResponsesBatch() {
+  return useMutation({
+    mutationFn: (responses) => OptimizedQuestionService.recordQuizResponsesBatch(responses),
+  });
+}
+
+export function useUpdateUserQuestionHistoryBatch() {
+  return useMutation({
+    mutationFn: (historyUpdates) => OptimizedQuestionService.updateUserQuestionHistoryBatch(historyUpdates),
+  });
 }
 
 // Utility hook for prefetching related questions
