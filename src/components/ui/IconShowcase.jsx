@@ -1,26 +1,14 @@
-import React from 'react';
-
 // Lucide React Icons
 import { Heart, Brain, Eye, Stethoscope } from 'lucide-react';
 
 // Health Icons
 import { Lungs, Kidneys, Dna, BloodBag } from 'healthicons-react';
 
-// FontAwesome Icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faUserMd, 
-  faHospital, 
-  faPills, 
-  faSyringe,
-  faHeartbeat,
-  faMicroscope,
-  faXRay,
-  faAmbulance 
-} from '@fortawesome/free-solid-svg-icons';
+// Additional Lucide icons for medical showcase
+import { UserRound, Building2 } from 'lucide-react';
 
-// Iconify Icons
-import { Icon } from '@iconify/react';
+// Additional Lucide icons for medical showcase
+import { Zap, Activity, Tablet, Hospital } from 'lucide-react';
 
 const IconShowcase = () => {
   const iconSections = [
@@ -45,23 +33,23 @@ const IconShowcase = () => {
       ]
     },
     {
-      title: "FontAwesome Icons",
-      description: "Popular icon library with extensive medical icons",
+      title: "Medical System Icons",
+      description: "Hospital and healthcare system icons using Lucide",
       icons: [
-        { component: <FontAwesomeIcon icon={faUserMd} className="w-6 h-6 text-blue-600" />, name: "Doctor", usage: "import { faUserMd } from '@fortawesome/free-solid-svg-icons'" },
-        { component: <FontAwesomeIcon icon={faHospital} className="w-6 h-6 text-gray-600" />, name: "Hospital", usage: "import { faHospital } from '@fortawesome/free-solid-svg-icons'" },
-        { component: <FontAwesomeIcon icon={faPills} className="w-6 h-6 text-orange-500" />, name: "Pills", usage: "import { faPills } from '@fortawesome/free-solid-svg-icons'" },
-        { component: <FontAwesomeIcon icon={faHeartbeat} className="w-6 h-6 text-pink-500" />, name: "Heartbeat", usage: "import { faHeartbeat } from '@fortawesome/free-solid-svg-icons'" }
+        { component: <UserRound className="w-6 h-6 text-blue-600" />, name: "Medical Professional", usage: "import { UserRound } from 'lucide-react'" },
+        { component: <Building2 className="w-6 h-6 text-gray-600" />, name: "Hospital", usage: "import { Building2 } from 'lucide-react'" },
+        { component: <Tablet className="w-6 h-6 text-orange-500" />, name: "Medication", usage: "import { Tablet } from 'lucide-react'" },
+        { component: <Activity className="w-6 h-6 text-pink-500" />, name: "Vital Signs", usage: "import { Activity } from 'lucide-react'" }
       ]
     },
     {
-      title: "Iconify Icons",
-      description: "Massive collection of icons from multiple icon sets",
+      title: "Additional Medical Icons",
+      description: "Extended set of medical icons using Lucide React",
       icons: [
-        { component: <Icon icon="medical-icon:i-cardiology" className="w-6 h-6 text-red-500" />, name: "Cardiology", usage: 'icon="medical-icon:i-cardiology"' },
-        { component: <Icon icon="medical-icon:i-neurology" className="w-6 h-6 text-purple-500" />, name: "Neurology", usage: 'icon="medical-icon:i-neurology"' },
-        { component: <Icon icon="medical-icon:i-radiology" className="w-6 h-6 text-blue-500" />, name: "Radiology", usage: 'icon="medical-icon:i-radiology"' },
-        { component: <Icon icon="medical-icon:i-pharmacy" className="w-6 h-6 text-green-500" />, name: "Pharmacy", usage: 'icon="medical-icon:i-pharmacy"' }
+        { component: <Activity className="w-6 h-6 text-red-500" />, name: "Activity", usage: 'import { Activity } from "lucide-react"' },
+        { component: <Brain className="w-6 h-6 text-purple-500" />, name: "Brain", usage: 'import { Brain } from "lucide-react"' },
+        { component: <Zap className="w-6 h-6 text-blue-500" />, name: "Medical Energy", usage: 'import { Zap } from "lucide-react"' },
+        { component: <Tablet className="w-6 h-6 text-green-500" />, name: "Medication", usage: 'import { Tablet } from "lucide-react"' }
       ]
     }
   ];
@@ -73,7 +61,7 @@ const IconShowcase = () => {
           Icon Library Showcase
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Four powerful icon libraries working together in your USMLE Trivia app
+          Streamlined icon libraries optimized for your USMLE Trivia app
         </p>
       </div>
 
@@ -122,12 +110,12 @@ const IconShowcase = () => {
             <span>Perfect for medical/healthcare specific icons</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="font-semibold text-orange-600 dark:text-orange-400">FontAwesome:</span>
-            <span>Extensive library, great for branding and social icons</span>
+            <span className="font-semibold text-orange-600 dark:text-orange-400">Medical Systems:</span>
+            <span>Professional healthcare and medical facility icons</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="font-semibold text-purple-600 dark:text-purple-400">Iconify:</span>
-            <span>Massive collection, access to 100+ icon sets</span>
+            <span className="font-semibold text-purple-600 dark:text-purple-400">Lucide Extended:</span>
+            <span>Comprehensive medical icons with consistent styling</span>
           </div>
         </div>
       </div>

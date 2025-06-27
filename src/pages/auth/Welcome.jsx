@@ -99,13 +99,13 @@ const Welcome = () => {
           className="space-y-3"
         >
           <Link
-            to="/auth/signup"
+            to="/signup"
             className="block w-full bg-white text-primary-600 rounded-xl py-4 px-6 font-semibold hover:bg-gray-50 transition-colors shadow-lg"
           >
             Create Account
           </Link>
           <Link
-            to="/auth/login"
+            to="/login"
             className="block w-full bg-white/20 text-white rounded-xl py-4 px-6 font-semibold hover:bg-white/30 transition-colors backdrop-blur-sm border border-white/30"
           >
             Sign In

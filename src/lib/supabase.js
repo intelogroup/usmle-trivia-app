@@ -6,11 +6,7 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Validate configuration
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase configuration!')
-  console.log('Required environment variables:')
-  console.log('- VITE_SUPABASE_URL:', supabaseUrl ? '✓ Set' : '✗ Missing')
-  console.log('- VITE_SUPABASE_ANON_KEY:', supabaseKey ? '✓ Set' : '✗ Missing')
-  console.log('\nPlease create a .env.local file with your Supabase credentials.')
+  console.warn('⚠️ Supabase environment variables missing. Please create a .env.local file with your Supabase credentials.')
 }
 
 // Create Supabase client with fallback values for development
@@ -45,13 +41,11 @@ export const testConnection = async () => {
       .limit(1)
     
     if (error) {
-      console.log('Supabase connection test error:', error.message)
       return { success: false, message: `Connection error: ${error.message}` }
     }
     
     return { success: true, message: 'Supabase connected successfully!', data }
   } catch (error) {
-    console.error('Supabase connection error:', error)
     return { success: false, message: `Connection failed: ${error.message}` }
   }
 } 

@@ -306,4 +306,138 @@ body {
 
 .native-shadow-dark {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* View Transition API styles for smooth page transitions */
+@view-transition {
+  navigation: auto;
+}
+
+/* Fallback for browsers without View Transition API support */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.transition-page-transition) {
+    view-transition-name: none;
+  }
+}
+
+/* Page transition animations */
+::view-transition-old(root) {
+  animation: fade-out 0.3s ease-out;
+}
+
+::view-transition-new(root) {
+  animation: fade-in 0.3s ease-in;
+}
+
+/* Quiz enter transition */
+.transition-quiz-enter ::view-transition-old(root) {
+  animation: slide-out-left 0.3s ease-out;
+}
+
+.transition-quiz-enter ::view-transition-new(root) {
+  animation: slide-in-right 0.3s ease-in;
+}
+
+/* Home enter transition */
+.transition-home-enter ::view-transition-old(root) {
+  animation: slide-out-right 0.3s ease-out;
+}
+
+.transition-home-enter ::view-transition-new(root) {
+  animation: slide-in-left 0.3s ease-in;
+}
+
+/* Profile enter transition */
+.transition-profile-enter ::view-transition-old(root) {
+  animation: slide-out-up 0.3s ease-out;
+}
+
+.transition-profile-enter ::view-transition-new(root) {
+  animation: slide-in-down 0.3s ease-in;
+}
+
+/* Keyframe animations */
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-out-left {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-out-up {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+
+@keyframes slide-in-down {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Performance optimizations for smooth transitions */
+* {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Instant loading indicators */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.dark .loading-shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+
+/* Cache status indicators */
+.cache-indicator {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Smooth scroll for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
 } 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QuestionService } from '../../services/questionService';
 import { testConnection } from '../../lib/supabase';
+import { logger } from '../../utils/logger';
 
 const DatabaseTest = () => {
   const [connectionStatus, setConnectionStatus] = useState(null);
@@ -13,7 +14,7 @@ const DatabaseTest = () => {
     const runTests = async () => {
       try {
         // Test 1: Basic connection
-        console.log('Testing database connection...');
+        logger.info('Testing database connection...');
         const connectionTest = await testConnection();
         setConnectionStatus(connectionTest);
 
@@ -22,21 +23,21 @@ const DatabaseTest = () => {
         }
 
         // Test 2: Fetch categories
-        console.log('Testing categories fetch...');
+        logger.info('Testing categories fetch...');
         const categoriesData = await QuestionService.fetchCategories();
         setCategories(categoriesData);
-        console.log('Categories fetched:', categoriesData.length);
+        logger.success('Categories fetched:', categoriesData.length);
 
         // Test 3: Fetch sample questions
         if (categoriesData.length > 0) {
-          console.log('Testing questions fetch...');
+          logger.info('Testing questions fetch...');
           const questionsData = await QuestionService.fetchQuestions('mixed', 5);
           setQuestions(questionsData);
-          console.log('Questions fetched:', questionsData.length);
+          logger.success('Questions fetched:', questionsData.length);
         }
 
       } catch (err) {
-        console.error('Database test error:', err);
+        logger.error('Database test error:', err);
         setError(err.message);
       } finally {
         setLoading(false);

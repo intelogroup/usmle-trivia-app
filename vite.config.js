@@ -70,12 +70,8 @@ export default defineConfig({
         // Vendor libraries change less often than your app code.
         manualChunks(id) {
           // Group all node_modules into a single 'vendor' chunk.
-          // React/ReactDOM are large and stable, so they are good candidates for a separate chunk.
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
-            }
-            return 'vendor'; // all other node_modules
+            return 'vendor';
           }
         },
 

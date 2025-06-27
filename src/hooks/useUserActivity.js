@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { usePageCache } from './useUICache'
+import { logger } from '../utils/logger'
 
 export const useUserActivity = () => {
   const { user } = useAuth()
-  const [loading, setLoading] = useState(true)
+  const pageCache = usePageCache('userActivity', user?.id)
+  
   const [isNewUser, setIsNewUser] = useState(true)
   const [userStats, setUserStats] = useState({
     totalQuestions: 0,
@@ -14,13 +17,27 @@ export const useUserActivity = () => {
   })
   const [recentActivity, setRecentActivity] = useState([])
 
+  // Initialize from cache if available
   useEffect(() => {
-    const fetchUserActivity = async () => {
-      if (!user) {
-        setLoading(false)
-        return
-      }
+    if (pageCache.data) {
+      setIsNewUser(pageCache.data.isNewUser ?? true)
+      setUserStats(pageCache.data.userStats ?? {
+        totalQuestions: 0,
+        accuracy: 0,
+        studyTime: 0,
+        currentStreak: 0
+      })
+      setRecentActivity(pageCache.data.recentActivity ?? [])
+    }
+  }, [pageCache.data])
 
+  useEffect(() => {
+    if (!user) {
+      pageCache.setLoading(false)
+      return
+    }
+
+    const fetchUserActivity = async () => {
       try {
         // Security: Only check current user's quiz history
         const { data: quizHistory, error: historyError } = await supabase
@@ -32,26 +49,59 @@ export const useUserActivity = () => {
         if (historyError) throw historyError
 
         const hasActivity = quizHistory && quizHistory.length > 0
-        setIsNewUser(!hasActivity)
+        const newUserState = !hasActivity
+
+        let statsResult = null
+        let activityResult = []
 
         if (hasActivity) {
           // Fetch user stats if they have activity
-          const [statsResult, activityResult] = await Promise.all([
+          const [stats, activity] = await Promise.all([
             fetchUserStats(),
             fetchRecentActivity()
           ])
-
-          if (statsResult) setUserStats(statsResult)
-          if (activityResult) setRecentActivity(activityResult)
+          
+          statsResult = stats
+          activityResult = activity
         }
+
+        // Prepare complete page data
+        const pageData = {
+          isNewUser: newUserState,
+          userStats: statsResult || {
+            totalQuestions: 0,
+            accuracy: 0,
+            studyTime: 0,
+            currentStreak: 0
+          },
+          recentActivity: activityResult || []
+        }
+
+        // Update cache and local state
+        pageCache.updateData(pageData)
+        setIsNewUser(pageData.isNewUser)
+        setUserStats(pageData.userStats)
+        setRecentActivity(pageData.recentActivity)
+
+        return pageData
       } catch (error) {
         console.error('Error fetching user activity:', error)
-      } finally {
-        setLoading(false)
+        throw error
       }
     }
 
-    fetchUserActivity()
+    // Use the cache-aware fetch function
+    pageCache.fetchWithCache(fetchUserActivity, {
+      onCacheHit: (cachedData) => {
+        // Data already set from useEffect above
+        logger.debug('User activity loaded from cache')
+      },
+      onFreshData: (freshData) => {
+        logger.debug('User activity refreshed from server')
+      }
+    }).catch(error => {
+      console.error('Failed to fetch user activity:', error)
+    })
   }, [user])
 
   const fetchUserStats = async () => {
@@ -170,14 +220,20 @@ export const useUserActivity = () => {
         studyTime: 0,
         currentStreak: 0
       },
-      recentActivity: []
+      recentActivity: [],
+      isFromCache: false,
+      isRefreshing: false
     }
   }
 
   return {
-    loading,
+    loading: pageCache.loading,
     isNewUser,
     userStats,
-    recentActivity
+    recentActivity,
+    isFromCache: pageCache.isFromCache,
+    isRefreshing: pageCache.isRefreshing,
+    clearCache: pageCache.clearCache,
+    getCacheInfo: pageCache.getCacheInfo
   }
 } 

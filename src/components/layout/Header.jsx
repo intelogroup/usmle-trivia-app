@@ -72,7 +72,7 @@ const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = fals
           <motion.button 
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => handleActionPress(() => console.log('Notifications clicked'))}
+            onClick={() => handleActionPress(() => {/* TODO: Implement notifications */})}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 relative active:bg-gray-200 dark:active:bg-gray-700"
           >
             <Bell size={16} className="text-gray-600 dark:text-gray-300" strokeWidth={2} />

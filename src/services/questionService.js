@@ -5,6 +5,146 @@ import { supabase } from '../lib/supabase';
  */
 export class QuestionService {
   /**
+   * Get demo questions when database is unavailable
+   */
+  static getDemoQuestions(questionCount = 10) {
+    const demoQuestions = [
+      {
+        id: 'demo-1',
+        question_text: 'Which of the following is the most common cause of myocardial infarction?',
+        options: [
+          { id: 'a', text: 'Coronary artery thrombosis' },
+          { id: 'b', text: 'Coronary artery spasm' },
+          { id: 'c', text: 'Aortic stenosis' },
+          { id: 'd', text: 'Pulmonary embolism' }
+        ],
+        correct_option_id: 'a',
+        explanation: 'Coronary artery thrombosis is the most common cause of myocardial infarction, typically occurring due to plaque rupture.',
+        question_tags: [{ tags: { name: 'Cardiology' } }]
+      },
+      {
+        id: 'demo-2',
+        question_text: 'What is the normal range for adult heart rate at rest?',
+        options: [
+          { id: 'a', text: '40-60 bpm' },
+          { id: 'b', text: '60-100 bpm' },
+          { id: 'c', text: '100-120 bpm' },
+          { id: 'd', text: '120-140 bpm' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'The normal resting heart rate for adults is 60-100 beats per minute.',
+        question_tags: [{ tags: { name: 'Physiology' } }]
+      },
+      {
+        id: 'demo-3',
+        question_text: 'Which hormone is primarily responsible for regulating blood glucose levels?',
+        options: [
+          { id: 'a', text: 'Cortisol' },
+          { id: 'b', text: 'Insulin' },
+          { id: 'c', text: 'Thyroxine' },
+          { id: 'd', text: 'Growth hormone' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'Insulin is the primary hormone responsible for regulating blood glucose levels by facilitating glucose uptake by cells.',
+        question_tags: [{ tags: { name: 'Endocrinology' } }]
+      },
+      {
+        id: 'demo-4',
+        question_text: 'What is the most common type of lung cancer?',
+        options: [
+          { id: 'a', text: 'Small cell lung cancer' },
+          { id: 'b', text: 'Adenocarcinoma' },
+          { id: 'c', text: 'Squamous cell carcinoma' },
+          { id: 'd', text: 'Large cell carcinoma' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'Adenocarcinoma is the most common type of lung cancer, accounting for about 40% of all lung cancers.',
+        question_tags: [{ tags: { name: 'Oncology' } }]
+      },
+      {
+        id: 'demo-5',
+        question_text: 'Which structure connects the two cerebral hemispheres?',
+        options: [
+          { id: 'a', text: 'Corpus callosum' },
+          { id: 'b', text: 'Brainstem' },
+          { id: 'c', text: 'Cerebellum' },
+          { id: 'd', text: 'Thalamus' }
+        ],
+        correct_option_id: 'a',
+        explanation: 'The corpus callosum is the largest white matter structure in the brain that connects the two cerebral hemispheres.',
+        question_tags: [{ tags: { name: 'Neurology' } }]
+      },
+      {
+        id: 'demo-6',
+        question_text: 'What is the first-line treatment for uncomplicated urinary tract infection in women?',
+        options: [
+          { id: 'a', text: 'Amoxicillin' },
+          { id: 'b', text: 'Nitrofurantoin' },
+          { id: 'c', text: 'Ciprofloxacin' },
+          { id: 'd', text: 'Cephalexin' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'Nitrofurantoin is often first-line treatment for uncomplicated UTIs in women due to its effectiveness and low resistance rates.',
+        question_tags: [{ tags: { name: 'Infectious Disease' } }]
+      },
+      {
+        id: 'demo-7',
+        question_text: 'Which valve is most commonly affected in rheumatic heart disease?',
+        options: [
+          { id: 'a', text: 'Aortic valve' },
+          { id: 'b', text: 'Mitral valve' },
+          { id: 'c', text: 'Tricuspid valve' },
+          { id: 'd', text: 'Pulmonary valve' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'The mitral valve is most commonly affected in rheumatic heart disease, often leading to mitral stenosis.',
+        question_tags: [{ tags: { name: 'Cardiology' } }]
+      },
+      {
+        id: 'demo-8',
+        question_text: 'What is the most common cause of acute pancreatitis?',
+        options: [
+          { id: 'a', text: 'Alcohol abuse' },
+          { id: 'b', text: 'Gallstones' },
+          { id: 'c', text: 'Medications' },
+          { id: 'd', text: 'Trauma' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'Gallstones are the most common cause of acute pancreatitis, followed by alcohol abuse.',
+        question_tags: [{ tags: { name: 'Gastroenterology' } }]
+      },
+      {
+        id: 'demo-9',
+        question_text: 'Which antibody is most specific for systemic lupus erythematosus?',
+        options: [
+          { id: 'a', text: 'Anti-dsDNA' },
+          { id: 'b', text: 'ANA' },
+          { id: 'c', text: 'Anti-Sm' },
+          { id: 'd', text: 'Anti-SSA/Ro' }
+        ],
+        correct_option_id: 'c',
+        explanation: 'Anti-Sm (Smith) antibodies are highly specific for SLE, though less sensitive than other markers.',
+        question_tags: [{ tags: { name: 'Rheumatology' } }]
+      },
+      {
+        id: 'demo-10',
+        question_text: 'What is the most appropriate initial imaging study for suspected pulmonary embolism?',
+        options: [
+          { id: 'a', text: 'Chest X-ray' },
+          { id: 'b', text: 'CT pulmonary angiogram' },
+          { id: 'c', text: 'Ventilation-perfusion scan' },
+          { id: 'd', text: 'Echocardiogram' }
+        ],
+        correct_option_id: 'b',
+        explanation: 'CT pulmonary angiogram (CTPA) is the most appropriate initial imaging study for suspected PE in most patients.',
+        question_tags: [{ tags: { name: 'Pulmonology' } }]
+      }
+    ];
+
+    return demoQuestions.slice(0, questionCount);
+  }
+
+  /**
    * Fetch questions for a specific category or mixed questions
    */
   static async fetchQuestions(categoryId, questionCount = 10) {
@@ -31,18 +171,20 @@ export class QuestionService {
 
       if (error) {
         console.error('Supabase error fetching questions:', error);
-        throw error;
+        console.warn('Falling back to demo questions due to database error');
+        return this.getDemoQuestions(questionCount);
       }
 
       if (!data || data.length === 0) {
-        throw new Error('No questions found for this category');
+        console.warn('No questions found in database, using demo questions');
+        return this.getDemoQuestions(questionCount);
       }
 
       // Shuffle questions for variety
       return data.sort(() => Math.random() - 0.5);
     } catch (error) {
-      console.error('Error fetching questions:', error);
-      throw error;
+      console.error('Error fetching questions, using demo questions:', error);
+      return this.getDemoQuestions(questionCount);
     }
   }
 
@@ -261,6 +403,61 @@ export class QuestionService {
       console.error('Error getting user progress:', error);
       // Return 0 progress if there's any error to prevent UI from breaking
       return 0;
+    }
+  }
+
+  /**
+   * Get progress map for all categories in a single query (BATCH OPTIMIZATION)
+   */
+  static async getProgressMap(userId) {
+    if (!userId) return {};
+
+    try {
+      // One query — returns all history rows in one shot
+      const { data, error } = await supabase
+        .from('user_question_history')
+        .select(`
+          last_answered_correctly,
+          questions!inner (
+            id,
+            question_tags!inner( tag_id )
+          )
+        `)
+        .eq('user_id', userId);
+
+      if (error) {
+        console.warn('Error fetching progress map:', error);
+        return {};
+      }
+
+      if (!data || data.length === 0) {
+        return {};
+      }
+
+      // Compute percentage per tag_id
+      const map = {};
+      data.forEach((row) => {
+        row.questions?.question_tags?.forEach(({ tag_id }) => {
+          if (!map[tag_id]) {
+            map[tag_id] = { correct: 0, total: 0 };
+          }
+          map[tag_id].total += 1;
+          if (row.last_answered_correctly) {
+            map[tag_id].correct += 1;
+          }
+        });
+      });
+
+      // Convert to percentage
+      const percentMap = {};
+      Object.entries(map).forEach(([tagId, { correct, total }]) => {
+        percentMap[tagId] = Math.round((correct / total) * 100);
+      });
+
+      return percentMap;
+    } catch (error) {
+      console.error('Error getting progress map:', error);
+      return {};
     }
   }
 

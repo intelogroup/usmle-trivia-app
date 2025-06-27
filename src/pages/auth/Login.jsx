@@ -143,7 +143,7 @@ const Login = () => {
             {/* Forgot Password */}
             <div className="text-right">
               <Link
-                to="/auth/forgot-password"
+                to="/forgot-password"
                 className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
               >
                 Forgot your password?
@@ -171,7 +171,7 @@ const Login = () => {
             <p className="text-gray-600 dark:text-dark-300">
               Don't have an account?{' '}
               <Link
-                to="/auth/signup"
+                to="/signup"
                 className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
               >
                 Sign up here
@@ -188,7 +188,7 @@ const Login = () => {
           className="mt-6 text-center"
         >
           <Link
-            to="/auth/welcome"
+            to="/welcome"
             className="inline-flex items-center gap-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-dark-100 transition-colors"
           >
             <ArrowLeft size={16} />

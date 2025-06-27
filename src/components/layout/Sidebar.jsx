@@ -20,7 +20,7 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
     { 
       icon: BookOpen, 
       label: 'Quiz', 
-      path: '/categories', 
+      path: '/quiz', 
       color: 'text-purple-600 dark:text-purple-400', 
       bgColor: 'bg-purple-500', 
       gradient: 'from-purple-500 to-purple-600' 

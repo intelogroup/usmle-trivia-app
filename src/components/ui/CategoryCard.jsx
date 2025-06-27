@@ -1,7 +1,14 @@
 import { motion } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Activity } from 'lucide-react'
+import { getMedicalIcon, getCategoryColor } from '../../data/medicalIcons'
+import IconWrapper from './IconWrapper'
 
-const CategoryCard = ({ title, description, icon: Icon, color, progress, questionCount, onClick, delay = 0 }) => {
+const CategoryCard = ({ title, description, icon, color, progress, questionCount, onClick, delay = 0, type }) => {
+  // Get the appropriate icon - prioritize medical icon mapping over passed icon
+  const IconComponent = getMedicalIcon(title, icon)
+  
+  // Get the appropriate color - prioritize passed color, then category-specific color, then type-based color
+  const cardColor = color || getCategoryColor(title, type)
   const getProgressColor = (progress) => {
     if (progress >= 80) return 'bg-success-500'
     if (progress >= 60) return 'bg-warning-500'
@@ -21,8 +28,8 @@ const CategoryCard = ({ title, description, icon: Icon, color, progress, questio
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${color}`}>
-            <Icon size={18} className="text-white" />
+          <div className={`p-2 rounded-xl ${cardColor}`}>
+            <IconWrapper icon={IconComponent} fallback={Activity} size={18} className="text-white" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-dark-50 text-sm">{title}</h3>

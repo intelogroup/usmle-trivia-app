@@ -1,52 +1,147 @@
 import { QueryClient } from '@tanstack/react-query'
+import { persistQueryClient } from '@tanstack/react-query-persist-client'
 
-// Create and configure React Query client with optimized settings for quiz app
+// Enhanced query client with aggressive caching for instant UI
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Cache quiz data for 5 minutes (questions don't change often)
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      // Serve stale data immediately while refetching in background
+      staleTime: 2 * 60 * 1000, // 2 minutes - data considered fresh
+      gcTime: 10 * 60 * 1000, // 10 minutes - keep in memory
       
-      // Keep data in cache for 30 minutes even when not in use
-      gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
+      // Instant UI: show cached data immediately, refetch in background
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: 'always',
       
-      // Retry failed requests 2 times
-      retry: 2,
-      
-      // Don't refetch on window focus for quiz data (avoid interruptions)
-      refetchOnWindowFocus: false,
-      
-      // Don't refetch on reconnect for cached quiz data
-      refetchOnReconnect: 'always',
-      
-      // Use stale data while refetching in background
-      refetchInterval: false,
+      // Retry configuration for reliability
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors (auth, not found, etc.)
+        if (error?.status >= 400 && error?.status < 500) return false
+        return failureCount < 3
+      },
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     },
     mutations: {
-      // Retry failed mutations once
       retry: 1,
-    },
-  },
+      onError: (error) => {
+        console.error('Mutation error:', error)
+      }
+    }
+  }
 })
 
-// Query Keys - centralized management for consistency
+// Persist query cache to localStorage for instant app startup
+const persister = {
+  persistClient: async (client) => {
+    try {
+      const data = JSON.stringify({
+        clientState: client,
+        timestamp: Date.now()
+      })
+      localStorage.setItem('REACT_QUERY_OFFLINE_CACHE', data)
+    } catch (error) {
+      console.warn('Failed to persist query cache:', error)
+    }
+  },
+  
+  restoreClient: async () => {
+    try {
+      const cached = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE')
+      if (!cached) return undefined
+      
+      const { clientState, timestamp } = JSON.parse(cached)
+      
+      // Expire cache after 24 hours
+      const maxAge = 24 * 60 * 60 * 1000
+      if (Date.now() - timestamp > maxAge) {
+        localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE')
+        return undefined
+      }
+      
+      return clientState
+    } catch (error) {
+      console.warn('Failed to restore query cache:', error)
+      localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE')
+      return undefined
+    }
+  },
+  
+  removeClient: async () => {
+    localStorage.removeItem('REACT_QUERY_OFFLINE_CACHE')
+  }
+}
+
+// Initialize persistence
+persistQueryClient({
+  queryClient,
+  persister,
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  buster: '1.0.0' // Increment to invalidate all caches
+})
+
+// Query keys for consistent caching
 export const queryKeys = {
-  // Categories
-  categories: () => ['categories'],
-  category: (id) => ['categories', id],
-  
-  // Questions
-  questions: () => ['questions'],
-  questionsByCategory: (categoryId, count) => ['questions', 'category', categoryId, count],
-  questionById: (id) => ['questions', id],
-  
-  // User data
-  userProgress: (userId, categoryId) => ['userProgress', userId, categoryId],
+  userActivity: (userId) => ['userActivity', userId],
   userStats: (userId) => ['userStats', userId],
-  quizSessions: (userId) => ['quizSessions', userId],
+  recentActivity: (userId) => ['recentActivity', userId],
+  categories: () => ['categories'],
+  categoriesWithProgress: (userId) => ['categories', 'withProgress', userId],
+  userProgress: (userId) => ['userProgress', userId],
+  questions: (categoryId, count) => ['questions', categoryId, count],
+  quizSession: (sessionId) => ['quizSession', sessionId]
+}
+
+// Prefetch functions for proactive loading
+export const prefetchQueries = {
+  categories: () => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.categories(),
+      queryFn: async () => {
+        const { QuestionService } = await import('../services/questionService')
+        return QuestionService.fetchCategories()
+      },
+      staleTime: 5 * 60 * 1000 // 5 minutes
+    })
+  },
   
-  // Leaderboard
-  leaderboard: () => ['leaderboard'],
+  userActivity: (userId) => {
+    if (!userId) return
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.userActivity(userId),
+      queryFn: async () => {
+        // Import and call the actual fetch functions
+        const { supabase } = await import('./supabase')
+        
+        const { data: quizHistory } = await supabase
+          .from('user_question_history')
+          .select('*')
+          .eq('user_id', userId)
+          .limit(1)
+          
+        return { hasActivity: quizHistory?.length > 0 }
+      },
+      staleTime: 2 * 60 * 1000 // 2 minutes
+    })
+  }
+}
+
+// Utility to invalidate related queries
+export const invalidateQueries = {
+  userData: (userId) => {
+    queryClient.invalidateQueries({ queryKey: ['userActivity', userId] })
+    queryClient.invalidateQueries({ queryKey: ['userStats', userId] })
+    queryClient.invalidateQueries({ queryKey: ['recentActivity', userId] })
+    queryClient.invalidateQueries({ queryKey: ['userProgress', userId] })
+  },
+  
+  categories: () => {
+    queryClient.invalidateQueries({ queryKey: ['categories'] })
+  },
+  
+  all: () => {
+    queryClient.invalidateQueries()
+  }
 }
 
 // Cache management utilities
@@ -54,7 +149,7 @@ export const cacheUtils = {
   // Prefetch questions for better UX
   prefetchQuestions: async (categoryId, questionCount = 10) => {
     return queryClient.prefetchQuery({
-      queryKey: queryKeys.questionsByCategory(categoryId, questionCount),
+      queryKey: queryKeys.questions(categoryId, questionCount),
       queryFn: () => import('../services/questionService').then(module => 
         module.QuestionService.fetchQuestions(categoryId, questionCount)
       ),
@@ -80,7 +175,7 @@ export const cacheUtils = {
   // Get cached questions without triggering a fetch
   getCachedQuestions: (categoryId, questionCount) => {
     return queryClient.getQueryData(
-      queryKeys.questionsByCategory(categoryId, questionCount)
+      queryKeys.questions(categoryId, questionCount)
     )
   },
 } 

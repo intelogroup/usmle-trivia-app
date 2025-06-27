@@ -8,7 +8,7 @@ const BottomNav = () => {
 
   const navItems = [
     { icon: Home, label: 'Home', path: '/', color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-500', gradient: 'from-blue-500 to-blue-600' },
-    { icon: BookOpen, label: 'Quiz', path: '/categories', color: 'text-purple-600 dark:text-purple-400', bgColor: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600' },
+    { icon: BookOpen, label: 'Quiz', path: '/quiz', color: 'text-purple-600 dark:text-purple-400', bgColor: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600' },
     { icon: GraduationCap, label: 'Learn', path: '/learn', color: 'text-emerald-600 dark:text-emerald-400', bgColor: 'bg-emerald-500', gradient: 'from-emerald-500 to-emerald-600' },
     { icon: Trophy, label: 'Leaders', path: '/leaderboard', color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-500', gradient: 'from-orange-500 to-orange-600' },
     { icon: BarChart3, label: 'Stats', path: '/stats', color: 'text-green-600 dark:text-green-400', bgColor: 'bg-green-500', gradient: 'from-green-500 to-green-600' }

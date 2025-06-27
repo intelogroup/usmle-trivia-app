@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isConfigured } from '../lib/supabase';
 import { authService } from '../services/authService';
+import { logger } from '../utils/logger';
 
 const AuthContext = createContext();
 
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const fetchUserProfile = async (userId) => {
-    console.log('🔍 [AuthContext] Fetching user profile for ID:', userId)
+    logger.debug('[AuthContext] Fetching user profile for ID:', userId)
     
     try {
       const { data, error } = await supabase
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
         .maybeSingle()
 
       if (error) {
-        console.error('❌ [AuthContext] Error in initial profile fetch:', {
+        logger.error('[AuthContext] Error in initial profile fetch:', {
           error,
           userId,
           code: error.code,
@@ -88,11 +89,11 @@ export const AuthProvider = ({ children }) => {
       
       // If no profile exists, create one
       if (!data) {
-        console.warn('⚠️ [AuthContext] No profile found for user, attempting to create...', userId)
+        logger.warn('[AuthContext] No profile found for user, attempting to create...', userId)
         await createUserProfile(userId)
         
         // Retry fetching the profile after creation
-        console.log('🔄 [AuthContext] Retrying profile fetch after creation...')
+        logger.debug('[AuthContext] Retrying profile fetch after creation...')
         const { data: newProfile, error: fetchError } = await supabase
           .from('profiles')
           .select(`
@@ -104,7 +105,7 @@ export const AuthProvider = ({ children }) => {
           .maybeSingle()
         
         if (fetchError) {
-          console.error('❌ [AuthContext] Error in retry profile fetch:', {
+          logger.error('[AuthContext] Error in retry profile fetch:', {
             error: fetchError,
             userId,
             code: fetchError.code,
@@ -114,18 +115,18 @@ export const AuthProvider = ({ children }) => {
         }
         
         if (newProfile) {
-          console.log('✅ [AuthContext] Profile successfully created and fetched:', {
+          logger.success('[AuthContext] Profile successfully created and fetched:', {
             userId,
             profileId: newProfile.id,
             email: newProfile.email
           })
         } else {
-          console.error('❌ [AuthContext] Profile creation appeared to succeed but profile still not found')
+          logger.error('[AuthContext] Profile creation appeared to succeed but profile still not found')
         }
         
         setProfile(newProfile)
       } else {
-        console.log('✅ [AuthContext] Profile found and loaded:', {
+        logger.success('[AuthContext] Profile found and loaded:', {
           userId,
           profileId: data.id,
           email: data.email,
@@ -135,7 +136,7 @@ export const AuthProvider = ({ children }) => {
         setProfile(data)
       }
     } catch (error) {
-      console.error('❌ [AuthContext] Critical error in fetchUserProfile:', {
+      logger.error('[AuthContext] Critical error in fetchUserProfile:', {
         error,
         userId,
         errorType: error.constructor.name,
@@ -147,32 +148,32 @@ export const AuthProvider = ({ children }) => {
   }
 
   const createUserProfile = async (userId) => {
-    console.log('🏗️ [AuthContext] Creating user profile for:', userId)
+    logger.debug('[AuthContext] Creating user profile for:', userId)
     
     try {
       // Get user data from auth
-      console.log('🔐 [AuthContext] Getting authenticated user data...')
+      logger.debug('[AuthContext] Getting authenticated user data...')
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       
       if (userError) {
-        console.error('❌ [AuthContext] Error getting authenticated user:', userError)
+        logger.error('[AuthContext] Error getting authenticated user:', userError)
         throw userError
       }
       
       if (!user) {
         const error = new Error('No authenticated user found')
-        console.error('❌ [AuthContext] No authenticated user:', error)
+        logger.error('[AuthContext] No authenticated user:', error)
         throw error
       }
 
-      console.log('✅ [AuthContext] Authenticated user found:', {
+      logger.success('[AuthContext] Authenticated user found:', {
         id: user.id,
         email: user.email,
         metadata: user.user_metadata
       })
 
       // Try using RPC call to create profile instead of direct insert
-      console.log('🔧 [AuthContext] Attempting to manually trigger profile creation...')
+      logger.debug('[AuthContext] Attempting to manually trigger profile creation...')
       
       // First, let's try to call the database function directly
       const { error: rpcError } = await supabase.rpc('create_user_profile_manual', {
@@ -183,10 +184,10 @@ export const AuthProvider = ({ children }) => {
       })
 
       if (rpcError) {
-        console.warn('⚠️ [AuthContext] RPC function not available, trying direct insert with SECURITY DEFINER context...')
+        logger.warn('[AuthContext] RPC function not available, trying direct insert with SECURITY DEFINER context...')
         
         // Get default country (US)
-        console.log('🌍 [AuthContext] Getting default country...')
+        logger.debug('[AuthContext] Getting default country...')
         const { data: defaultCountry, error: countryError } = await supabase
           .from('countries')
           .select('id')
@@ -194,10 +195,10 @@ export const AuthProvider = ({ children }) => {
           .maybeSingle()
 
         if (countryError) {
-          console.error('❌ [AuthContext] Error getting default country:', countryError)
+          logger.error('[AuthContext] Error getting default country:', countryError)
         }
 
-        console.log('🏠 [AuthContext] Default country found:', defaultCountry)
+        logger.debug('[AuthContext] Default country found:', defaultCountry)
 
         // Create the profile with INSERT policy bypass attempt
         const profileData = {
@@ -210,14 +211,14 @@ export const AuthProvider = ({ children }) => {
           updated_at: new Date().toISOString()
         }
 
-        console.log('📝 [AuthContext] Attempting profile insert with data:', profileData)
+        logger.debug('[AuthContext] Attempting profile insert with data:', profileData)
 
         const { error: insertError } = await supabase
           .from('profiles')
           .insert(profileData)
 
         if (insertError) {
-          console.error('❌ [AuthContext] Profile insert failed:', {
+          logger.error('[AuthContext] Profile insert failed:', {
             error: insertError,
             code: insertError.code,
             message: insertError.message,
@@ -229,9 +230,9 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      console.log('✅ [AuthContext] Profile created successfully for user:', userId)
+      logger.success('[AuthContext] Profile created successfully for user:', userId)
     } catch (error) {
-      console.error('❌ [AuthContext] Critical error creating profile:', {
+      logger.error('[AuthContext] Critical error creating profile:', {
         error,
         userId,
         errorType: error.constructor.name,
