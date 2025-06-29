@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isConfigured } from '../lib/supabase';
 import { authService } from '../services/authService';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 
 const AuthContext = createContext();
 
@@ -50,21 +50,36 @@ export const AuthProvider = ({ children }) => {
   const getInitialSession = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      logger.debug('[AuthContext:getInitialSession] Initial session check:', {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        userId: session?.user?.id || 'undefined',
+        sessionObj: session
+      })
       setUser(session?.user ?? null)
-      
-      if (session?.user) {
-        await fetchUserProfile(session.user.id)
+      if (session?.user?.id) {
+        logger.debug('[AuthContext:getInitialSession] Valid user found, fetching profile:', session.user.id)
+        await fetchUserProfile(session.user.id, 'getInitialSession')
+      } else {
+        logger.warn('[AuthContext:getInitialSession] No valid user in session, skipping profile fetch')
       }
     } catch (error) {
-      console.error('Error getting initial session:', error)
+      logger.error('[AuthContext:getInitialSession] Error getting initial session:', {
+        error,
+        errorType: error.constructor.name,
+        message: error.message
+      })
     } finally {
       setLoading(false)
     }
   }
 
-  const fetchUserProfile = async (userId) => {
-    logger.debug('[AuthContext] Fetching user profile for ID:', userId)
-    
+  const fetchUserProfile = async (userId, context = 'unknown') => {
+    if (!userId) {
+      logger.error(`[AuthContext:fetchUserProfile] Called with undefined/null userId (context: ${context})`)
+      return null
+    }
+    logger.debug(`[AuthContext:fetchUserProfile] Fetching user profile for ID: ${userId} (context: ${context})`)
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -75,25 +90,30 @@ export const AuthProvider = ({ children }) => {
         `)
         .eq('id', userId)
         .maybeSingle()
-
       if (error) {
-        logger.error('[AuthContext] Error in initial profile fetch:', {
+        logger.error(`[AuthContext:fetchUserProfile] Error in initial profile fetch (context: ${context}):`, {
           error,
           userId,
           code: error.code,
           message: error.message,
           details: error.details
         })
-        throw error
+        if (error.code === 'PGRST116') {
+          logger.warn(`[AuthContext:fetchUserProfile] No profile found for user (context: ${context})`, { userId })
+          setProfile(null)
+          return null
+        } else if (error.code === 'PGRST301' || error.code === '42501') {
+          logger.error(`[AuthContext:fetchUserProfile] Permission denied (RLS) (context: ${context})`, { userId })
+          setProfile(null)
+          return null
+        } else {
+          throw error
+        }
       }
-      
-      // If no profile exists, create one
       if (!data) {
-        logger.warn('[AuthContext] No profile found for user, attempting to create...', userId)
+        logger.warn(`[AuthContext:fetchUserProfile] No profile found for user, attempting to create... (context: ${context})`, userId)
         await createUserProfile(userId)
-        
-        // Retry fetching the profile after creation
-        logger.debug('[AuthContext] Retrying profile fetch after creation...')
+        logger.debug(`[AuthContext:fetchUserProfile] Retrying profile fetch after creation... (context: ${context})`)
         const { data: newProfile, error: fetchError } = await supabase
           .from('profiles')
           .select(`
@@ -103,30 +123,38 @@ export const AuthProvider = ({ children }) => {
           `)
           .eq('id', userId)
           .maybeSingle()
-        
         if (fetchError) {
-          logger.error('[AuthContext] Error in retry profile fetch:', {
+          logger.error(`[AuthContext:fetchUserProfile] Error in retry profile fetch (context: ${context}):`, {
             error: fetchError,
             userId,
             code: fetchError.code,
             message: fetchError.message
           })
-          throw fetchError
+          if (fetchError.code === 'PGRST116') {
+            logger.warn(`[AuthContext:fetchUserProfile] No profile found for user after creation (context: ${context})`, { userId })
+            setProfile(null)
+            return null
+          } else if (fetchError.code === 'PGRST301' || fetchError.code === '42501') {
+            logger.error(`[AuthContext:fetchUserProfile] Permission denied (RLS) after creation (context: ${context})`, { userId })
+            setProfile(null)
+            return null
+          } else {
+            throw fetchError
+          }
         }
-        
         if (newProfile) {
-          logger.success('[AuthContext] Profile successfully created and fetched:', {
+          logger.info(`[AuthContext:fetchUserProfile] Profile successfully created and fetched (context: ${context}):`, {
             userId,
             profileId: newProfile.id,
             email: newProfile.email
           })
         } else {
-          logger.error('[AuthContext] Profile creation appeared to succeed but profile still not found')
+          logger.error(`[AuthContext:fetchUserProfile] Profile creation appeared to succeed but profile still not found (context: ${context})`)
         }
-        
         setProfile(newProfile)
+        return newProfile
       } else {
-        logger.success('[AuthContext] Profile found and loaded:', {
+        logger.info(`[AuthContext:fetchUserProfile] Profile found and loaded (context: ${context}):`, {
           userId,
           profileId: data.id,
           email: data.email,
@@ -134,16 +162,24 @@ export const AuthProvider = ({ children }) => {
           hasGrade: !!data.achievement_grades
         })
         setProfile(data)
+        return data
       }
     } catch (error) {
-      logger.error('[AuthContext] Critical error in fetchUserProfile:', {
-        error,
-        userId,
-        errorType: error.constructor.name,
-        stack: error.stack
-      })
-      // Set profile to null if there's an error to prevent infinite loops
+      const errorString = JSON.stringify(error, Object.getOwnPropertyNames(error));
+      logger.error(
+        `[AuthContext:fetchUserProfile] Unexpected error (context: ${context}): errorString=${errorString}`,
+        {
+          error,
+          userId,
+          errorType: error.constructor?.name,
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          stack: error.stack
+        }
+      );
       setProfile(null)
+      return null
     }
   }
 
@@ -166,7 +202,7 @@ export const AuthProvider = ({ children }) => {
         throw error
       }
 
-      logger.success('[AuthContext] Authenticated user found:', {
+      logger.info('[AuthContext] Authenticated user found:', {
         id: user.id,
         email: user.email,
         metadata: user.user_metadata
@@ -230,7 +266,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      logger.success('[AuthContext] Profile created successfully for user:', userId)
+      logger.info('[AuthContext] Profile created successfully for user:', userId)
     } catch (error) {
       logger.error('[AuthContext] Critical error creating profile:', {
         error,
@@ -257,7 +293,7 @@ export const AuthProvider = ({ children }) => {
     profile,
     loading,
     signOut,
-    refreshProfile: () => user && fetchUserProfile(user.id),
+    refreshProfile: () => user?.id ? fetchUserProfile(user.id, 'refreshProfile') : logger.warn('[AuthContext:refreshProfile] Tried to refresh profile with missing user id'),
     isConfigured,
   };
 

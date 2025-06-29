@@ -1,304 +1,180 @@
-import { Suspense, useEffect, useMemo } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  useQuestions,
-  useCacheManager
-} from '../hooks/useQuestionQueries';
-import { useEnhancedQuestions, useQuestionPerformance } from '../hooks/useEnhancedQuestionQueries';
-import { QuestionService } from '../services/questionService';
-import { EnhancedQuestionService } from '../services/enhancedQuestionService';
-
-// Import custom hooks
-import { useQuizState } from '../hooks/useQuizState';
-import { useQuizTimer } from '../hooks/useQuizTimer';
-import { useEnhancedQuizSession } from '../hooks/useEnhancedQuizSession';
-
-// Import quiz components
-import QuizHeader from '../components/quiz/QuizHeader';
-import QuizProgressBar from '../components/quiz/QuizProgressBar';
+import { ArrowLeft, Home, Volume2, VolumeX } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useQuickQuiz } from '../hooks/useQuickQuiz';
+import { useQuizSounds } from '../hooks/useQuizSounds';
 import QuestionCard from '../components/quiz/QuestionCard';
-import QuizLoading from '../components/quiz/QuizLoading';
-import EnhancedQuizLoading from '../components/quiz/EnhancedQuizLoading';
-import QuizError from '../components/quiz/QuizError';
 import QuizTimer from '../components/quiz/QuizTimer';
+import QuizProgressBar from '../components/quiz/QuizProgressBar';
 import QuizResults from '../components/quiz/QuizResults';
+import QuizLoading from '../components/quiz/QuizLoading';
+import QuizError from '../components/quiz/QuizError';
 
 const QuickQuiz = () => {
+  const { state: config } = useLocation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const params = useParams();
   const { user } = useAuth();
-  
-  // Enhanced quiz configuration from state or defaults
-  const quizConfig = useMemo(() => {
-    const stateConfig = location.state || {};
-    const defaultConfig = EnhancedQuestionService.getQuizModeConfig(stateConfig.quizMode || 'quick');
-    
-    return {
-      categoryId: params.categoryId || stateConfig.categoryId || 'mixed',
-      questionCount: stateConfig.questionCount || defaultConfig.questionCount,
-      difficulty: stateConfig.difficulty || null,
-      quizMode: stateConfig.quizMode || 'quick',
-      quizType: stateConfig.quizType || 'quick',
-      autoAdvance: stateConfig.autoAdvance !== undefined ? stateConfig.autoAdvance : defaultConfig.autoAdvance,
-      timePerQuestion: stateConfig.timePerQuestion || defaultConfig.timePerQuestion,
-      showExplanations: stateConfig.showExplanations || defaultConfig.showExplanations
-    };
-  }, [location.state, params.categoryId]);
 
-  const { categoryId, questionCount, difficulty, quizMode, quizType, autoAdvance, timePerQuestion, showExplanations } = quizConfig;
-
-  const { getOfflineData } = useCacheManager();
-
-  // Enhanced questions query using the new service
   const {
-    data: questions = [],
-    isLoading: questionsLoading,
-    error: questionsError,
-    refetch: refetchQuestions
-  } = useQuery({
-    queryKey: ['questions', categoryId, questionCount, difficulty],
-    queryFn: () => EnhancedQuestionService.getQuestionsForQuiz({
-      categoryId: categoryId,
-      questionCount: questionCount,
-      difficulty: difficulty,
-      quizMode: quizMode
-    }),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
-    retry: 2,
-    refetchOnWindowFocus: false
-  });
-
-  // Performance monitoring
-  const { metrics: performanceStats } = useQuestionPerformance();
-
-  const isOffline = useMemo(() => {
-    return questionsError && questions.length > 0;
-  }, [questionsError, questions.length]);
-
-  // Quiz state management
-  const {
-    currentQuestionIndex,
+    questions,
+    currentIndex,
     currentQuestion,
-    selectedOption,
-    score,
     userAnswers,
-    quizCompleted,
-    showResults,
-    isAutoAdvancing,
-    progress,
-    accuracy,
-    handleOptionSelect,
-    handleTimeout,
-    advanceQuestion,
-    completeQuiz,
-    resetQuiz,
-  } = useQuizState(questions, questionCount);
-
-  // Enhanced quiz session management
-  const {
-    session: quizSession,
-    recordResponse,
-    completeSession,
-    resetSession,
-    isCreating: sessionCreating,
-    isCompleting: sessionCompleting,
-  } = useEnhancedQuizSession(user, quizConfig, isOffline);
-
-  // Timer management
-  const {
+    isAnswered,
+    selectedOption,
+    timedOut,
+    loading,
+    error,
+    isComplete,
     timeLeft,
-    timerKey,
-    formatTime,
-    resetTimer,
-    isLowTime,
-    progressPercentage,
-  } = useQuizTimer({
-    initialTime: 60,
-    isActive: !showResults && !quizCompleted && !!currentQuestion,
-    onTimeUp: () => {
-      const result = handleTimeout();
-      if (result) {
-        recordResponse({
-          questionId: currentQuestion.id,
-          selectedOptionId: null,
-          isCorrect: false,
-          responseOrder: currentQuestionIndex + 1,
-          timeSpent: 60
-        });
-      }
-      advanceQuestion();
-    },
-    resetTrigger: currentQuestionIndex
+    handleOptionSelect,
+    quizSession
+  } = useQuickQuiz({
+    userId: user?.id,
+    categoryId: config?.categoryId || 'mixed',
+    questionCount: config?.questionCount || 10,
+    difficulty: config?.difficulty || null,
+    timePerQuestion: 60
   });
 
-  // Create session when questions are loaded
-  useEffect(() => {
-    if (user && questions.length > 0 && !quizSession) {
-      createSession();
-    }
-  }, [user, questions.length, quizSession, createSession]);
-
-  // Handle option selection with session recording
-  const handleOptionSelectWithRecording = (optionId) => {
-    const result = handleOptionSelect(optionId);
-    if (result) {
-      recordResponse({
-        questionId: currentQuestion.id,
-        selectedOptionId: optionId,
-        isCorrect: result.isCorrect,
-        responseOrder: currentQuestionIndex + 1,
-        timeSpent: 60 - timeLeft
-      });
-      
-      // Auto-advance after delay (0.5s as per docs)
-      setTimeout(() => {
-        advanceQuestion();
-      }, 500);
-    }
+  const [isMuted, setIsMuted] = React.useState(() => {
+    return localStorage.getItem('quizMuted') === 'true';
+  });
+  const toggleMute = () => {
+    setIsMuted(m => {
+      localStorage.setItem('quizMuted', !m);
+      return !m;
+    });
   };
+  const { playCorrect, playWrong, playTimesUp, playNext, playComplete } = useQuizSounds(isMuted);
 
-  // Handle quiz completion with session recording
-  const handleCompleteQuiz = async () => {
-    const result = completeQuiz();
-    if (result) {
-      await completeSession(result.finalScore);
+  // Play sound effects on answer, timeout, next, complete
+  React.useEffect(() => {
+    if (isAnswered && !timedOut) {
+      if (selectedOption === currentQuestion?.correct_option_id) playCorrect();
+      else playWrong();
     }
-  };
+    if (timedOut) playTimesUp();
+  }, [isAnswered, timedOut, selectedOption, currentQuestion, playCorrect, playWrong, playTimesUp]);
 
-  // Handle restart
+  React.useEffect(() => {
+    if (isComplete) playComplete();
+  }, [isComplete, playComplete]);
+
+  const isLastQuestion = currentIndex === questions.length - 1;
+
+  // Navigation handlers
+  const handleGoBack = () => navigate(-1);
+  const handleGoHome = () => navigate('/');
   const handleRestart = () => {
-    resetQuiz();
-    resetSession();
-    resetTimer();
+    navigate('/quick-quiz', { state: config, replace: true });
+    window.location.reload();
   };
 
-  // Handle navigation
-  const handleGoHome = () => {
-    navigate('/');
-  };
+  // Results
+  const score = userAnswers.filter(answer => answer.isCorrect).length;
+  const accuracy = Math.round((score / Math.max(1, userAnswers.length)) * 100);
+  const totalTimeSpent = userAnswers.reduce((sum, answer) => sum + answer.timeSpent, 0);
 
-  // Enhanced loading state
-  if (questionsLoading) {
-    return (
-      <EnhancedQuizLoading 
-        preloadStatus={preloadStatus}
-        cacheStats={cacheStats}
-        isPreloading={isPreloading}
-        estimatedTime={performanceMetrics?.loadTime ? `${Math.round(performanceMetrics.loadTime / 1000)}s` : null}
-        loadingStage="questions"
-        showDetailedProgress={true}
-      />
-    );
-  }
+  if (loading) return <QuizLoading message="" />;
+  if (error && questions.length === 0) return <QuizError error={error} onRetry={() => window.location.reload()} onGoBack={handleGoBack} />;
+  if (questions.length === 0) return <QuizError error={{ code: 'NO_QUESTIONS', message: 'No questions available.' }} onRetry={() => window.location.reload()} onGoBack={handleGoBack} />;
+  if (isComplete) return (
+    <QuizResults
+      score={score}
+      questionCount={questions.length}
+      accuracy={accuracy}
+      userAnswers={userAnswers}
+      quizSession={quizSession}
+      quizConfig={{ ...config, quizMode: 'quick' }}
+      timeSpent={totalTimeSpent}
+      onRestart={handleRestart}
+      onGoHome={handleGoHome}
+    />
+  );
 
-  // Enhanced error state with better options
-  if (questionsError && questions.length === 0) {
-    return (
-      <QuizError 
-        error={questionsError} 
-        onRetry={() => window.location.reload()} 
-        categoryId={categoryId}
-        questionCount={questionCount}
-        getOfflineData={getOfflineData}
-        showOfflineOption={true}
-      />
-    );
-  }
-
-  // Fallback to demo questions if no questions loaded but no error
-  if (!questionsLoading && !questionsError && questions.length === 0) {
-    console.log('No questions loaded, this might indicate a data issue');
-  }
-
-  // Results screen
-  if (showResults) {
-    return (
-      <QuizResults
-        score={score}
-        questionCount={questionCount}
-        accuracy={accuracy}
-        userAnswers={userAnswers}
-        quizSession={quizSession}
-        quizConfig={quizConfig}
-        timeSpent={userAnswers.reduce((total, answer) => total + (answer.timeSpent || 0), 0)}
-        onRestart={handleRestart}
-        onGoHome={handleGoHome}
-      />
-    );
-  }
-
-  // Quiz interface
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Timer */}
-          <QuizTimer
-            timeLeft={timeLeft}
-            formatTime={formatTime}
-            isLowTime={isLowTime}
-            progressPercentage={progressPercentage}
-            timerKey={timerKey}
-          />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900/20">
+      {/* Minimal Header */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <button onClick={handleGoBack} className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Quiz</h1>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleMute} className="p-2 rounded" title={isMuted ? 'Unmute' : 'Mute'}>
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+            <button onClick={handleGoHome} className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded">
+              <Home className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
 
-          {/* Quiz Header */}
-          <QuizHeader 
-            categoryName={quizConfig.categoryName || categoryId}
-            currentQuestionIndex={currentQuestionIndex}
-            totalQuestions={questionCount}
-            score={score}
-            isOffline={isOffline}
-            isFetching={questionsLoading}
-            timeLeft={timeLeft}
-            isTimed={quizConfig.quizMode === 'timed'}
-            quizMode={quizConfig.quizMode}
-            quizType={quizConfig.quizType}
-          />
+      {/* Timer and Progress */}
+      <div className="container mx-auto px-4 pt-8 pb-2 flex flex-col items-center">
+        <QuizTimer
+          timeLeft={timeLeft}
+          formatTime={s => `${s}s`}
+          isLowTime={timeLeft <= 15}
+          progressPercentage={(timeLeft / 60) * 100}
+          timerKey={currentIndex}
+          initialTime={60}
+          showProgressBar={false}
+          size="small"
+        />
+        <QuizProgressBar
+          current={currentIndex + 1}
+          total={questions.length}
+          progress={(currentIndex + 1) / questions.length}
+          showDetailed={false}
+          size="small"
+        />
+      </div>
 
-          {/* Progress Bar */}
-          <QuizProgressBar 
-            current={currentQuestionIndex + 1}
-            total={questionCount}
-            progress={progress}
-            score={score}
-            accuracy={accuracy}
-            averageTime={userAnswers.length > 0 ? userAnswers.reduce((acc, answer) => acc + (answer.timeSpent || 0), 0) / userAnswers.length : 0}
-            showDetailed={true}
-            size="normal"
-          />
-
-          {/* Question Card */}
-          <AnimatePresence mode="wait">
+      {/* Question */}
+      <div className="container mx-auto px-4 pb-8">
+        <AnimatePresence mode="wait">
+          {currentQuestion ? (
             <motion.div
-              key={currentQuestionIndex}
+              key={currentQuestion.id}
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3 }}
             >
-              {currentQuestion && (
-                <QuestionCard
-                  currentQuestion={currentQuestion}
-                  selectedOption={selectedOption}
-                  isAnswered={selectedOption !== null}
-                  handleOptionSelect={handleOptionSelectWithRecording}
-                  showExplanations={true}
-                  questionNumber={currentQuestionIndex + 1}
-                  totalQuestions={questionCount}
-                  timeSpent={60 - timeLeft}
-                  difficulty={difficulty || 'medium'}
-                />
-              )}
+              <QuestionCard
+                key={currentQuestion.id}
+                currentQuestion={currentQuestion}
+                isAnswered={isAnswered}
+                selectedOption={selectedOption}
+                handleOptionSelect={handleOptionSelect}
+                showExplanations={false}
+                timedOut={timedOut}
+                secondsLeft={timeLeft}
+              />
             </motion.div>
-          </AnimatePresence>
-        </div>
+          ) : (
+            !loading && (
+              <div className="text-center text-gray-600 dark:text-gray-400 py-10">
+                <p>No question available to display. Please try again or select a different category.</p>
+                <button
+                  onClick={() => navigate(-1)}
+                  className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Go Back
+                </button>
+              </div>
+            )
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 };
 
-export default QuickQuiz; 
+export default QuickQuiz;

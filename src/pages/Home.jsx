@@ -65,23 +65,30 @@ const Home = () => {
   
   // Use optimized query hook for instant rendering
   const {
+    data: userActivity,
     isLoading,
     isError,
     error,
-    isNewUser,
-    userStats,
-    recentActivity,
-    isFromCache,
-    isRefreshing,
     refetch
   } = useUserActivityQuery(user?.id)
+
+  // Extract data with safe defaults
+  const {
+    isNewUser = true,
+    userStats = {
+      totalQuestions: 0,
+      accuracy: 0,
+      studyTime: 0,
+      currentStreak: 0
+    },
+    recentActivity = []
+  } = userActivity || {}
 
   if (isError) return <ErrorDisplay error={error} onRetry={refetch} />
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-0">
-      <CacheStatusIndicators isRefreshing={isRefreshing} isFromCache={isFromCache} />
-      
+      <CacheStatusIndicators isRefreshing={false} isFromCache={false} />
       <div className="px-3 md:px-6 lg:px-8 pt-2 pb-3 max-w-4xl mx-auto">
         <Suspense fallback={<LoadingIndicator />}>
           <WelcomeSection user={user} profile={profile} isNewUser={isNewUser} />

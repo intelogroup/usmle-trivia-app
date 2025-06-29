@@ -48,10 +48,10 @@ export class UserProgressManager {
       .from('quiz_sessions')
       .insert({
         user_id: this.userId,
-        quiz_type: sessionData.quiz_type || 'practice',
-        total_questions: sessionData.total_questions,
-        settings: sessionData.settings || {},
-        started_at: new Date().toISOString()
+        session_type: sessionData.session_type || 'self_paced',
+        total_questions: sessionData.total_questions
+        // Using DEFAULT NOW() for started_at
+        // Avoiding any non-existent or problematic fields
       })
       .select()
       .single();
@@ -131,11 +131,12 @@ export class UserProgressManager {
     const { error } = await supabase
       .from('quiz_sessions')
       .update({
-        score: finalScore,
-        correct_answers: metadata.correct_answers,
+        correct_answers: metadata.correct_answers || finalScore,
         completed_at: new Date().toISOString(),
-        duration_seconds: metadata.duration_seconds,
-        metadata: metadata
+        total_time_seconds: metadata.total_time_seconds || metadata.duration_seconds || 0,
+        points_earned: metadata.points_earned || finalScore
+        // Using only fields that exist in the actual schema
+        // Removed: score, duration_seconds, metadata (don't exist)
       })
       .eq('id', sessionId)
       .eq('user_id', this.userId); // Double security check
@@ -211,18 +212,14 @@ export class UserProgressManager {
         times_seen,
         questions!inner (
           question_tags (
-            tag_id,
-            tags (
-              id,
-              name
-            )
+            tags(name)
           )
         )
       `)
       .eq('user_id', this.userId);
 
     if (categoryId && categoryId !== 'mixed') {
-      query = query.eq('questions.question_tags.tag_id', categoryId);
+      query = query.ilike('questions.question_tags.tags.name', `%${categoryId}%`);
     }
 
     const { data, error } = await query
@@ -246,13 +243,12 @@ export class UserProgressManager {
       .from('quiz_sessions')
       .select(`
         id,
-        quiz_type,
-        score,
+        session_type,
         total_questions,
         correct_answers,
         completed_at,
-        duration_seconds,
-        settings
+        total_time_seconds,
+        points_earned
       `)
       .eq('user_id', this.userId)
       .not('completed_at', 'is', null)

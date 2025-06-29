@@ -2,8 +2,9 @@ import { User, Trophy, Bell, Sun, Moon, Menu } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../contexts/ThemeContext'
+import { getTransformedUrl } from '../../utils/imageUtils'
 
-const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = false }) => {
+const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = false, user }) => {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useTheme()
 
@@ -116,12 +117,16 @@ const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = fals
             onClick={() => handleActionPress(() => navigate('/profile'))}
             className="relative"
           >
-            <div className="w-8 h-8 rounded-full overflow-hidden shadow-lg ring-2 ring-white/50 dark:ring-gray-700/50 bg-gradient-to-br from-blue-500 to-purple-600">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" 
-                alt="Profile" 
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-              />
+            <div className="w-8 h-8 rounded-full overflow-hidden shadow-lg ring-2 ring-white/50 dark:ring-gray-700/50 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              {user?.avatar_url ? (
+                <img 
+                  src={getTransformedUrl(user.avatar_url, { width: 80, height: 80 })} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                />
+              ) : (
+                <User size={18} className="text-white" />
+              )}
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 shadow-sm"></div>
           </motion.button>

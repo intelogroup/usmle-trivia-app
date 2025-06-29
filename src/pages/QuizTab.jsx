@@ -5,7 +5,6 @@ import { useCategoriesQuery } from '../hooks/useOptimizedQueries'
 import { useViewTransitions } from '../hooks/useViewTransitions'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import LoadingIndicator from '../components/ui/LoadingIndicator'
-import { EnhancedQuestionService } from '../services/enhancedQuestionService'
 
 // Import quiz components directly for debugging
 import QuizFilters from '../components/quiz/QuizFilters'
@@ -128,18 +127,32 @@ const QuizTab = () => {
     });
   }, []);
 
+  // Quiz mode configuration constants (from QUIZ_MODES_GUIDE.md)
+  const QUICK_QUIZ_CONFIG = {
+    questionCount: 10,
+    autoAdvance: true,
+    timePerQuestion: 60,
+    showExplanations: false,
+    allowReview: false
+  };
+  const TIMED_TEST_CONFIG = {
+    questionCount: 20,
+    totalTime: 30 * 60, // 30 minutes in seconds
+    autoAdvance: false,
+    timePerQuestion: 90,
+    showExplanations: true,
+    allowReview: false
+  };
+
   // Enhanced category select handler with proper quiz mode support
   const handleCategorySelect = useCallback((categoryId, categoryName) => {
     if (!categoryId) {
       console.warn('Category ID is required');
       return;
     }
-
     try {
-      // Get quiz mode configuration
-      const quizConfig = EnhancedQuestionService.getQuizModeConfig('quick');
-      
-      // Navigate to QuickQuiz with enhanced state
+      // Use local config for quick quiz
+      const quizConfig = QUICK_QUIZ_CONFIG;
       navigate('/quick-quiz', {
         state: {
           categoryId,
@@ -161,7 +174,7 @@ const QuizTab = () => {
 
   // Enhanced quick actions handlers
   const handleQuickStart = useCallback(() => {
-    const quickConfig = EnhancedQuestionService.getQuizModeConfig('quick');
+    const quickConfig = QUICK_QUIZ_CONFIG;
     navigate('/quick-quiz', {
       state: {
         categoryId: 'mixed',
@@ -176,18 +189,8 @@ const QuizTab = () => {
   }, [navigate]);
 
   const handleTimedTest = useCallback(() => {
-    const timedConfig = EnhancedQuestionService.getQuizModeConfig('timed');
-    navigate('/timed-test', {
-      state: {
-        categoryId: 'mixed',
-        categoryName: 'Timed Test',
-        questionCount: timedConfig.questionCount,
-        quizMode: 'timed',
-        quizType: 'timed_test',
-        totalTime: timedConfig.totalTime,
-        autoAdvance: timedConfig.autoAdvance
-      }
-    });
+    // Navigate to setup screen instead of directly to test
+    navigate('/timed-test-setup');
   }, [navigate]);
 
   const handleCustomQuiz = useCallback(() => {

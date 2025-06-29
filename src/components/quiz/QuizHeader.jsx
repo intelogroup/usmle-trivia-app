@@ -42,7 +42,7 @@ const QuizHeader = ({ categoryName, currentQuestionIndex, totalQuestions, score,
 
       <div className="text-center flex-1">
         <div className="flex items-center justify-center gap-2 mb-1">
-          <ModeIcon className={`w-4 h-4 ${modeInfo.color}`} />
+          <ModeIcon className={`w-4 h-4 ${modeInfo.color}`} data-lucide={modeInfo.label.toLowerCase().replace(/ /g, '-')} />
           <span className="text-base font-bold text-gray-900 dark:text-white">
             {categoryName || modeInfo.label}
           </span>

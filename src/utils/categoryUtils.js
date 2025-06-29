@@ -45,7 +45,7 @@ export const filterCategories = (categories, filters) => {
         break;
       case 'high-yield':
         filtered = filtered.filter(category => 
-          (category.questionCount || 0) >= 50 ||
+          (category.questionCount || 0) >= 50 || 
           category.isHighYield === true
         );
         break;
@@ -71,7 +71,7 @@ export const sortCategories = (categories, sortBy = 'name') => {
     cat && typeof cat === 'object'
   );
 
-  const sorted = [...validCategories];
+  let sorted = [...validCategories];
   
   try {
     switch (sortBy) {
@@ -83,7 +83,7 @@ export const sortCategories = (categories, sortBy = 'name') => {
         });
       case 'questionCount':
         return sorted.sort((a, b) => (b.questionCount || 0) - (a.questionCount || 0));
-      case 'difficulty':
+      case 'difficulty': {
         const difficultyOrder = { 
           'easy': 1, 'beginner': 1,
           'medium': 2, 'intermediate': 2,
@@ -94,6 +94,7 @@ export const sortCategories = (categories, sortBy = 'name') => {
           const diffB = (b.difficulty || 'medium').toLowerCase();
           return (difficultyOrder[diffA] || 2) - (difficultyOrder[diffB] || 2);
         });
+      }
       case 'lastUsed':
         return sorted.sort((a, b) => {
           const dateA = a.lastUsed || a.last_used;
@@ -209,4 +210,4 @@ export const getProgressBarColor = (accuracy) => {
   if (accuracy >= 60) return 'bg-yellow-500'
   if (accuracy >= 40) return 'bg-orange-500'
   return 'bg-red-500'
-} 
+}

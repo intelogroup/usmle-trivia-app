@@ -4,7 +4,7 @@ import { getCategoryStats, getDifficultyColor, getAccuracyColor, formatLastUsed,
 import { ChevronRight, Clock, Target, TrendingUp, Star } from 'lucide-react'
 
 const CategoryListItem = ({ category, onClick, delay = 0 }) => {
-  const IconComponent = getMedicalIcon(category.name, category.icon)
+  const IconComponent = getMedicalIcon(category.name, category.icon, { 'data-lucide': category.icon ? category.icon.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase() : undefined })
   const stats = getCategoryStats(category)
   const difficultyColorClass = getDifficultyColor(stats.difficulty)
   const accuracyColor = getAccuracyColor(stats.averageAccuracy)

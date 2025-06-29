@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useAuth } from '../../contexts/AuthContext'
+import { useLocation } from 'react-router-dom'
 import Header from './Header'
 import BottomNav from './BottomNav'
 import Sidebar from './Sidebar'
 
+const noHeaderPaths = [];
+const noBottomNavPaths = [];
+
 const Layout = ({ children }) => {
+  const { user } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(true)
+  const location = useLocation()
 
   // Detect screen size
   useEffect(() => {
@@ -30,6 +37,9 @@ const Layout = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen)
   }
 
+  const showHeader = !noHeaderPaths.includes(location.pathname)
+  const showBottomNav = !noBottomNavPaths.includes(location.pathname)
+
   return (
     <div 
       className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
@@ -41,7 +51,7 @@ const Layout = ({ children }) => {
       {/* Mobile Layout (unchanged) */}
       {isMobile ? (
         <div className="flex flex-col min-h-screen">
-          <Header />
+          {showHeader && <Header user={user} />}
           <main className="flex-1 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -55,7 +65,7 @@ const Layout = ({ children }) => {
               {children}
             </motion.div>
           </main>
-          <BottomNav />
+          {showBottomNav && <BottomNav />}
         </div>
       ) : (
         /* Desktop/Tablet Layout */
@@ -73,12 +83,14 @@ const Layout = ({ children }) => {
           
           {/* Main Content Area - Takes remaining width */}
           <div className={`${isSidebarOpen ? 'w-[85%]' : 'w-full'} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
-            {/* Keep Header as top bar with profile on far right */}
-            <Header 
-              onSidebarToggle={toggleSidebar}
-              showSidebarToggle={window.innerWidth < 1024}
-              isCondensed={false}
-            />
+            {showHeader && (
+              <Header 
+                onSidebarToggle={toggleSidebar}
+                showSidebarToggle={window.innerWidth < 1024}
+                isCondensed={false}
+                user={user}
+              />
+            )}
             
             {/* Main content area - theater of the app */}
             <main className="flex-1 overflow-auto">

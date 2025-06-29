@@ -1,11 +1,27 @@
 import { motion } from 'framer-motion'
 import { Timer, Settings, Play, Layers } from 'lucide-react'
-import { EnhancedQuestionService } from '../../services/enhancedQuestionService'
+
+// Quiz mode configuration constants (from QUIZ_MODES_GUIDE.md)
+const QUICK_QUIZ_CONFIG = {
+  questionCount: 10,
+  autoAdvance: true,
+  timePerQuestion: 60,
+  showExplanations: false,
+  allowReview: false
+};
+const TIMED_TEST_CONFIG = {
+  questionCount: 20,
+  totalTime: 30 * 60, // 30 minutes in seconds
+  autoAdvance: false,
+  timePerQuestion: 90,
+  showExplanations: true,
+  allowReview: false
+};
 
 const QuizActions = ({ onQuickStart, onTimedTest, onCustomQuiz, onBlockTest }) => {
-  // Get actual quiz mode configurations from our enhanced service
-  const quickConfig = EnhancedQuestionService.getQuizModeConfig('quick')
-  const timedConfig = EnhancedQuestionService.getQuizModeConfig('timed')
+  // Use local config for quick and timed quiz
+  const quickConfig = QUICK_QUIZ_CONFIG;
+  const timedConfig = TIMED_TEST_CONFIG;
 
   const quickActions = [
     {

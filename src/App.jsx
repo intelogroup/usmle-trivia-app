@@ -5,6 +5,7 @@ import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import SplashScreen from './components/auth/SplashScreen'
 import LoadingIndicator from './components/ui/LoadingIndicator'
+import NotificationToast from './components/ui/NotificationToast'
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'))
@@ -14,6 +15,7 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard'))
 const Learn = lazy(() => import('./pages/Learn'))
 const QuickQuiz = lazy(() => import('./pages/QuickQuiz'))
 const TimedTest = lazy(() => import('./pages/TimedTest'))
+const TimedTestSetup = lazy(() => import('./pages/TimedTestSetup'))
 const Results = lazy(() => import('./pages/Results'))
 const CustomQuiz = lazy(() => import('./pages/CustomQuiz'))
 const BlockTest = lazy(() => import('./pages/BlockTest'))
@@ -23,10 +25,12 @@ const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'))
 const Welcome = lazy(() => import('./pages/auth/Welcome'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
+const Chat = lazy(() => import('./pages/Chat'))
 
 function App() {
   return (
     <ErrorBoundary>
+      <NotificationToast />
       <Routes>
         {/* Auth routes */}
         <Route path="/login" element={
@@ -70,11 +74,13 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/quiz" element={<QuizTab />} />
+                  <Route path="/chat" element={<Chat />} />
                   <Route path="/quiz/:categoryId" element={<QuickQuiz />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/learn" element={<Learn />} />
                   <Route path="/quick-quiz" element={<QuickQuiz />} />
+                  <Route path="/timed-test-setup" element={<TimedTestSetup />} />
                   <Route path="/timed-test" element={<TimedTest />} />
                   <Route path="/custom-quiz" element={<CustomQuiz />} />
                   <Route path="/block-test" element={<BlockTest />} />

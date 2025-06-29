@@ -1,483 +1,426 @@
 import { supabase } from '../lib/supabase';
+import logger, { logPerformance } from '../utils/logger';
+import { showError, withRetry } from '../utils/notifications';
+
+// Fetch questions for QuickQuiz or other quiz modes (LEGACY - doesn't consider user history)
+export async function fetchQuestions({ categoryId = 'mixed', questionCount = 10, difficulty = null }) {
+  let query = supabase
+    .from('questions')
+    .select('*')
+    .eq('is_active', true);
+
+  if (categoryId && categoryId !== 'mixed') {
+    query = query.contains('question_tags', [{ id: categoryId }]);
+  }
+  if (difficulty) {
+    query = query.eq('difficulty', difficulty);
+  }
+  query = query.limit(questionCount);
+
+  const startTime = performance.now();
+  const { data, error } = await query;
+  const duration = performance.now() - startTime;
+
+  if (error) {
+    console.error('❌ [QuizService] Error fetching questions:', {
+      message: error.message,
+      details: error.details,
+      categoryId,
+      questionCount,
+      difficulty,
+      duration: `${duration.toFixed(2)}ms`
+    });
+    throw new Error(`FETCH_QUESTIONS_ERROR: ${error.message}`);
+  }
+
+  console.log('✅ [QuizService] Successfully fetched questions:', {
+    count: data.length,
+    categoryId,
+    difficulty,
+    duration: `${duration.toFixed(2)}ms`
+  });
+  return data;
+}
+
+// Fisher-Yates (aka Knuth) Shuffle utility
+function shuffleArray(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex > 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+// NEW: Smart question fetching that considers user history
+export async function fetchQuestionsForUser({ 
+  userId, 
+  categoryId = 'mixed', 
+  questionCount = 10, 
+  difficulty = null 
+}) {
+  logger.setContext({ userId, operation: 'fetchQuestionsForUser' });
+  if (!userId) {
+    logger.warn('No userId provided, falling back to basic fetchQuestions', {
+      categoryId,
+      questionCount,
+      difficulty
+    });
+    return fetchQuestions({ categoryId, questionCount, difficulty });
+  }
+  logger.info('Starting smart question fetch for user (using RPC)', {
+    userId,
+    categoryId,
+    questionCount,
+    difficulty
+  });
+  return await logPerformance('fetchQuestionsForUser', async () => {
+    try {
+      // Use the new RPC to get unseen questions
+      const { data: unseenQuestions, error: rpcError } = await supabase.rpc('get_unseen_questions', {
+        p_user_id: userId,
+        p_category_id: categoryId === 'mixed' ? null : categoryId,
+        p_difficulty: difficulty,
+        p_limit: questionCount * 2 // get more for shuffling
+      });
+      if (rpcError) {
+        logger.error('Error fetching unseen questions via RPC', { error: rpcError });
+        logger.warn('Falling back to basic fetch due to RPC error', { error: rpcError.message });
+        console.error('[RPC ERROR] get_unseen_questions:', rpcError);
+        return fetchQuestions({ categoryId, questionCount, difficulty });
+      }
+      logger.info('Fetched unseen questions via RPC', { count: unseenQuestions?.length, data: unseenQuestions });
+      console.log('[RPC DATA] get_unseen_questions:', unseenQuestions);
+      if (unseenQuestions && unseenQuestions.length >= questionCount) {
+        const shuffled = shuffleArray([...unseenQuestions]); // Use Fisher-Yates shuffle
+        logger.info('Using unseen questions for user (RPC)', {
+          userId,
+          selectedCount: questionCount,
+          totalAvailable: unseenQuestions.length
+        });
+        return shuffled.slice(0, questionCount);
+      }
+      // If not enough, fall back to basic fetch
+      logger.warn('Not enough unseen questions from RPC, using fallback', {
+        userId,
+        available: unseenQuestions?.length || 0,
+        requested: questionCount
+      });
+      return fetchQuestions({ categoryId, questionCount, difficulty });
+    } catch (error) {
+      logger.error('Error in fetchQuestionsForUser (RPC)', { error });
+      return fetchQuestions({ categoryId, questionCount, difficulty });
+    }
+  });
+}
+
+// Create a new quiz session
+export async function createQuizSession({ userId, sessionType = 'timed', totalQuestions, categoryName = null, timePerQuestion = 60, totalTimeLimit = null, autoAdvance = true, showExplanations = false, settings = {} }) {
+  // Map sessionType to valid database values (timed, self_paced, learn_module)
+  let mappedSessionType = sessionType;
+  if (sessionType === 'timed_test' || sessionType === 'timed') {
+    mappedSessionType = 'timed';
+  } else if (sessionType === 'custom' || sessionType === 'self_paced') {
+    mappedSessionType = 'self_paced';
+  } else if (sessionType === 'quick' || sessionType === 'blitz') {
+    mappedSessionType = 'timed'; // Map quick/blitz to timed (since they're timed quizzes)
+  } else if (sessionType === 'learn_module') {
+    mappedSessionType = 'learn_module';
+  } else {
+    // Default fallback
+    mappedSessionType = 'self_paced';
+  }
+  
+  // Only include columns that exist in the database schema
+  const payload = {
+    user_id: userId,
+    session_type: mappedSessionType,
+    total_questions: totalQuestions
+    // Note: category_tag_id could be added if we have a way to map categoryName to tag_id
+    // Other fields like time_per_question, auto_advance, etc. don't exist in current schema
+  };
+  console.log('🔍 [QuizService] Creating quiz session with payload:', JSON.stringify(payload, null, 2));
+  console.log('ℹ️ [QuizService] Mapped session_type from', sessionType, 'to', mappedSessionType);
+  
+  const startTime = performance.now();
+  const { data, error } = await supabase
+    .from('quiz_sessions')
+    .insert(payload)
+    .select()
+    .single();
+  const duration = performance.now() - startTime;
+  
+  if (error) {
+    console.error('❌ [QuizService] Error creating quiz session:', {
+      message: error.message,
+      details: error.details,
+      userId,
+      sessionType: mappedSessionType,
+      duration: `${duration.toFixed(2)}ms`
+    });
+    throw new Error(`SESSION_CREATION_ERROR: ${error.message}`);
+  }
+  
+  console.log('✅ [QuizService] Successfully created quiz session:', {
+    sessionId: data.id,
+    userId,
+    sessionType: mappedSessionType,
+    duration: `${duration.toFixed(2)}ms`
+  });
+  return data;
+}
+
+// Add this function to update user question history
+export async function updateUserQuestionHistory({ userId, questionId, isCorrect }) {
+  try {
+    const startTime = performance.now();
+    const { error } = await supabase
+      .from('user_question_history')
+      .upsert({
+        user_id: userId,
+        question_id: questionId,
+        last_answered_correctly: isCorrect,
+        last_seen_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,question_id'
+      });
+    const duration = performance.now() - startTime;
+
+    if (error) {
+      console.error('❌ [QuizService] Error updating user question history:', {
+        message: error.message,
+        details: error.details,
+        userId,
+        questionId,
+        duration: `${duration.toFixed(2)}ms`
+      });
+      // Don't throw - this is not critical for quiz functionality
+    } else {
+      console.log('✅ [QuizService] Successfully updated user question history:', {
+        userId,
+        questionId,
+        isCorrect,
+        duration: `${duration.toFixed(2)}ms`
+      });
+    }
+  } catch (error) {
+    console.error('❌ [QuizService] Unexpected error updating user question history:', {
+      message: error.message,
+      userId,
+      questionId
+    });
+    // Don't throw - this is not critical for quiz functionality
+  }
+}
+
+// Add this function to record question interaction using the new RPC
+export async function recordQuestionInteraction({ userId, questionId, isCorrect }) {
+  const { error } = await supabase.rpc('record_question_interaction', {
+    p_user_id: userId,
+    p_question_id: questionId,
+    p_answered_correctly: isCorrect
+  });
+  if (error) {
+    console.error('❌ [QuizService] Error recording question interaction:', error);
+  }
+}
+
+// Update recordQuizResponse to use recordQuestionInteraction
+export async function recordQuizResponse(sessionId, answerData) {
+  if (!answerData || !answerData.questionId) {
+    console.error('❌ [QuizService] recordQuizResponse: questionId is undefined! answerData:', answerData);
+    return { error: 'Missing questionId in answerData.' };
+  }
+  
+  const startTime = performance.now();
+  const { data, error } = await supabase
+    .from('quiz_responses')
+    .insert({
+      session_id: sessionId,
+      question_id: answerData.questionId,
+      selected_option_id: answerData.selectedOptionId,
+      is_correct: answerData.isCorrect,
+      time_spent_seconds: answerData.timeSpent,
+      response_order: answerData.responseOrder
+    })
+    .select()
+    .single();
+  const duration = performance.now() - startTime;
+    
+  if (error) {
+    console.error('❌ [QuizService] Error recording quiz response:', {
+      message: error.message,
+      details: error.details,
+      sessionId,
+      questionId: answerData.questionId,
+      duration: `${duration.toFixed(2)}ms`
+    });
+    throw new Error(`RESPONSE_RECORDING_ERROR: ${error.message}`);
+  }
+  
+  console.log('✅ [QuizService] Successfully recorded quiz response:', {
+    sessionId,
+    questionId: answerData.questionId,
+    isCorrect: answerData.isCorrect,
+    duration: `${duration.toFixed(2)}ms`
+  });
+  
+  // Also update user question history (non-blocking)
+  if (answerData.userId) {
+    await recordQuestionInteraction({
+      userId: answerData.userId,
+      questionId: answerData.questionId,
+      isCorrect: answerData.isCorrect
+    });
+  } else {
+    console.warn('⚠️ [QuizService] No userId provided for history update', {
+      sessionId,
+      questionId: answerData.questionId
+    });
+  }
+  
+  return data;
+}
+
+// Mark a quiz session as completed
+export async function completeQuizSession(sessionId) {
+  const startTime = performance.now();
+  const { data, error } = await supabase
+    .from('quiz_sessions')
+    .update({ completed_at: new Date().toISOString() })
+    .eq('id', sessionId)
+    .select()
+    .single();
+  const duration = performance.now() - startTime;
+  
+  if (error) {
+    console.error('❌ [QuizService] Error completing quiz session:', {
+      message: error.message,
+      details: error.details,
+      sessionId,
+      duration: `${duration.toFixed(2)}ms`
+    });
+    throw new Error(`SESSION_COMPLETION_ERROR: ${error.message}`);
+  }
+  
+  console.log('✅ [QuizService] Successfully completed quiz session:', {
+    sessionId,
+    duration: `${duration.toFixed(2)}ms`
+  });
+  return data;
+}
 
 /**
- * Service for handling question-related database operations
+ * Create a new Block Test session (multi-block exam simulation)
+ * @param {Object} params - { userId, numBlocks, questionsPerBlock, totalQuestions, settings }
+ * @returns {Promise<Object>} The created block test session
  */
-export class QuestionService {
-  /**
-   * Get demo questions when database is unavailable
-   */
-  static getDemoQuestions(questionCount = 10) {
-    const demoQuestions = [
-      {
-        id: 'demo-1',
-        question_text: 'Which of the following is the most common cause of myocardial infarction?',
-        options: [
-          { id: 'a', text: 'Coronary artery thrombosis' },
-          { id: 'b', text: 'Coronary artery spasm' },
-          { id: 'c', text: 'Aortic stenosis' },
-          { id: 'd', text: 'Pulmonary embolism' }
-        ],
-        correct_option_id: 'a',
-        explanation: 'Coronary artery thrombosis is the most common cause of myocardial infarction, typically occurring due to plaque rupture.',
-        question_tags: [{ tags: { name: 'Cardiology' } }]
-      },
-      {
-        id: 'demo-2',
-        question_text: 'What is the normal range for adult heart rate at rest?',
-        options: [
-          { id: 'a', text: '40-60 bpm' },
-          { id: 'b', text: '60-100 bpm' },
-          { id: 'c', text: '100-120 bpm' },
-          { id: 'd', text: '120-140 bpm' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'The normal resting heart rate for adults is 60-100 beats per minute.',
-        question_tags: [{ tags: { name: 'Physiology' } }]
-      },
-      {
-        id: 'demo-3',
-        question_text: 'Which hormone is primarily responsible for regulating blood glucose levels?',
-        options: [
-          { id: 'a', text: 'Cortisol' },
-          { id: 'b', text: 'Insulin' },
-          { id: 'c', text: 'Thyroxine' },
-          { id: 'd', text: 'Growth hormone' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'Insulin is the primary hormone responsible for regulating blood glucose levels by facilitating glucose uptake by cells.',
-        question_tags: [{ tags: { name: 'Endocrinology' } }]
-      },
-      {
-        id: 'demo-4',
-        question_text: 'What is the most common type of lung cancer?',
-        options: [
-          { id: 'a', text: 'Small cell lung cancer' },
-          { id: 'b', text: 'Adenocarcinoma' },
-          { id: 'c', text: 'Squamous cell carcinoma' },
-          { id: 'd', text: 'Large cell carcinoma' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'Adenocarcinoma is the most common type of lung cancer, accounting for about 40% of all lung cancers.',
-        question_tags: [{ tags: { name: 'Oncology' } }]
-      },
-      {
-        id: 'demo-5',
-        question_text: 'Which structure connects the two cerebral hemispheres?',
-        options: [
-          { id: 'a', text: 'Corpus callosum' },
-          { id: 'b', text: 'Brainstem' },
-          { id: 'c', text: 'Cerebellum' },
-          { id: 'd', text: 'Thalamus' }
-        ],
-        correct_option_id: 'a',
-        explanation: 'The corpus callosum is the largest white matter structure in the brain that connects the two cerebral hemispheres.',
-        question_tags: [{ tags: { name: 'Neurology' } }]
-      },
-      {
-        id: 'demo-6',
-        question_text: 'What is the first-line treatment for uncomplicated urinary tract infection in women?',
-        options: [
-          { id: 'a', text: 'Amoxicillin' },
-          { id: 'b', text: 'Nitrofurantoin' },
-          { id: 'c', text: 'Ciprofloxacin' },
-          { id: 'd', text: 'Cephalexin' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'Nitrofurantoin is often first-line treatment for uncomplicated UTIs in women due to its effectiveness and low resistance rates.',
-        question_tags: [{ tags: { name: 'Infectious Disease' } }]
-      },
-      {
-        id: 'demo-7',
-        question_text: 'Which valve is most commonly affected in rheumatic heart disease?',
-        options: [
-          { id: 'a', text: 'Aortic valve' },
-          { id: 'b', text: 'Mitral valve' },
-          { id: 'c', text: 'Tricuspid valve' },
-          { id: 'd', text: 'Pulmonary valve' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'The mitral valve is most commonly affected in rheumatic heart disease, often leading to mitral stenosis.',
-        question_tags: [{ tags: { name: 'Cardiology' } }]
-      },
-      {
-        id: 'demo-8',
-        question_text: 'What is the most common cause of acute pancreatitis?',
-        options: [
-          { id: 'a', text: 'Alcohol abuse' },
-          { id: 'b', text: 'Gallstones' },
-          { id: 'c', text: 'Medications' },
-          { id: 'd', text: 'Trauma' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'Gallstones are the most common cause of acute pancreatitis, followed by alcohol abuse.',
-        question_tags: [{ tags: { name: 'Gastroenterology' } }]
-      },
-      {
-        id: 'demo-9',
-        question_text: 'Which antibody is most specific for systemic lupus erythematosus?',
-        options: [
-          { id: 'a', text: 'Anti-dsDNA' },
-          { id: 'b', text: 'ANA' },
-          { id: 'c', text: 'Anti-Sm' },
-          { id: 'd', text: 'Anti-SSA/Ro' }
-        ],
-        correct_option_id: 'c',
-        explanation: 'Anti-Sm (Smith) antibodies are highly specific for SLE, though less sensitive than other markers.',
-        question_tags: [{ tags: { name: 'Rheumatology' } }]
-      },
-      {
-        id: 'demo-10',
-        question_text: 'What is the most appropriate initial imaging study for suspected pulmonary embolism?',
-        options: [
-          { id: 'a', text: 'Chest X-ray' },
-          { id: 'b', text: 'CT pulmonary angiogram' },
-          { id: 'c', text: 'Ventilation-perfusion scan' },
-          { id: 'd', text: 'Echocardiogram' }
-        ],
-        correct_option_id: 'b',
-        explanation: 'CT pulmonary angiogram (CTPA) is the most appropriate initial imaging study for suspected PE in most patients.',
-        question_tags: [{ tags: { name: 'Pulmonology' } }]
-      }
-    ];
-
-    return demoQuestions.slice(0, questionCount);
-  }
-
-  /**
-   * Fetch questions for a specific category or mixed questions
-   */
-  static async fetchQuestions(categoryId, questionCount = 10) {
-    try {
-      let query = supabase
-        .from('questions')
-        .select(`
-          *,
-          question_tags!inner (
-            tag_id,
-            tags (
-              name,
-              type
-            )
-          )
-        `);
-
-      // Handle mixed category vs specific category
-      if (categoryId !== 'mixed') {
-        query = query.eq('question_tags.tag_id', categoryId);
-      }
-
-      const { data, error } = await query.limit(questionCount);
-
-      if (error) {
-        console.error('Supabase error fetching questions:', error);
-        console.warn('Falling back to demo questions due to database error');
-        return this.getDemoQuestions(questionCount);
-      }
-
-      if (!data || data.length === 0) {
-        console.warn('No questions found in database, using demo questions');
-        return this.getDemoQuestions(questionCount);
-      }
-
-      // Shuffle questions for variety
-      return data.sort(() => Math.random() - 0.5);
-    } catch (error) {
-      console.error('Error fetching questions, using demo questions:', error);
-      return this.getDemoQuestions(questionCount);
+export async function createBlockTestSession({ userId, numBlocks, questionsPerBlock, totalQuestions, settings = {} }) {
+  // TODO: Implement DB schema for multi-block sessions if needed
+  // For now, create a quiz_session with block metadata in settings
+  const payload = {
+    user_id: userId,
+    session_type: 'block',
+    total_questions: totalQuestions,
+    settings: {
+      ...settings,
+      numBlocks,
+      questionsPerBlock
     }
-  }
+  };
+  const { data, error } = await supabase
+    .from('quiz_sessions')
+    .insert(payload)
+    .select()
+    .single();
+  if (error) throw new Error(`BLOCK_SESSION_CREATION_ERROR: ${error.message}`);
+  return data;
+}
 
-  /**
-   * Fetch categories with question counts
-   */
-  static async fetchCategories() {
-    try {
-      // First, try to fetch from the view
-      const { data, error } = await supabase
-        .from('tag_question_counts')
-        .select('*')
-        .eq('is_active', true)
-        .order('order_index', { ascending: true });
+/**
+ * Fetch questions for a specific block in a Block Test
+ * @param {Object} params - { userId, blockIndex, questionsPerBlock, difficulty }
+ * @returns {Promise<Array>} Questions for the block
+ */
+export async function fetchBlockQuestions({ userId, blockIndex, questionsPerBlock, difficulty = null }) {
+  // TODO: Implement block-specific question selection (ensure no repeats across blocks)
+  // For now, fallback to fetchQuestionsForUser
+  return fetchQuestionsForUser({
+    userId,
+    categoryId: 'mixed',
+    questionCount: questionsPerBlock,
+    difficulty
+  });
+}
 
-      if (error) {
-        console.error('Error fetching from tag_question_counts view:', error);
-        
-        // Fallback: fetch directly from tags table and manually count questions
-        const { data: tagsData, error: tagsError } = await supabase
-          .from('tags')
-          .select(`
-            id,
-            name,
-            slug,
-            description,
-            icon_name,
-            color,
-            color_code,
-            parent_id,
-            type,
-            order_index,
-            is_active,
-            created_at,
-            updated_at
-          `)
-          .eq('is_active', true)
-          .order('order_index', { ascending: true });
+/**
+ * Record a response for a question in a Block Test
+ * @param {string} sessionId
+ * @param {Object} answerData
+ * @param {number} blockIndex
+ * @returns {Promise<Object>} The recorded response
+ */
+export async function recordBlockResponse(sessionId, answerData, blockIndex) {
+  // TODO: Optionally store blockIndex in quiz_responses if schema allows
+  // For now, use recordQuizResponse
+  return recordQuizResponse(sessionId, { ...answerData, blockIndex });
+}
 
-        if (tagsError) {
-          throw tagsError;
-        }
+/**
+ * Pause a Block Test session
+ * @param {string} sessionId
+ * @param {Object} pauseData - { currentBlock, currentQuestion, timeLeft, ... }
+ * @returns {Promise<Object>} The updated session
+ */
+export async function pauseBlockSession(sessionId, pauseData) {
+  // TODO: Store pause state in quiz_sessions.settings or dedicated columns
+  const { data, error } = await supabase
+    .from('quiz_sessions')
+    .update({
+      settings: pauseData,
+      paused_at: new Date().toISOString()
+    })
+    .eq('id', sessionId)
+    .select()
+    .single();
+  if (error) throw new Error(`BLOCK_SESSION_PAUSE_ERROR: ${error.message}`);
+  return data;
+}
 
-        // Manually count questions for each tag
-        const categoriesWithCounts = await Promise.all(
-          (tagsData || []).map(async (tag) => {
-            const { count, error: countError } = await supabase
-              .from('question_tags')
-              .select('*', { count: 'exact', head: true })
-              .eq('tag_id', tag.id);
+/**
+ * Resume a paused Block Test session
+ * @param {string} sessionId
+ * @returns {Promise<Object>} The updated session
+ */
+export async function resumeBlockSession(sessionId) {
+  // TODO: Clear paused_at and update settings as needed
+  const { data, error } = await supabase
+    .from('quiz_sessions')
+    .update({
+      paused_at: null
+    })
+    .eq('id', sessionId)
+    .select()
+    .single();
+  if (error) throw new Error(`BLOCK_SESSION_RESUME_ERROR: ${error.message}`);
+  return data;
+}
 
-            if (countError) {
-              console.warn(`Error counting questions for tag ${tag.id}:`, countError);
-            }
-
-            return {
-              ...tag,
-              question_count: count || 0
-            };
-          })
-        );
-
-        return categoriesWithCounts;
-      }
-
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create a new quiz session
-   */
-  static async createQuizSession(userId, categoryId, questionCount) {
-    try {
-      const { data, error } = await supabase
-        .from('quiz_sessions')
-        .insert({
-          user_id: userId,
-          quiz_type: 'practice',
-          total_questions: questionCount,
-          settings: {
-            category_id: categoryId !== 'mixed' ? categoryId : null,
-            is_mixed: categoryId === 'mixed'
-          }
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating quiz session:', error);
-        throw error;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error creating quiz session:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Record a quiz response
-   */
-  static async recordQuizResponse(sessionId, questionId, selectedOptionId, isCorrect, responseOrder = 0) {
-    try {
-      const { error } = await supabase
-        .from('quiz_responses')
-        .insert({
-          session_id: sessionId,
-          question_id: questionId,
-          selected_option_id: selectedOptionId,
-          is_correct: isCorrect,
-          response_order: responseOrder,
-          time_spent_seconds: 0 // TODO: Add timing functionality
-        });
-
-      if (error) {
-        console.error('Error recording quiz response:', error);
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error recording quiz response:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Update user question history
-   */
-  static async updateUserQuestionHistory(userId, questionId, selectedOptionId, isCorrect) {
-    try {
-      const { error } = await supabase
-        .from('user_question_history')
-        .upsert({
-          user_id: userId,
-          question_id: questionId,
-          last_answered_correctly: isCorrect,
-          last_seen_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,question_id'
-        });
-
-      if (error) {
-        console.error('Error updating user question history:', error);
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error updating user question history:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Complete a quiz session
-   */
-  static async completeQuizSession(sessionId, userId, finalScore) {
-    try {
-      const { error } = await supabase
-        .from('quiz_sessions')
-        .update({
-          correct_answers: finalScore,
-          completed_at: new Date().toISOString()
-        })
-        .eq('id', sessionId)
-        .eq('user_id', userId); // Security: ensure user can only update their own session
-
-      if (error) {
-        console.error('Error completing quiz session:', error);
-        throw error;
-      }
-    } catch (error) {
-      console.error('Error completing quiz session:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get user progress for a specific category
-   */
-  static async getUserProgress(userId, categoryId) {
-    if (!userId || !categoryId) return 0;
-    
-    try {
-      // Get user's question history for this category
-      const { data, error } = await supabase
-        .from('user_question_history')
-        .select(`
-          last_answered_correctly,
-          questions!inner (
-            question_tags!inner (
-              tag_id
-            )
-          )
-        `)
-        .eq('user_id', userId)
-        .eq('questions.question_tags.tag_id', categoryId);
-
-      if (error) {
-        console.warn('Error getting user progress:', error);
-        return 0;
-      }
-
-      if (!data || data.length === 0) {
-        return 0;
-      }
-
-      // Calculate progress based on correct answers percentage
-      const correctAnswers = data.filter(item => item.last_answered_correctly).length;
-      const totalAttempts = data.length;
-      
-      return Math.round((correctAnswers / totalAttempts) * 100);
-    } catch (error) {
-      console.error('Error getting user progress:', error);
-      // Return 0 progress if there's any error to prevent UI from breaking
-      return 0;
-    }
-  }
-
-  /**
-   * Get progress map for all categories in a single query (BATCH OPTIMIZATION)
-   */
-  static async getProgressMap(userId) {
-    if (!userId) return {};
-
-    try {
-      // One query — returns all history rows in one shot
-      const { data, error } = await supabase
-        .from('user_question_history')
-        .select(`
-          last_answered_correctly,
-          questions!inner (
-            id,
-            question_tags!inner( tag_id )
-          )
-        `)
-        .eq('user_id', userId);
-
-      if (error) {
-        console.warn('Error fetching progress map:', error);
-        return {};
-      }
-
-      if (!data || data.length === 0) {
-        return {};
-      }
-
-      // Compute percentage per tag_id
-      const map = {};
-      data.forEach((row) => {
-        row.questions?.question_tags?.forEach(({ tag_id }) => {
-          if (!map[tag_id]) {
-            map[tag_id] = { correct: 0, total: 0 };
-          }
-          map[tag_id].total += 1;
-          if (row.last_answered_correctly) {
-            map[tag_id].correct += 1;
-          }
-        });
-      });
-
-      // Convert to percentage
-      const percentMap = {};
-      Object.entries(map).forEach(([tagId, { correct, total }]) => {
-        percentMap[tagId] = Math.round((correct / total) * 100);
-      });
-
-      return percentMap;
-    } catch (error) {
-      console.error('Error getting progress map:', error);
-      return {};
-    }
-  }
-
-  /**
-   * Test database connection
-   */
-  static async testConnection() {
-    try {
-      const { data, error } = await supabase
-        .from('tags')
-        .select('count(*)')
-        .limit(1);
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      return { success: true, data };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
+/**
+ * Complete a Block Test session
+ * @param {string} sessionId
+ * @returns {Promise<Object>} The completed session
+ */
+export async function completeBlockTestSession(sessionId) {
+  // Mark session as completed (reuse existing logic)
+  return completeQuizSession(sessionId);
 }

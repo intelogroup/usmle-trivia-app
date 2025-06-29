@@ -16,10 +16,10 @@ const IconShowcase = () => {
       title: "Lucide React Icons",
       description: "Clean, customizable icons with consistent design",
       icons: [
-        { component: <Heart className="w-6 h-6 text-red-500" />, name: "Heart", usage: "import { Heart } from 'lucide-react'" },
-        { component: <Brain className="w-6 h-6 text-purple-500" />, name: "Brain", usage: "import { Brain } from 'lucide-react'" },
-        { component: <Eye className="w-6 h-6 text-blue-500" />, name: "Eye", usage: "import { Eye } from 'lucide-react'" },
-        { component: <Stethoscope className="w-6 h-6 text-green-500" />, name: "Stethoscope", usage: "import { Stethoscope } from 'lucide-react'" }
+        { component: <Heart className="w-6 h-6 text-red-500" data-lucide="heart" />, name: "Heart", usage: "import { Heart } from 'lucide-react'" },
+        { component: <Brain className="w-6 h-6 text-purple-500" data-lucide="brain" />, name: "Brain", usage: "import { Brain } from 'lucide-react'" },
+        { component: <Eye className="w-6 h-6 text-blue-500" data-lucide="eye" />, name: "Eye", usage: "import { Eye } from 'lucide-react'" },
+        { component: <Stethoscope className="w-6 h-6 text-green-500" data-lucide="stethoscope" />, name: "Stethoscope", usage: "import { Stethoscope } from 'lucide-react'" }
       ]
     },
     {
@@ -36,20 +36,20 @@ const IconShowcase = () => {
       title: "Medical System Icons",
       description: "Hospital and healthcare system icons using Lucide",
       icons: [
-        { component: <UserRound className="w-6 h-6 text-blue-600" />, name: "Medical Professional", usage: "import { UserRound } from 'lucide-react'" },
-        { component: <Building2 className="w-6 h-6 text-gray-600" />, name: "Hospital", usage: "import { Building2 } from 'lucide-react'" },
-        { component: <Tablet className="w-6 h-6 text-orange-500" />, name: "Medication", usage: "import { Tablet } from 'lucide-react'" },
-        { component: <Activity className="w-6 h-6 text-pink-500" />, name: "Vital Signs", usage: "import { Activity } from 'lucide-react'" }
+        { component: <UserRound className="w-6 h-6 text-blue-600" data-lucide="user-round" />, name: "Medical Professional", usage: "import { UserRound } from 'lucide-react'" },
+        { component: <Building2 className="w-6 h-6 text-gray-600" data-lucide="building-2" />, name: "Hospital", usage: "import { Building2 } from 'lucide-react'" },
+        { component: <Tablet className="w-6 h-6 text-orange-500" data-lucide="tablet" />, name: "Medication", usage: "import { Tablet } from 'lucide-react'" },
+        { component: <Activity className="w-6 h-6 text-pink-500" data-lucide="activity" />, name: "Vital Signs", usage: "import { Activity } from 'lucide-react'" }
       ]
     },
     {
       title: "Additional Medical Icons",
       description: "Extended set of medical icons using Lucide React",
       icons: [
-        { component: <Activity className="w-6 h-6 text-red-500" />, name: "Activity", usage: 'import { Activity } from "lucide-react"' },
-        { component: <Brain className="w-6 h-6 text-purple-500" />, name: "Brain", usage: 'import { Brain } from "lucide-react"' },
-        { component: <Zap className="w-6 h-6 text-blue-500" />, name: "Medical Energy", usage: 'import { Zap } from "lucide-react"' },
-        { component: <Tablet className="w-6 h-6 text-green-500" />, name: "Medication", usage: 'import { Tablet } from "lucide-react"' }
+        { component: <Activity className="w-6 h-6 text-red-500" data-lucide="activity" />, name: "Activity", usage: 'import { Activity } from "lucide-react"' },
+        { component: <Brain className="w-6 h-6 text-purple-500" data-lucide="brain" />, name: "Brain", usage: 'import { Brain } from "lucide-react"' },
+        { component: <Zap className="w-6 h-6 text-blue-500" data-lucide="zap" />, name: "Medical Energy", usage: 'import { Zap } from "lucide-react"' },
+        { component: <Tablet className="w-6 h-6 text-green-500" data-lucide="tablet" />, name: "Medication", usage: 'import { Tablet } from "lucide-react"' }
       ]
     }
   ];

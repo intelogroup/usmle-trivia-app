@@ -9,7 +9,7 @@ const QuizTimer = ({
   timerKey,
   initialTime = 60,
   showProgressBar = true,
-  size = 'normal' // 'small', 'normal', 'large'
+  size = 'large' // 'small', 'normal', 'large'
 }) => {
   // Calculate time percentage for visual feedback
   const timePercentage = (timeLeft / initialTime) * 100;
@@ -117,7 +117,7 @@ const QuizTimer = ({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-2 mb-6">
+    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center space-y-2">
       {/* Main Timer Display */}
       <motion.div
         key={timerKey}
@@ -244,4 +244,4 @@ const QuizTimer = ({
   );
 };
 
-export default QuizTimer; 
+export default QuizTimer;

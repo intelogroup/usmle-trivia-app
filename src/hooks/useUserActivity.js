@@ -94,10 +94,10 @@ export const useUserActivity = () => {
     pageCache.fetchWithCache(fetchUserActivity, {
       onCacheHit: (cachedData) => {
         // Data already set from useEffect above
-        logger.debug('User activity loaded from cache')
+        logger.debug('User activity loaded from cache', { userId: user?.id, operation: 'fetchUserActivity' })
       },
       onFreshData: (freshData) => {
-        logger.debug('User activity refreshed from server')
+        logger.debug('User activity refreshed from server', { userId: user?.id, operation: 'fetchUserActivity' })
       }
     }).catch(error => {
       console.error('Failed to fetch user activity:', error)

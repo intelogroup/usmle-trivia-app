@@ -98,8 +98,11 @@ export const prefetchQueries = {
     queryClient.prefetchQuery({
       queryKey: queryKeys.categories(),
       queryFn: async () => {
-        const { QuestionService } = await import('../services/questionService')
-        return QuestionService.fetchCategories()
+        const { supabase } = await import('./supabase')
+        const { data: categories } = await supabase
+          .from('categories')
+          .select('*')
+        return categories || []
       },
       staleTime: 5 * 60 * 1000 // 5 minutes
     })
@@ -150,9 +153,18 @@ export const cacheUtils = {
   prefetchQuestions: async (categoryId, questionCount = 10) => {
     return queryClient.prefetchQuery({
       queryKey: queryKeys.questions(categoryId, questionCount),
-      queryFn: () => import('../services/questionService').then(module => 
-        module.QuestionService.fetchQuestions(categoryId, questionCount)
-      ),
+      queryFn: async () => {
+        const { supabase } = await import('./supabase')
+        let query = supabase
+          .from('questions')
+          .select('*')
+        if (categoryId !== 'mixed') {
+          query = query.eq('category_id', categoryId)
+        }
+        query = query.limit(questionCount)
+        const { data: questions } = await query
+        return questions || []
+      },
       staleTime: 10 * 60 * 1000, // 10 minutes for prefetched data
     })
   },
@@ -178,4 +190,4 @@ export const cacheUtils = {
       queryKeys.questions(categoryId, questionCount)
     )
   },
-} 
+}

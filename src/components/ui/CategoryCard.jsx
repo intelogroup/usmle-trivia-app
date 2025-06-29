@@ -29,7 +29,7 @@ const CategoryCard = ({ title, description, icon, color, progress, questionCount
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-xl ${cardColor}`}>
-            <IconWrapper icon={IconComponent} fallback={Activity} size={18} className="text-white" />
+            <IconWrapper icon={IconComponent} fallback={Activity} size={18} className="text-white" data-lucide={icon ? icon.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase() : undefined} />
           </div>
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-dark-50 text-sm">{title}</h3>

@@ -46,6 +46,17 @@ export default defineConfig({
     // **Critical CSS Extraction** (Coming in Phase 2)
     // TODO: Add critical CSS extraction plugin for above-the-fold optimization
   ],
+  server: {
+    // **Proxy Configuration for Supabase**
+    // This proxies requests to Supabase to bypass CORS issues during development.
+    proxy: {
+      '/supabase': {
+        target: 'https://bkuowoowlmwranfoliea.supabase.co',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/supabase/, '')
+      }
+    }
+  },
   build: {
     // **Tree-shaking Optimization**
     // Vite uses Rollup, which enables tree-shaking by default for production.

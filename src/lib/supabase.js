@@ -6,7 +6,9 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Validate configuration
 if (!supabaseUrl || !supabaseKey) {
-  console.warn('⚠️ Supabase environment variables missing. Please create a .env.local file with your Supabase credentials.')
+  console.error('Supabase environment variables are missing');
+  console.error('URL:', supabaseUrl ? 'OK' : 'MISSING');
+  console.error('KEY:', supabaseKey ? 'OK' : 'MISSING');
 }
 
 // Create Supabase client with fallback values for development
@@ -18,6 +20,16 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true
+    },
+    global: {
+      // Use the proxy path for development to bypass CORS
+      fetch: (url, options) => {
+        if (url.startsWith(supabaseUrl)) {
+          const newUrl = url.replace(supabaseUrl, '/supabase');
+          return fetch(newUrl, options);
+        }
+        return fetch(url, options);
+      }
     }
   }
 )
@@ -25,27 +37,53 @@ export const supabase = createClient(
 // Configuration status
 export const isConfigured = Boolean(supabaseUrl && supabaseKey)
 
-// Test connection function
+// Test function to verify connection
 export const testConnection = async () => {
-  if (!isConfigured) {
-    return { 
-      success: false, 
-      message: 'Supabase not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local' 
-    }
-  }
-
   try {
+    console.log('🔍 [Supabase] Testing database connection...');
+    console.log('🌐 [Supabase] URL:', supabaseUrl);
+    console.log('🔑 [Supabase] Key present:', !!supabaseKey);
+    
+    // Simple test query
     const { data, error } = await supabase
-      .from('profiles')
-      .select('id')
-      .limit(1)
+      .from('tags')
+      .select('id, name')
+      .limit(1);
     
     if (error) {
-      return { success: false, message: `Connection error: ${error.message}` }
+      console.error('❌ [Supabase] Connection test failed:', error);
+      return {
+        success: false,
+        message: `Database error: ${error.message}`,
+        details: error
+      };
     }
     
-    return { success: true, message: 'Supabase connected successfully!', data }
+    console.log('✅ [Supabase] Connection test successful');
+    console.log('📊 [Supabase] Sample data:', data);
+    
+    return {
+      success: true,
+      message: 'Database connection successful',
+      data: data
+    };
   } catch (error) {
-    return { success: false, message: `Connection failed: ${error.message}` }
+    console.error('💥 [Supabase] Connection test exception:', error);
+    return {
+      success: false,
+      message: `Connection failed: ${error.message}`,
+      details: error
+    };
   }
-} 
+}
+
+// Run test on module load in development
+if (import.meta.env.DEV) {
+  testConnection().then(result => {
+    if (result.success) {
+      console.log('🎉 [Supabase] Database ready!');
+    } else {
+      console.error('🚨 [Supabase] Database connection failed on startup');
+    }
+  });
+}
