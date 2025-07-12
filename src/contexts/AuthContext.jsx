@@ -19,60 +19,53 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    const initAuth = async () => {
-      if (!isConfigured) {
-        console.warn('Supabase not configured. Authentication will not work.')
-        setLoading(false)
-        return
-      }
-
-      // Get initial session and then listen for auth changes
-      await getInitialSession();
-
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          await fetchUserProfile(session.user.id)
-        } else {
-          setProfile(null)
-        }
-
-        setLoading(false)
-      })
-
-      return () => subscription.unsubscribe()
+    if (!isConfigured) {
+      logger.warn('Supabase not configured. Authentication will not work.')
+      setLoading(false)
+      return
     }
 
-    initAuth()
+    setLoading(true)
+    
+    // The listener will handle setting user and profile
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      logger.debug(`[AuthContext:onAuthStateChange] Auth event: ${event}`, { session })
+      const currentUser = session?.user
+      setUser(currentUser ?? null)
+
+      if (currentUser) {
+        await fetchUserProfile(currentUser.id, event)
+      } else {
+        setProfile(null)
+      }
+      setLoading(false)
+    })
+
+    // Manually trigger the initial check
+    getInitialSession()
+
+    return () => {
+      subscription?.unsubscribe()
+    }
   }, [])
 
+
+  // This function now just triggers the initial auth state check.
+  // The onAuthStateChange listener will handle the result.
   const getInitialSession = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      logger.debug('[AuthContext:getInitialSession] Initial session check:', {
-        hasSession: !!session,
-        hasUser: !!session?.user,
-        userId: session?.user?.id || 'undefined',
-        sessionObj: session
-      })
-      setUser(session?.user ?? null)
-      if (session?.user?.id) {
-        logger.debug('[AuthContext:getInitialSession] Valid user found, fetching profile:', session.user.id)
-        await fetchUserProfile(session.user.id, 'getInitialSession')
-      } else {
-        logger.warn('[AuthContext:getInitialSession] No valid user in session, skipping profile fetch')
-      }
+      logger.debug('[AuthContext:getInitialSession] Triggering initial session check...')
+      // This will trigger onAuthStateChange if a session exists
+      await supabase.auth.getSession()
     } catch (error) {
-      logger.error('[AuthContext:getInitialSession] Error getting initial session:', {
+      logger.error('[AuthContext:getInitialSession] Error triggering initial session check:', {
         error,
-        errorType: error.constructor.name,
         message: error.message
       })
-    } finally {
-      setLoading(false)
+      setLoading(false) // Ensure loading is false on error
     }
   }
+
 
   const fetchUserProfile = async (userId, context = 'unknown') => {
     if (!userId) {
@@ -301,5 +294,6 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
+
   )
 }
