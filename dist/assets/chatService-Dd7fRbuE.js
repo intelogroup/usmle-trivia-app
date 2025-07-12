@@ -1,0 +1,1 @@
+import{s as r}from"./index-CvtoYzRs.js";async function o(o){const t=r.auth.user();if(!t)throw new Error("Not logged in");const{data:e,error:n}=await r.rpc("find_or_create_one_to_one_chat",{user1:t.id,user2:o});if(n)throw n;return e}export{o as s};
