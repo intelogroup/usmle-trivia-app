@@ -73,7 +73,6 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           description: 'Targeted study, flexible practice',
           progress: 0,
           recommended: false,
-          disabled: true
         },
         {
           icon: Layers,
@@ -87,7 +86,6 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           description: 'Full exam simulation',
           progress: 0,
           recommended: false,
-          disabled: true
         }
       ]
     } else {
@@ -143,7 +141,6 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           description: 'Targeted study, flexible practice',
           progress: 0,
           recommended: false,
-          disabled: true
         },
         {
           icon: Layers,
@@ -157,7 +154,6 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           description: 'Full exam simulation',
           progress: 0,
           recommended: false,
-          disabled: true
         },
         {
           icon: BarChart3,
@@ -200,7 +196,7 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             whileHover={{ y: -5, scale: 1.02 }}
-            className={`relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 ${action.disabled ? 'opacity-60' : ''}`}
+            className={`relative bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 ${action.disabled ? 'opacity-60 pointer-events-none' : ''}`}
             onClick={action.action}
           >
             {action.recommended && (

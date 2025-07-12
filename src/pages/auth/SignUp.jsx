@@ -1,63 +1,153 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Stethoscope, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Mail, Lock, User, ArrowLeft, Stethoscope, CheckCircle, AlertTriangle } from 'lucide-react'
 import { authService } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
+import ValidatedInput from '../../components/ui/ValidatedInput';
+import { 
+  validateEmail, 
+  validatePassword, 
+  validateConfirmPassword, 
+  validateFullName, 
+  createFormValidation 
+} from '../../utils/formValidation';
 
 const SignUp = () => {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const { isConfigured } = useAuth();
   const navigate = useNavigate();
 
-  const validateForm = () => {
-    if (!fullName.trim()) {
-      setError('Please enter your full name')
-      return false
+  // Validation rules
+  const validationRules = {
+    fullName: (name) => validateFullName(name),
+    email: (email) => validateEmail(email),
+    password: (password) => validatePassword(password),
+    confirmPassword: (confirmPassword) => validateConfirmPassword(formData.password, confirmPassword)
+  };
+
+  const validator = createFormValidation(validationRules);
+
+  // Handle real-time field changes
+  const handleChange = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setSubmitError(''); // Clear submit error when user types
+    
+    // Validate field if it has been touched or has content
+    if (touched[name] || value) {
+      const validation = validator.validateField(name, value, { ...formData, [name]: value });
+      setErrors(prev => ({ ...prev, [name]: validation.error }));
     }
-    if (!email.trim()) {
-      setError('Please enter your email address')
-      return false
+    
+    // Special handling for confirm password when password changes
+    if (name === 'password' && touched.confirmPassword) {
+      const confirmValidation = validateConfirmPassword(value, formData.confirmPassword);
+      setErrors(prev => ({ ...prev, confirmPassword: confirmValidation.error }));
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long')
-      return false
+  };
+
+  // Handle field blur (when user leaves the field)
+  const handleBlur = (name) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const validation = validator.validateField(name, formData[name], formData);
+    setErrors(prev => ({ ...prev, [name]: validation.error }));
+  };
+
+  // Enhanced error handling for JSON parsing and network issues
+  const handleSubmitError = (error) => {
+    console.error('SignUp error:', error);
+    
+    // Handle JSON parsing errors
+    if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
+      setSubmitError('Server communication error. Please try again.');
+      return;
     }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return false
+    
+    // Handle network errors
+    if (error.message.includes('fetch') || error.message.includes('Network')) {
+      setSubmitError('Network error. Please check your connection and try again.');
+      return;
     }
-    return true
-  }
+    
+    // Handle specific auth errors
+    if (error.message.includes('User already registered') || 
+        error.message.includes('already in use')) {
+      setSubmitError('This email is already registered. Please use a different email or try signing in.');
+      return;
+    }
+    
+    if (error.message.includes('Password should be at least')) {
+      setSubmitError('Password must be at least 6 characters long.');
+      return;
+    }
+    
+    if (error.message.includes('Invalid email')) {
+      setSubmitError('Please enter a valid email address.');
+      return;
+    }
+    
+    if (error.message.includes('Too many requests')) {
+      setSubmitError('Too many signup attempts. Please wait a moment and try again.');
+      return;
+    }
+    
+    // Default error message
+    setSubmitError(error.message || 'An error occurred during registration. Please try again.');
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setSubmitError('');
 
-    if (!validateForm()) {
-      setLoading(false)
-      return
+    // Validate all fields
+    const { isValid, errors: validationErrors } = validator.validateAll(formData);
+    
+    if (!isValid) {
+      setErrors(validationErrors);
+      setTouched({ fullName: true, email: true, password: true, confirmPassword: true });
+      setLoading(false);
+      return;
+    }
+
+    // Additional check for empty fields and password match
+    if (!formData.fullName.trim() || !formData.email || !formData.password || !formData.confirmPassword) {
+      setSubmitError('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setSubmitError('Passwords do not match');
+      setLoading(false);
+      return;
     }
 
     try {
-      await authService.signUp(email, password, fullName);
+      await authService.signUp(formData.email.trim(), formData.password, formData.fullName.trim());
       setSuccess(true);
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      handleSubmitError(error);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  // Check if form is valid for submit button state
+  const isFormValid = formData.fullName && formData.email && formData.password && 
+                     formData.confirmPassword && !errors.fullName && !errors.email && 
+                     !errors.password && !errors.confirmPassword;
 
   if (success) {
     return (
@@ -85,15 +175,16 @@ const SignUp = () => {
             </p>
             
             <Link
-              to="/auth/login"
+              to="/login"
               className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+              data-testid="go-to-login"
             >
               Go to Sign In
             </Link>
           </div>
         </motion.div>
       </div>
-    )
+    );
   }
 
   return (
@@ -115,21 +206,21 @@ const SignUp = () => {
           </motion.div>
           
           <h1 className="text-3xl font-bold text-gray-800 dark:text-dark-50 mb-2">
-            Join USMLE Trivia
+            Create Account
           </h1>
           <p className="text-gray-600 dark:text-dark-300">
-            Start your medical exam preparation today
+            Start your USMLE preparation journey today
           </p>
         </div>
 
-        {/* Sign Up Form */}
+        {/* SignUp Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="bg-white dark:bg-expo-850 rounded-2xl p-8 shadow-card dark:shadow-card-dark border border-gray-100 dark:border-expo-700"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {/* Configuration Error Message */}
             {!isConfigured && (
               <motion.div
@@ -140,170 +231,153 @@ const SignUp = () => {
                 <AlertTriangle size={20} />
                 <div>
                   <h3 className="font-bold">Supabase Not Configured</h3>
-                  <p className="text-xs">Please set up your .env.local file to enable sign-up.</p>
+                  <p className="text-xs">Please set up your .env.local file to enable registration.</p>
                 </div>
               </motion.div>
             )}
 
-            {/* Error Message */}
-            {error && (
+            {/* Submit Error Message */}
+            {submitError && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium border border-red-200 dark:border-red-800"
+                data-testid="signup-error"
               >
-                {error}
+                {submitError}
               </motion.div>
             )}
 
             {/* Full Name Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <User size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Enter your full name"
-                  disabled={loading || !isConfigured}
-                />
-              </div>
-            </div>
+            <ValidatedInput
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Enter your full name"
+              label="Full Name"
+              icon={User}
+              error={touched.fullName ? errors.fullName : ''}
+              isValid={!errors.fullName && formData.fullName}
+              required
+              autoComplete="name"
+              data-testid="fullname-input"
+            />
 
             {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Enter your email"
-                  disabled={loading || !isConfigured}
-                />
-              </div>
-            </div>
+            <ValidatedInput
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Enter your email"
+              label="Email Address"
+              icon={Mail}
+              error={touched.email ? errors.email : ''}
+              isValid={!errors.email && formData.email}
+              required
+              autoComplete="email"
+              data-testid="email-input"
+            />
 
             {/* Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Create a password"
-                  disabled={loading || !isConfigured}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-200 transition-colors disabled:opacity-50"
-                  disabled={loading || !isConfigured}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
+            <ValidatedInput
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Create a password"
+              label="Password"
+              icon={Lock}
+              error={touched.password ? errors.password : ''}
+              isValid={!errors.password && formData.password}
+              required
+              showPasswordToggle={true}
+              autoComplete="new-password"
+              data-testid="password-input"
+            />
 
             {/* Confirm Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Confirm your password"
-                  disabled={loading || !isConfigured}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-200 transition-colors disabled:opacity-50"
-                  disabled={loading || !isConfigured}
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
+            <ValidatedInput
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Confirm your password"
+              label="Confirm Password"
+              icon={Lock}
+              error={touched.confirmPassword ? errors.confirmPassword : ''}
+              isValid={!errors.confirmPassword && formData.confirmPassword}
+              required
+              showPasswordToggle={true}
+              autoComplete="new-password"
+              data-testid="confirm-password-input"
+            />
 
             {/* Submit Button */}
             <motion.button
-              whileHover={{ scale: !isConfigured || loading ? 1 : 1.02 }}
-              whileTap={{ scale: !isConfigured || loading ? 1 : 0.98 }}
               type="submit"
-              disabled={loading || !isConfigured}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 disabled:opacity-70 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg disabled:cursor-not-allowed"
+              disabled={loading || !isConfigured || !isFormValid}
+              whileHover={!loading && isConfigured && isFormValid ? { scale: 1.02 } : {}}
+              whileTap={!loading && isConfigured && isFormValid ? { scale: 0.98 } : {}}
+              className={`
+                w-full py-3 px-6 rounded-xl font-bold text-white transition-all duration-200
+                ${loading || !isConfigured || !isFormValid
+                  ? 'bg-gray-400 cursor-not-allowed opacity-50'
+                  : 'bg-primary-600 hover:bg-primary-700 shadow-lg hover:shadow-xl'
+                }
+              `}
+              data-testid="signup-submit"
             >
-              {loading 
-                ? 'Creating Account...' 
-                : !isConfigured 
-                ? 'Configuration Missing'
-                : 'Create Account'}
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Creating Account...</span>
+                </div>
+              ) : !isConfigured ? (
+                'Configuration Missing'
+              ) : (
+                'Create Account'
+              )}
             </motion.button>
 
-            {/* Terms */}
-            <p className="text-xs text-gray-500 dark:text-dark-400 text-center">
-              By creating an account, you agree to our{' '}
-              <Link to="/terms" className="text-primary-600 dark:text-primary-400 hover:underline">
-                Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="text-primary-600 dark:text-primary-400 hover:underline">
-                Privacy Policy
-              </Link>
-            </p>
+            {/* Sign In Link */}
+            <div className="text-center pt-4 border-t border-gray-200 dark:border-expo-700">
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Already have an account?{' '}
+                <Link 
+                  to="/login" 
+                  className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-bold"
+                >
+                  Sign In
+                </Link>
+              </p>
+            </div>
           </form>
-
-          {/* Sign In Link */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-expo-600 text-center">
-            <p className="text-gray-600 dark:text-dark-300">
-              Already have an account?{' '}
-              <Link
-                to="/auth/login"
-                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
-              >
-                Sign in here
-              </Link>
-            </p>
-          </div>
         </motion.div>
 
-        {/* Back to Welcome */}
+        {/* Back Link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-6 text-center"
+          className="text-center mt-6"
         >
-          <Link
-            to="/auth/welcome"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-dark-100 transition-colors"
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-sm text-gray-600 dark:text-dark-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
           >
-            <ArrowLeft size={16} />
-            <span className="text-sm font-medium">Back to welcome</span>
+            <ArrowLeft size={16} className="mr-2" />
+            Back to Home
           </Link>
         </motion.div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;
