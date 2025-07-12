@@ -61,10 +61,15 @@ const resetPassword = async (email) => {
 };
 
 const updateProfile = async (updates) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new AuthError('User not authenticated');
+  }
+  
   const { data, error } = await supabase
     .from('profiles')
     .update(updates)
-    .eq('id', supabase.auth.user().id)
+    .eq('id', user.id)
     .select()
     .single();
 
