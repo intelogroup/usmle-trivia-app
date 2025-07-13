@@ -21,14 +21,13 @@ const TimedTest = lazy(() => import('./pages/TimedTest'))
 const TimedTestSetup = lazy(() => import('./pages/TimedTestSetup'))
 const Results = lazy(() => import('./pages/Results'))
 const CustomQuiz = lazy(() => import('./pages/CustomQuiz'))
-const BlockTest = lazy(() => import('./pages/BlockTest'))
+const CustomQuizSetup = lazy(() => import('./pages/CustomQuizSetup'))
 const Login = lazy(() => import('./pages/auth/Login'))
 const SignUp = lazy(() => import('./pages/auth/SignUp'))
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'))
 const Welcome = lazy(() => import('./pages/auth/Welcome'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
-const Chat = lazy(() => import('./pages/Chat'))
 
 function App() {
   return (
@@ -94,7 +93,7 @@ function App() {
                         <QuizTab />
                       </QueryErrorBoundary>
                     } />
-                    <Route path="/chat" element={<Chat />} />
+
                     <Route path="/quiz/:categoryId" element={
                       <QuizErrorBoundary quizType="quick-quiz">
                         <QuickQuiz />
@@ -110,11 +109,7 @@ function App() {
                         <Leaderboard />
                       </QueryErrorBoundary>
                     } />
-                    <Route path="/learn" element={
-                      <QueryErrorBoundary queryType="learn-content">
-                        <Learn />
-                      </QueryErrorBoundary>
-                    } />
+                    <Route path="/learn" element={<Learn />} />
                     <Route path="/quick-quiz" element={
                       <QuizErrorBoundary quizType="quick-quiz">
                         <QuickQuiz />
@@ -130,16 +125,17 @@ function App() {
                         <TimedTest />
                       </QuizErrorBoundary>
                     } />
+                    <Route path="/custom-quiz-setup" element={
+                      <QuizErrorBoundary quizType="custom-quiz-setup">
+                        <CustomQuizSetup />
+                      </QuizErrorBoundary>
+                    } />
                     <Route path="/custom-quiz" element={
                       <QuizErrorBoundary quizType="custom-quiz">
                         <CustomQuiz />
                       </QuizErrorBoundary>
                     } />
-                    <Route path="/block-test" element={
-                      <QuizErrorBoundary quizType="block-test">
-                        <BlockTest />
-                      </QuizErrorBoundary>
-                    } />
+
                     <Route path="/results" element={
                       <QuizErrorBoundary quizType="results">
                         <Results />

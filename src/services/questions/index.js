@@ -7,7 +7,6 @@
 export {
   fetchQuestions,
   fetchQuestionsForUser,
-  fetchBlockQuestions,
   shuffleArray
 } from './questionFetchService';
 
@@ -24,11 +23,3 @@ export {
   updateUserQuestionHistory
 } from './responseService';
 
-// Block Test Service
-export {
-  createBlockTestSession,
-  recordBlockResponse,
-  pauseBlockSession,
-  resumeBlockSession,
-  completeBlockTestSession
-} from './blockTestService';

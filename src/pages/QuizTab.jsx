@@ -194,12 +194,10 @@ const QuizTab = () => {
   }, [navigate]);
 
   const handleCustomQuiz = useCallback(() => {
-    navigate('/custom-quiz');
+    navigate('/custom-quiz-setup');
   }, [navigate]);
 
-  const handleBlockTest = useCallback(() => {
-    navigate('/block-test');
-  }, [navigate]);
+
 
   // Handle go home navigation
   const handleGoHome = useCallback(() => {
@@ -227,7 +225,6 @@ const QuizTab = () => {
           onQuickStart={handleQuickStart}
           onTimedTest={handleTimedTest}
           onCustomQuiz={handleCustomQuiz}
-          onBlockTest={handleBlockTest}
         />
 
         {/* Filters */}

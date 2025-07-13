@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Zap, Timer, BookOpen, BarChart3, Settings, Layers } from 'lucide-react'
+import { Zap, Timer, BookOpen, BarChart3, Settings } from 'lucide-react'
 
 const HomeActions = ({ isNewUser, onNavigate }) => {
   const navigate = useNavigate()
@@ -67,23 +67,10 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           subtitle: '1-40 questions (user choice)',
           color: 'bg-green-600',
           iconColor: 'text-green-600',
-          action: () => navigate('/custom-quiz'),
+          action: () => navigate('/custom-quiz-setup'),
           timeEstimate: 'Variable',
           difficulty: 'Custom',
           description: 'Targeted study, flexible practice',
-          progress: 0,
-          recommended: false,
-        },
-        {
-          icon: Layers,
-          title: '🟡 Block Test',
-          subtitle: '20-50 per block × 2-8 blocks',
-          color: 'bg-yellow-600',
-          iconColor: 'text-yellow-600',
-          action: () => navigate('/block-test'),
-          timeEstimate: '2-6 hours',
-          difficulty: 'Full Exam',
-          description: 'Full exam simulation',
           progress: 0,
           recommended: false,
         }
@@ -135,23 +122,10 @@ const HomeActions = ({ isNewUser, onNavigate }) => {
           subtitle: '1-40 questions (user choice)',
           color: 'bg-green-600',
           iconColor: 'text-green-600',
-          action: () => navigate('/custom-quiz'),
+          action: () => navigate('/custom-quiz-setup'),
           timeEstimate: 'Variable',
           difficulty: 'Custom',
           description: 'Targeted study, flexible practice',
-          progress: 0,
-          recommended: false,
-        },
-        {
-          icon: Layers,
-          title: '🟡 Block Test',
-          subtitle: '20-50 per block × 2-8 blocks',
-          color: 'bg-yellow-600',
-          iconColor: 'text-yellow-600',
-          action: () => navigate('/block-test'),
-          timeEstimate: '2-6 hours',
-          difficulty: 'Full Exam',
-          description: 'Full exam simulation',
           progress: 0,
           recommended: false,
         },

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { getRankIcon, getRankTextColor } from '../../utils/leaderboardUtils.jsx';
 import { useNavigate } from 'react-router-dom';
-import { startChatWithUser } from '../../services/chatService';
+
 
 const LeaderboardTable = ({ leaderboardData, totalParticipants }) => {
   const navigate = useNavigate();
@@ -74,17 +74,7 @@ const LeaderboardTable = ({ leaderboardData, totalParticipants }) => {
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 text-xs">{user.questionsAnswered} Qs</p>
               </div>
-              {!user.isCurrentUser && (
-                <button
-                  className="ml-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
-                  onClick={async () => {
-                    const chatId = await startChatWithUser(user.id);
-                    navigate(`/chat?chatId=${chatId}`);
-                  }}
-                >
-                  Chat
-                </button>
-              )}
+
             </div>
 
             {/* Desktop Layout */}
@@ -137,17 +127,7 @@ const LeaderboardTable = ({ leaderboardData, totalParticipants }) => {
                 <p className={`font-bold text-xl ${getRankTextColor(user.isCurrentUser)}`}>
                   {user.score}
                 </p>
-                {!user.isCurrentUser && (
-                  <button
-                    className="ml-4 px-3 py-1 bg-blue-500 text-white rounded text-xs font-semibold hover:bg-blue-600"
-                    onClick={async () => {
-                      const chatId = await startChatWithUser(user.id);
-                      navigate(`/chat?chatId=${chatId}`);
-                    }}
-                  >
-                    Chat
-                  </button>
-                )}
+
               </div>
             </div>
           </motion.div>

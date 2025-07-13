@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Home, Trophy, User, BarChart3, BookOpen, GraduationCap, Swords, MessageSquare } from 'lucide-react'
+import { Home, Trophy, User, BarChart3, BookOpen, GraduationCap, Swords } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const BottomNav = () => {
@@ -10,7 +10,6 @@ const BottomNav = () => {
     { icon: Home, label: 'Home', path: '/', color: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-500', gradient: 'from-blue-500 to-blue-600' },
     { icon: BookOpen, label: 'Learn', path: '/learn', color: 'text-emerald-600 dark:text-emerald-400', bgColor: 'bg-emerald-500', gradient: 'from-emerald-500 to-emerald-600' },
     { icon: Swords, label: 'Quiz', path: '/quiz', color: 'text-purple-600 dark:text-purple-400', bgColor: 'bg-purple-500', gradient: 'from-purple-500 to-purple-600' },
-    { icon: MessageSquare, label: 'Chat', path: '/chat', color: 'text-pink-600 dark:text-pink-400', bgColor: 'bg-pink-500', gradient: 'from-pink-500 to-pink-600' },
     { icon: Trophy, label: 'Leaders', path: '/leaderboard', color: 'text-orange-600 dark:text-orange-400', bgColor: 'bg-orange-500', gradient: 'from-orange-500 to-orange-600' },
   ]
 

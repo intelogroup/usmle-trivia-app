@@ -133,45 +133,6 @@ export async function fetchQuestionsForUser({
   });
 }
 
-// Fetch questions for specific blocks in Block Tests
-export async function fetchBlockQuestions(blockConfig) {
-  const { categoryId, questionCount, difficulty, excludeQuestionIds = [] } = blockConfig;
-  
-  logger.info('Fetching block questions', blockConfig);
-  
-  let query = supabase
-    .from('questions')
-    .select('*')
-    .eq('is_active', true);
 
-  if (categoryId && categoryId !== 'mixed') {
-    query = query.contains('question_tags', [{ id: categoryId }]);
-  }
-  
-  if (difficulty) {
-    query = query.eq('difficulty', difficulty);
-  }
-  
-  if (excludeQuestionIds.length > 0) {
-    query = query.not('id', 'in', `(${excludeQuestionIds.join(',')})`);
-  }
-  
-  query = query.limit(questionCount);
-
-  const { data, error } = await query;
-  
-  if (error) {
-    logger.error('Error fetching block questions', { error, blockConfig });
-    throw new Error(`FETCH_BLOCK_QUESTIONS_ERROR: ${error.message}`);
-  }
-
-  const shuffledQuestions = shuffleArray([...data]);
-  logger.success('Successfully fetched block questions', {
-    count: shuffledQuestions.length,
-    blockConfig
-  });
-  
-  return shuffledQuestions;
-}
 
 export { shuffleArray };

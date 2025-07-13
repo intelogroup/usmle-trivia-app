@@ -11,7 +11,6 @@ export {
   // Question Fetching
   fetchQuestions,
   fetchQuestionsForUser,
-  fetchBlockQuestions,
   shuffleArray,
   
   // Session Management
@@ -22,11 +21,5 @@ export {
   recordQuizResponse,
   recordQuestionInteraction,
   updateUserQuestionHistory,
-  
-  // Block Test Management
-  createBlockTestSession,
-  recordBlockResponse,
-  pauseBlockSession,
-  resumeBlockSession,
-  completeBlockTestSession
+
 } from './questions/index';
