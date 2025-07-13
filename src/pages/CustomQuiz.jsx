@@ -140,13 +140,19 @@ const CustomQuiz = () => {
       setSelectedOption(optionId);
       setIsAnswered(true);
       setTimedOut(false);
-      recordQuizResponse(quizSessionId, {
+
+      // Record the quiz response with correct parameter structure
+      recordQuizResponse({
+        sessionId: quizSessionId,
         userId: user.id,
         questionId: questions[currentIdx].id,
         selectedOptionId: optionId,
         isCorrect: optionId === questions[currentIdx].correct_option_id,
-        timeSpentSeconds: config?.timing === 'timed' ? 60 - timeLeft : null,
+        timeSpent: config?.timing === 'timed' ? 60 - timeLeft : null,
         responseOrder: currentIdx + 1,
+      }).catch(error => {
+        console.error('Failed to record quiz response:', error);
+        // Don't block the quiz flow if response recording fails
       });
     },
     [isAnswered, questions, currentIdx, quizSessionId, user, config, timeLeft]

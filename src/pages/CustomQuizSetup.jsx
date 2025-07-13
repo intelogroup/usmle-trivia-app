@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { getAllQuestionCounts, getAvailableQuestionCount } from '../services/questions/questionCountService';
 
 const DIFFICULTY_OPTIONS = [
   { value: '', label: 'Mixed' },
@@ -28,6 +29,12 @@ const CustomQuizSetup = () => {
   const [timing, setTiming] = useState('timed');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [questionCounts, setQuestionCounts] = useState({
+    subjects: {},
+    systems: {},
+    topics: {}
+  });
+  const [availableQuestions, setAvailableQuestions] = useState(0);
 
   // Fetch subjects, systems, topics from Supabase (tags table)
   useEffect(() => {
@@ -64,6 +71,10 @@ const CustomQuizSetup = () => {
           .order('order_index', { ascending: true });
         if (topicError) throw topicError;
         setTopics(topicTags || []);
+
+        // Fetch question counts
+        const counts = await getAllQuestionCounts();
+        setQuestionCounts(counts);
       } catch (e) {
         setError(e.message || 'Failed to load quiz options.');
       } finally {
@@ -73,12 +84,25 @@ const CustomQuizSetup = () => {
     fetchTags();
   }, []);
 
+  // Update available question count when selections change
+  useEffect(() => {
+    const updateAvailableCount = async () => {
+      if (selectedSubject && selectedSystem) {
+        const count = await getAvailableQuestionCount(selectedSubject, selectedSystem, selectedTopic);
+        setAvailableQuestions(count);
+      } else {
+        setAvailableQuestions(0);
+      }
+    };
+    updateAvailableCount();
+  }, [selectedSubject, selectedSystem, selectedTopic]);
+
   // Filter topics by selected subject/system if desired
   const filteredTopics = topics.filter(
     t => (!selectedSubject || t.parent_id === selectedSubject) && (!selectedSystem || t.parent_id === selectedSystem)
   );
 
-  const canStart = selectedSubject && selectedSystem && questionCount > 0 && questionCount <= 40;
+  const canStart = selectedSubject && selectedSystem && questionCount > 0 && questionCount <= 40 && availableQuestions > 0;
 
   const handleStart = (e) => {
     e.preventDefault();
@@ -120,7 +144,9 @@ const CustomQuizSetup = () => {
           >
             <option value="">Select a subject</option>
             {subjects.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+              <option key={s.id} value={s.id}>
+                {s.name} ({questionCounts.subjects[s.id] || 0} questions)
+              </option>
             ))}
           </select>
         </div>
@@ -137,7 +163,9 @@ const CustomQuizSetup = () => {
           >
             <option value="">Select a system</option>
             {systems.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+              <option key={s.id} value={s.id}>
+                {s.name} ({questionCounts.systems[s.id] || 0} questions)
+              </option>
             ))}
           </select>
         </div>
@@ -153,7 +181,9 @@ const CustomQuizSetup = () => {
           >
             <option value="">All topics</option>
             {filteredTopics.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
+              <option key={t.id} value={t.id}>
+                {t.name} ({questionCounts.topics[t.id] || 0} questions)
+              </option>
             ))}
           </select>
         </div>
@@ -203,10 +233,35 @@ const CustomQuizSetup = () => {
           </select>
         </div>
 
+        {/* Available Questions Display */}
+        {selectedSubject && selectedSystem && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Available Questions:
+              </span>
+              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                {availableQuestions}
+              </span>
+            </div>
+            {availableQuestions === 0 && (
+              <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                No questions available for this combination. Try selecting different options.
+              </p>
+            )}
+            {availableQuestions > 0 && questionCount > availableQuestions && (
+              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                Requested {questionCount} questions, but only {availableQuestions} available.
+                Quiz will include all available questions.
+              </p>
+            )}
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled={!canStart}
-          className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all ${canStart ? 'bg-green-600 hover:bg-green-700 shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
+          disabled={!canStart || availableQuestions === 0}
+          className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all ${canStart && availableQuestions > 0 ? 'bg-green-600 hover:bg-green-700 shadow-lg' : 'bg-gray-400 cursor-not-allowed'}`}
         >
           Start Quiz <ChevronRight className="w-5 h-5" />
         </button>
