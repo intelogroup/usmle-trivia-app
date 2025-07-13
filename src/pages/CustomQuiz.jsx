@@ -60,7 +60,7 @@ const CustomQuiz = () => {
       return;
     }
     setLoading(true);
-    const categoryId = config.topicId || config.systemId || config.subjectId || 'mixed';
+    const categoryId = config.categoryId || config.topicId || config.systemId || config.subjectId || 'mixed';
     fetchQuestionsForUser({
       userId: user.id,
       categoryId: categoryId,

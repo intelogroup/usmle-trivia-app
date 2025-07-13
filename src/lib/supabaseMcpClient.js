@@ -6,8 +6,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
  * This client interacts with the Supabase MCP server using MCP tools.
  */
 
-const SUPABASE_MCP_TOOL_NAME = 'supabase'; // MCP server name as configured in MCP settings
-const SUPABASE_MCP_TOOL_OPERATION = 'query'; // Assuming the MCP tool exposes a 'query' operation
+const SUPABASE_MCP_TOOL_NAME = 'execute_sql'; // The actual tool name from MCP server
 
 // Create MCP client and connect to the MCP server process
 const transport = new StdioClientTransport({
@@ -35,7 +34,7 @@ export async function executeSupabaseQuery(sql) {
   try {
     const result = await client.callTool({
       name: SUPABASE_MCP_TOOL_NAME,
-      arguments: { sql },
+      arguments: { query: sql }, // Use 'query' parameter as expected by the tool
     });
     return {
       success: true,

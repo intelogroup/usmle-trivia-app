@@ -26,18 +26,36 @@ function shuffleArray(array) {
 
 // Fetch questions for QuickQuiz or other quiz modes (LEGACY - doesn't consider user history)
 export async function fetchQuestions({ categoryId = 'mixed', questionCount = 10, difficulty = null }) {
-  let query = supabase
-    .from('questions')
-    .select('*')
-    .eq('is_active', true);
-
+  let query;
+  
   if (categoryId && categoryId !== 'mixed') {
-    query = query.contains('question_tags', [{ id: categoryId }]);
+    // Use join query to filter by tag
+    query = supabase
+      .from('questions')
+      .select(`
+        *,
+        question_tags!inner(
+          tag_id,
+          tags!inner(
+            id,
+            name
+          )
+        )
+      `)
+      .eq('is_active', true)
+      .eq('question_tags.tag_id', categoryId);
+  } else {
+    // Simple query for mixed/all questions
+    query = supabase
+      .from('questions')
+      .select('*')
+      .eq('is_active', true);
   }
+
   if (difficulty) {
     query = query.eq('difficulty', difficulty);
   }
-  query = query.limit(questionCount);
+  query = query.limit(questionCount * 2); // Get more for better randomization
 
   const startTime = performance.now();
   const { data, error } = await query;
@@ -55,13 +73,18 @@ export async function fetchQuestions({ categoryId = 'mixed', questionCount = 10,
     throw new Error(`FETCH_QUESTIONS_ERROR: ${error.message}`);
   }
 
+  // Shuffle and limit to requested count
+  const shuffledQuestions = shuffleArray([...data]);
+  const limitedQuestions = shuffledQuestions.slice(0, questionCount);
+
   console.log('✅ [QuizService] Successfully fetched questions:', {
-    count: data.length,
+    totalFound: data.length,
+    returned: limitedQuestions.length,
     categoryId,
     difficulty,
     duration: `${duration.toFixed(2)}ms`
   });
-  return data;
+  return limitedQuestions;
 }
 
 // NEW: Smart question fetching that considers user history
@@ -139,13 +162,30 @@ export async function fetchBlockQuestions(blockConfig) {
   
   logger.info('Fetching block questions', blockConfig);
   
-  let query = supabase
-    .from('questions')
-    .select('*')
-    .eq('is_active', true);
-
+  let query;
+  
   if (categoryId && categoryId !== 'mixed') {
-    query = query.contains('question_tags', [{ id: categoryId }]);
+    // Use join query to filter by tag
+    query = supabase
+      .from('questions')
+      .select(`
+        *,
+        question_tags!inner(
+          tag_id,
+          tags!inner(
+            id,
+            name
+          )
+        )
+      `)
+      .eq('is_active', true)
+      .eq('question_tags.tag_id', categoryId);
+  } else {
+    // Simple query for mixed/all questions
+    query = supabase
+      .from('questions')
+      .select('*')
+      .eq('is_active', true);
   }
   
   if (difficulty) {

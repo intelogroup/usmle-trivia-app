@@ -18,6 +18,7 @@ const TimedTest = lazy(() => import('./pages/TimedTest'))
 const TimedTestSetup = lazy(() => import('./pages/TimedTestSetup'))
 const Results = lazy(() => import('./pages/Results'))
 const CustomQuiz = lazy(() => import('./pages/CustomQuiz'))
+const CustomQuizSetup = lazy(() => import('./pages/CustomQuizSetup'))
 const BlockTest = lazy(() => import('./pages/BlockTest'))
 const Login = lazy(() => import('./pages/auth/Login'))
 const SignUp = lazy(() => import('./pages/auth/SignUp'))
@@ -82,6 +83,7 @@ function App() {
                   <Route path="/quick-quiz" element={<QuickQuiz />} />
                   <Route path="/timed-test-setup" element={<TimedTestSetup />} />
                   <Route path="/timed-test" element={<TimedTest />} />
+                  <Route path="/custom-quiz-setup" element={<CustomQuizSetup />} />
                   <Route path="/custom-quiz" element={<CustomQuiz />} />
                   <Route path="/block-test" element={<BlockTest />} />
                   <Route path="/results" element={<Results />} />
