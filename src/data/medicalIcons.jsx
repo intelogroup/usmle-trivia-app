@@ -1,5 +1,6 @@
 import { medicalIconMapping } from './medicalIconMapping';
 import { categoryColorMapping } from './categoryColorMapping';
+import logger from '../utils/logger';
 import { 
   Brain,
   Heart,
@@ -82,7 +83,11 @@ export const getMedicalIcon = (categoryName, databaseIcon, props = {}) => {
     if (IconComponent) {
       return (iconProps) => <IconComponent {...props} {...iconProps} />;
     } else {
-      console.warn(`Icon "${databaseIcon}" not found in lucide-react`);
+      logger.warn('Icon not found in lucide-react', {
+        databaseIcon,
+        mappedIconName,
+        availableIconsCount: Object.keys(availableIcons).length
+      });
     }
   }
   

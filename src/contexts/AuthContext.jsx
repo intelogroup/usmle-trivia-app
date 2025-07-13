@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, isConfigured } from '../lib/supabase';
 import { authService } from '../services/authService';
 import logger from '../utils/logger';
+import { withAuthTimeout } from '../utils/queryTimeout';
 
 const AuthContext = createContext();
 
@@ -29,16 +30,35 @@ export const AuthProvider = ({ children }) => {
     
     // The listener will handle setting user and profile
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      logger.debug(`[AuthContext:onAuthStateChange] Auth event: ${event}`, { session })
-      const currentUser = session?.user
-      setUser(currentUser ?? null)
+      // Add overall timeout for the entire auth state change handler
+      const authTimeout = setTimeout(() => {
+        logger.warn(`[AuthContext:onAuthStateChange] Auth state change handler timeout for event: ${event}`)
+        setLoading(false)
+      }, 15000) // 15 second overall timeout
 
-      if (currentUser) {
-        await fetchUserProfile(currentUser.id, event)
-      } else {
+      try {
+        logger.debug(`[AuthContext:onAuthStateChange] Auth event: ${event}`, { session })
+        const currentUser = session?.user
+        setUser(currentUser ?? null)
+
+        if (currentUser) {
+          await fetchUserProfile(currentUser.id, event)
+        } else {
+          setProfile(null)
+        }
+      } catch (error) {
+        logger.error(`[AuthContext:onAuthStateChange] Error in auth state change handler:`, {
+          error,
+          event,
+          message: error.message
+        })
+        // Ensure we don't get stuck in loading state
         setProfile(null)
+      } finally {
+        // Clear the timeout and always set loading to false
+        clearTimeout(authTimeout)
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     // Manually trigger the initial check
@@ -73,49 +93,50 @@ export const AuthProvider = ({ children }) => {
       return null
     }
     logger.debug(`[AuthContext:fetchUserProfile] Fetching user profile for ID: ${userId} (context: ${context})`)
+
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          countries (name, flag_emoji),
-          achievement_grades (name, icon_color)
-        `)
-        .eq('id', userId)
-        .maybeSingle()
-      if (error) {
-        logger.error(`[AuthContext:fetchUserProfile] Error in initial profile fetch (context: ${context}):`, {
-          error,
-          userId,
-          code: error.code,
-          message: error.message,
-          details: error.details
-        })
-        if (error.code === 'PGRST116') {
-          logger.warn(`[AuthContext:fetchUserProfile] No profile found for user (context: ${context})`, { userId })
-          setProfile(null)
-          return null
-        } else if (error.code === 'PGRST301' || error.code === '42501') {
-          logger.error(`[AuthContext:fetchUserProfile] Permission denied (RLS) (context: ${context})`, { userId })
-          setProfile(null)
-          return null
-        } else {
-          throw error
+      return await withAuthTimeout(async () => {
+        // Simplified query without complex joins to avoid hanging
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle()
+
+        if (error) {
+          logger.error(`[AuthContext:fetchUserProfile] Error in initial profile fetch (context: ${context}):`, {
+            error,
+            userId,
+            code: error.code,
+            message: error.message,
+            details: error.details
+          })
+          if (error.code === 'PGRST116') {
+            logger.warn(`[AuthContext:fetchUserProfile] No profile found for user (context: ${context})`, { userId })
+            setProfile(null)
+            return null
+          } else if (error.code === 'PGRST301' || error.code === '42501') {
+            logger.error(`[AuthContext:fetchUserProfile] Permission denied (RLS) (context: ${context})`, { userId })
+            setProfile(null)
+            return null
+          } else {
+            throw error
+          }
         }
-      }
       if (!data) {
         logger.warn(`[AuthContext:fetchUserProfile] No profile found for user, attempting to create... (context: ${context})`, userId)
         await createUserProfile(userId)
         logger.debug(`[AuthContext:fetchUserProfile] Retrying profile fetch after creation... (context: ${context})`)
-        const { data: newProfile, error: fetchError } = await supabase
+        const retryQueryPromise = supabase
           .from('profiles')
-          .select(`
-            *,
-            countries (name, flag_emoji),
-            achievement_grades (name, icon_color)
-          `)
+          .select('*')
           .eq('id', userId)
           .maybeSingle()
+
+        const { data: newProfile, error: fetchError } = await Promise.race([
+          retryQueryPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Retry fetch timeout')), 10000))
+        ])
         if (fetchError) {
           logger.error(`[AuthContext:fetchUserProfile] Error in retry profile fetch (context: ${context}):`, {
             error: fetchError,
@@ -157,6 +178,10 @@ export const AuthProvider = ({ children }) => {
         setProfile(data)
         return data
       }
+      }, {
+        queryType: `profile-${context}`,
+        fallback: null
+      });
     } catch (error) {
       const errorString = JSON.stringify(error, Object.getOwnPropertyNames(error));
       logger.error(

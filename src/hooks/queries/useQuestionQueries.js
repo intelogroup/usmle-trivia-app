@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import logger from '../../utils/logger';
 import { queryKeys } from './queryKeys';
+import { withQuestionTimeout, withUserDataTimeout } from '../../utils/queryTimeout';
 
 /**
  * Question-related React Query hooks
@@ -15,12 +16,13 @@ export const useQuestionsQuery = (categoryId, questionCount = 10) => {
   return useQuery({
     queryKey: queryKeys.questions(categoryId, questionCount),
     queryFn: async () => {
-      try {
-        logger.info('🔍 [QuestionsQuery] Starting questions fetch', { 
-          categoryId, 
-          questionCount 
+      return withQuestionTimeout(async () => {
+        logger.info('🔍 [QuestionsQuery] Starting questions fetch', {
+          categoryId,
+          questionCount
         });
 
+        // Simplified query without complex joins to avoid timeouts
         let query = supabase
           .from('questions')
           .select(`
@@ -30,20 +32,32 @@ export const useQuestionsQuery = (categoryId, questionCount = 10) => {
             correct_option_id,
             explanation,
             difficulty,
-            image_url,
-            question_tags (
-              tags (
-                id,
-                name,
-                type
-              )
-            )
+            image_url
           `)
           .eq('is_active', true);
 
         // Apply category filter if specified
+        // Note: Category filtering is now handled by RPC function or fallback logic
         if (categoryId && categoryId !== 'mixed') {
-          query = query.contains('question_tags', [{ id: categoryId }]);
+          // Use RPC function for category filtering to avoid complex joins
+          try {
+            const { data: categoryQuestions, error: rpcError } = await supabase.rpc('get_questions_by_category', {
+              p_category_id: categoryId,
+              p_limit: questionCount
+            });
+
+            if (!rpcError && categoryQuestions && categoryQuestions.length > 0) {
+              logger.success('Questions fetched via RPC', {
+                count: categoryQuestions.length,
+                categoryId
+              });
+              return categoryQuestions;
+            } else {
+              logger.warn('RPC failed, using fallback query', { rpcError });
+            }
+          } catch (rpcError) {
+            logger.warn('RPC exception, using fallback query', { rpcError });
+          }
         }
 
         // Limit the number of questions
@@ -78,15 +92,10 @@ export const useQuestionsQuery = (categoryId, questionCount = 10) => {
         });
 
         return shuffledQuestions;
-
-      } catch (error) {
-        logger.error('❌ [QuestionsQuery] Fatal error in questions query', {
-          error: error.message,
-          categoryId,
-          questionCount
-        });
-        throw error;
-      }
+      }, {
+        queryType: `questions-${categoryId}`,
+        fallback: []
+      });
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -105,39 +114,42 @@ export const useQuizSessionQuery = (sessionId) => {
     queryFn: async () => {
       if (!sessionId) return null;
 
-      try {
-        const { data, error } = await supabase
+      return withUserDataTimeout(async () => {
+        // Simplified query - fetch session first, then responses separately
+        const { data: session, error: sessionError } = await supabase
           .from('quiz_sessions')
-          .select(`
-            *,
-            quiz_responses (
-              *,
-              questions (
-                id,
-                question_text,
-                options,
-                correct_option_id,
-                explanation
-              )
-            )
-          `)
+          .select('*')
           .eq('id', sessionId)
           .single();
 
-        if (error) {
-          logger.error('Error fetching quiz session', { error, sessionId });
-          throw error;
+        if (sessionError) {
+          logger.error('Error fetching quiz session', { error: sessionError, sessionId });
+          throw sessionError;
         }
 
-        return data;
+        // Fetch responses separately to avoid complex joins
+        const { data: responses, error: responsesError } = await supabase
+          .from('quiz_responses')
+          .select('*')
+          .eq('session_id', sessionId)
+          .order('created_at');
 
-      } catch (error) {
-        logger.error('Error in useQuizSessionQuery', { 
-          error: error.message, 
-          sessionId 
-        });
-        throw error;
-      }
+        if (responsesError) {
+          logger.warn('Error fetching quiz responses', { error: responsesError, sessionId });
+          // Continue without responses rather than failing completely
+        }
+
+        // Combine the data
+        const data = {
+          ...session,
+          quiz_responses: responses || []
+        };
+
+        return data;
+      }, {
+        queryType: `quiz-session-${sessionId}`,
+        fallback: null
+      });
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes

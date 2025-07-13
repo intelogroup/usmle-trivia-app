@@ -6,6 +6,7 @@ import { authService } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
 import ValidatedInput from '../../components/ui/ValidatedInput';
 import { validateEmail, validateRequired, createFormValidation } from '../../utils/formValidation';
+import logger from '../../utils/logger';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +50,7 @@ const Login = () => {
 
   // Enhanced error handling for JSON parsing and network issues
   const handleSubmitError = (error) => {
-    console.error('Login error:', error);
+    logger.error('Login error occurred', { formData: { email: formData.email } }, error);
     
     // Handle JSON parsing errors
     if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {

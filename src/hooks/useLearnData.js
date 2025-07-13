@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { FileText, Video, Headphones, BookOpen, Brain, Book, TrendingUp, Award } from 'lucide-react';
 
 // Static data - could be replaced with API calls
@@ -139,14 +140,23 @@ const RECENT_ACTIVITY = [
 ];
 
 export const useLearnData = () => {
+  const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
 
-  // User statistics
-  const userStats = useMemo(() => ({
-    hoursStudied: 156,
-    coursesStarted: 42,
-    coursesCompleted: 12
-  }), []);
+  // User statistics - calculate from profile data
+  const userStats = useMemo(() => {
+    const studyTimeHours = profile?.total_study_time_seconds
+      ? Math.round(profile.total_study_time_seconds / 3600)
+      : 0;
+
+    // For now, use placeholder values for courses since we don't have this data yet
+    // TODO: Implement course tracking in the database
+    return {
+      hoursStudied: studyTimeHours,
+      coursesStarted: Math.min(Math.floor(studyTimeHours / 4), 50), // Rough estimate: 1 course per 4 hours
+      coursesCompleted: Math.min(Math.floor(studyTimeHours / 8), 25) // Rough estimate: 1 completion per 8 hours
+    };
+  }, [profile]);
 
   // Calculate overall progress
   const overallProgress = useMemo(() => {

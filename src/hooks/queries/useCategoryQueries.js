@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import logger from '../../utils/logger';
 import { queryKeys } from './queryKeys';
 import { getCategoryColor } from '../../utils/queryUtils';
+import { withCategoryTimeout } from '../../utils/queryTimeout';
 
 /**
  * Category-related React Query hooks
@@ -16,7 +17,7 @@ export const useCategoriesQuery = (userId) => {
   return useQuery({
     queryKey: queryKeys.categoriesWithProgress(userId),
     queryFn: async () => {
-      try {
+      return withCategoryTimeout(async () => {
         logger.info('🔍 [CategoriesQuery] Starting categories fetch', { userId });
 
         // Fetch all active categories
@@ -130,14 +131,10 @@ export const useCategoriesQuery = (userId) => {
         });
 
         return categoriesWithProgress;
-
-      } catch (error) {
-        logger.error('❌ [CategoriesQuery] Fatal error in categories query', {
-          error: error.message,
-          userId
-        });
-        throw error;
-      }
+      }, {
+        queryType: `categories-${userId || 'anonymous'}`,
+        fallback: []
+      });
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes

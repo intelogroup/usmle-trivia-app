@@ -1,6 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import ErrorBoundary from './components/ErrorBoundary'
+import AuthErrorBoundary from './components/auth/AuthErrorBoundary'
+import QueryErrorBoundary from './components/ui/QueryErrorBoundary'
+import QuizErrorBoundary from './components/quiz/QuizErrorBoundary'
 import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import SplashScreen from './components/auth/SplashScreen'
@@ -34,24 +37,32 @@ function App() {
       <Routes>
         {/* Auth routes */}
         <Route path="/login" element={
-          <Suspense fallback={<SplashScreen />}>
-            <Login />
-          </Suspense>
+          <AuthErrorBoundary authFlow="login">
+            <Suspense fallback={<SplashScreen />}>
+              <Login />
+            </Suspense>
+          </AuthErrorBoundary>
         } />
         <Route path="/signup" element={
-          <Suspense fallback={<SplashScreen />}>
-            <SignUp />
-          </Suspense>
+          <AuthErrorBoundary authFlow="signup">
+            <Suspense fallback={<SplashScreen />}>
+              <SignUp />
+            </Suspense>
+          </AuthErrorBoundary>
         } />
         <Route path="/forgot-password" element={
-          <Suspense fallback={<SplashScreen />}>
-            <ForgotPassword />
-          </Suspense>
+          <AuthErrorBoundary authFlow="forgot-password">
+            <Suspense fallback={<SplashScreen />}>
+              <ForgotPassword />
+            </Suspense>
+          </AuthErrorBoundary>
         } />
         <Route path="/welcome" element={
-          <Suspense fallback={<SplashScreen />}>
-            <Welcome />
-          </Suspense>
+          <AuthErrorBoundary authFlow="welcome">
+            <Suspense fallback={<SplashScreen />}>
+              <Welcome />
+            </Suspense>
+          </AuthErrorBoundary>
         } />
         
         {/* Legal pages */}
@@ -69,25 +80,75 @@ function App() {
         {/* Protected app routes */}
         <Route path="/*" element={
           <ProtectedRoute>
-            <Layout>
-              <Suspense fallback={<LoadingIndicator />}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/quiz" element={<QuizTab />} />
-                  <Route path="/chat" element={<Chat />} />
-                  <Route path="/quiz/:categoryId" element={<QuickQuiz />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/learn" element={<Learn />} />
-                  <Route path="/quick-quiz" element={<QuickQuiz />} />
-                  <Route path="/timed-test-setup" element={<TimedTestSetup />} />
-                  <Route path="/timed-test" element={<TimedTest />} />
-                  <Route path="/custom-quiz" element={<CustomQuiz />} />
-                  <Route path="/block-test" element={<BlockTest />} />
-                  <Route path="/results" element={<Results />} />
-                </Routes>
-              </Suspense>
-            </Layout>
+            <QueryErrorBoundary queryType="app-data">
+              <Layout>
+                <Suspense fallback={<LoadingIndicator />}>
+                  <Routes>
+                    <Route path="/" element={
+                      <QueryErrorBoundary queryType="home-data">
+                        <Home />
+                      </QueryErrorBoundary>
+                    } />
+                    <Route path="/quiz" element={
+                      <QueryErrorBoundary queryType="quiz-categories">
+                        <QuizTab />
+                      </QueryErrorBoundary>
+                    } />
+                    <Route path="/chat" element={<Chat />} />
+                    <Route path="/quiz/:categoryId" element={
+                      <QuizErrorBoundary quizType="quick-quiz">
+                        <QuickQuiz />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/profile" element={
+                      <QueryErrorBoundary queryType="profile-data">
+                        <Profile />
+                      </QueryErrorBoundary>
+                    } />
+                    <Route path="/leaderboard" element={
+                      <QueryErrorBoundary queryType="leaderboard-data">
+                        <Leaderboard />
+                      </QueryErrorBoundary>
+                    } />
+                    <Route path="/learn" element={
+                      <QueryErrorBoundary queryType="learn-content">
+                        <Learn />
+                      </QueryErrorBoundary>
+                    } />
+                    <Route path="/quick-quiz" element={
+                      <QuizErrorBoundary quizType="quick-quiz">
+                        <QuickQuiz />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/timed-test-setup" element={
+                      <QuizErrorBoundary quizType="timed-test-setup">
+                        <TimedTestSetup />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/timed-test" element={
+                      <QuizErrorBoundary quizType="timed-test">
+                        <TimedTest />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/custom-quiz" element={
+                      <QuizErrorBoundary quizType="custom-quiz">
+                        <CustomQuiz />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/block-test" element={
+                      <QuizErrorBoundary quizType="block-test">
+                        <BlockTest />
+                      </QuizErrorBoundary>
+                    } />
+                    <Route path="/results" element={
+                      <QuizErrorBoundary quizType="results">
+                        <Results />
+                      </QuizErrorBoundary>
+                    } />
+                  </Routes>
+                </Suspense>
+              </Layout>
+            </QueryErrorBoundary>
           </ProtectedRoute>
         } />
       </Routes>

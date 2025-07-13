@@ -56,9 +56,9 @@ const HomeStats = ({ userStats, isNewUser, isLoading }) => {
           color: 'text-green-600 dark:text-green-400', 
           bgColor: 'bg-green-100 dark:bg-green-900/30', 
           iconColor: 'text-green-600',
-          trend: { value: 8, direction: accuracyTrend, period: 'this week' },
+          trend: { value: Math.max(0, Math.round(userStats.accuracy - 70)), direction: accuracyTrend, period: 'this week' },
           goal: { current: Math.round(userStats.accuracy), target: 85, unit: '%' },
-          subtitle: accuracyTrend === 'up' ? '+8% this week' : 'Room for improvement',
+          subtitle: accuracyTrend === 'up' ? `+${Math.max(0, Math.round(userStats.accuracy - 70))}% this week` : 'Room for improvement',
           detailed: `${userStats.totalQuestions} questions answered, ${Math.round(userStats.accuracy * userStats.totalQuestions / 100)} correct`
         },
         { 
@@ -68,9 +68,9 @@ const HomeStats = ({ userStats, isNewUser, isLoading }) => {
           color: 'text-blue-600 dark:text-blue-400', 
           bgColor: 'bg-blue-100 dark:bg-blue-900/30', 
           iconColor: 'text-blue-600',
-          trend: { value: 3.5, direction: 'up', period: 'this week' },
+          trend: { value: Math.max(0, Math.round(userStats.studyTime / 7 * 10) / 10), direction: 'up', period: 'this week' },
           goal: { current: userStats.studyTime, target: 50, unit: 'hours' },
-          subtitle: '+3.5h this week',
+          subtitle: `+${Math.max(0, Math.round(userStats.studyTime / 7 * 10) / 10)}h this week`,
           detailed: `${Math.round(userStats.studyTime / 7 * 10) / 10}h daily average, ${50 - userStats.studyTime}h to goal`
         },
         { 

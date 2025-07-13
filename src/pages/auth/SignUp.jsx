@@ -12,6 +12,7 @@ import {
   validateFullName, 
   createFormValidation 
 } from '../../utils/formValidation';
+import logger from '../../utils/logger';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -66,7 +67,7 @@ const SignUp = () => {
 
   // Enhanced error handling for JSON parsing and network issues
   const handleSubmitError = (error) => {
-    console.error('SignUp error:', error);
+    logger.error('SignUp error occurred', { formData: { email: formData.email, fullName: formData.fullName } }, error);
     
     // Handle JSON parsing errors
     if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
