@@ -189,8 +189,8 @@ test.describe('USMLE Trivia - Comprehensive Analysis', () => {
     await page.waitForTimeout(3000);
     
     const quizState = {
-      hasLoadingState: await page.locator('.loading, .spinner, text=Loading').count() > 0,
-      hasErrorState: await page.locator('.error, text=Error').count() > 0,
+      hasLoadingState: await page.locator('.loading, .spinner').count() > 0 || await page.locator('text="Loading"').count() > 0,
+      hasErrorState: await page.locator('.error').count() > 0 || await page.locator('text="Error"').count() > 0,
       hasQuestionState: await page.locator('.question, .question-text').count() > 0,
       hasOptionsState: await page.locator('button:has-text("A)"), button:has-text("B)")').count() > 0,
       hasTimerState: await page.locator('.timer, .time').count() > 0

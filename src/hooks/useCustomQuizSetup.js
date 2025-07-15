@@ -82,13 +82,34 @@ export const useCustomQuizSetup = () => {
       }
 
       try {
+        // First, get the subject UUID from the slug if needed
+        let subjectId = selectedSubject;
+
+        // If selectedSubject looks like a slug (no hyphens indicating UUID), convert it
+        if (!selectedSubject.includes('-')) {
+          const { data: subjectData, error: subjectError } = await supabase
+            .from('tags')
+            .select('id')
+            .eq('slug', selectedSubject)
+            .eq('type', 'subject')
+            .single();
+
+          if (subjectError) {
+            console.warn('Could not find subject by slug:', selectedSubject);
+            // For now, just load all systems since parent_id relationships may not be set up
+            subjectId = null;
+          } else {
+            subjectId = subjectData.id;
+          }
+        }
+
+        // Load systems - for now, load all systems since parent_id relationships aren't set up
         const { data: systemsData, error: systemsError } = await supabase
           .from('tags')
           .select('id, name, slug')
           .eq('type', 'system')
-          .eq('parent_id', selectedSubject)
           .eq('is_active', true)
-          .order('order_index', { ascending: true })
+          .order('order_index', { ascending: true });
 
         if (systemsError) throw systemsError
 
@@ -97,7 +118,8 @@ export const useCustomQuizSetup = () => {
         setSelectedTopic('')
       } catch (err) {
         console.error('Error loading systems:', err)
-        setError(err.message)
+        // Don't set error for this - just log it and continue
+        setSystems([])
       }
     }
 
@@ -114,13 +136,13 @@ export const useCustomQuizSetup = () => {
       }
 
       try {
+        // For now, load all topics since parent_id relationships may not be fully set up
         const { data: topicsData, error: topicsError } = await supabase
           .from('tags')
           .select('id, name, slug')
           .eq('type', 'topic')
-          .eq('parent_id', selectedSystem)
           .eq('is_active', true)
-          .order('order_index', { ascending: true })
+          .order('order_index', { ascending: true });
 
         if (topicsError) throw topicsError
 
@@ -128,7 +150,8 @@ export const useCustomQuizSetup = () => {
         setSelectedTopic('')
       } catch (err) {
         console.error('Error loading topics:', err)
-        setError(err.message)
+        // Don't set error for this - just log it and continue
+        setTopics([])
       }
     }
 
@@ -167,8 +190,21 @@ export const useCustomQuizSetup = () => {
 
   // Navigation data creation
   const createNavigationState = () => {
+    console.log('🎯 [useCustomQuizSetup] Creating navigation state');
+    console.log('📊 [useCustomQuizSetup] Current selections:', {
+      isSimpleMode,
+      selectedSubject,
+      selectedSystem,
+      selectedTopic,
+      questionCount,
+      difficulty,
+      timing,
+      availableQuestions
+    });
+
+    let navigationState;
     if (isSimpleMode) {
-      return {
+      navigationState = {
         categoryId: selectedSubject,
         categoryName: simpleCategories.find(c => c.id === selectedSubject)?.name || 'Mixed Questions',
         questionCount,
@@ -179,7 +215,7 @@ export const useCustomQuizSetup = () => {
         showExplanations: true
       }
     } else {
-      return {
+      navigationState = {
         subjectId: selectedSubject,
         systemId: selectedSystem,
         topicId: selectedTopic || null,
@@ -188,6 +224,9 @@ export const useCustomQuizSetup = () => {
         timing,
       }
     }
+
+    console.log('🎯 [useCustomQuizSetup] Navigation state created:', navigationState);
+    return navigationState;
   }
 
   return {

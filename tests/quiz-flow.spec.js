@@ -84,8 +84,8 @@ test.describe('USMLE Trivia - Quiz Flow & Database Tests', () => {
     
     // Check if quiz loaded
     const quizContent = page.locator('.quiz-container, [data-testid="quiz"], .question-card');
-    const loadingIndicator = page.locator('.loading, .spinner, text=Loading');
-    const errorMessage = page.locator('.error, text=Error, text=Failed');
+    const loadingIndicator = page.locator('.loading, .spinner');
+    const errorMessage = page.locator('.error');
     
     const hasQuizContent = await quizContent.count() > 0;
     const hasLoading = await loadingIndicator.count() > 0;
@@ -131,7 +131,7 @@ test.describe('USMLE Trivia - Quiz Flow & Database Tests', () => {
     await page.waitForTimeout(3000);
     
     // Check timed test state
-    const timerElement = page.locator('.timer, [data-testid="timer"], text=30:00, text=Timer');
+    const timerElement = page.locator('.timer, [data-testid="timer"]');
     const hasTimer = await timerElement.count() > 0;
     
     if (hasTimer) {

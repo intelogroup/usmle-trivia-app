@@ -33,9 +33,9 @@ import {
 // Function to get medical icon for a category
 export const getMedicalIcon = (categoryName, databaseIcon, props = {}) => {
   // First check our medical icon mapping (prioritized)
-  const medicalIcon = medicalIconMapping[categoryName];
-  if (medicalIcon) {
-    return (iconProps) => <medicalIcon {...props} {...iconProps} />;
+  const MedicalIcon = medicalIconMapping[categoryName];
+  if (MedicalIcon) {
+    return (iconProps) => <MedicalIcon {...props} {...iconProps} />;
   }
   
   // Fallback to database icon if available

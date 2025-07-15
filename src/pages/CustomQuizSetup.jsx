@@ -58,9 +58,28 @@ const CustomQuizSetup = () => {
 
   const handleStart = (e) => {
     e.preventDefault()
-    if (!canStart) return
-    
+    console.log('🚀 [CustomQuizSetup] Starting custom quiz with configuration:');
+    console.log('📊 [CustomQuizSetup] Current state:', {
+      isSimpleMode,
+      selectedSubject,
+      selectedSystem,
+      selectedTopic,
+      difficulty,
+      questionCount,
+      timing,
+      availableQuestions,
+      canStart
+    });
+
+    if (!canStart) {
+      console.log('❌ [CustomQuizSetup] Cannot start quiz - canStart is false');
+      return;
+    }
+
     const navigationState = createNavigationState()
+    console.log('🎯 [CustomQuizSetup] Navigation state created:', navigationState);
+    console.log('🧭 [CustomQuizSetup] Navigating to /custom-quiz with state');
+
     navigate('/custom-quiz', { state: navigationState })
   }
 

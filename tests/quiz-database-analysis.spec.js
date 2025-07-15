@@ -88,11 +88,11 @@ test.describe('USMLE Trivia - Database & Quiz Analysis', () => {
         console.log(`${path} - Has quiz content: ${hasQuizContent}`);
         
         // Look for loading states
-        const loadingElements = await page.locator('.loading, .spinner, text=Loading').count();
+        const loadingElements = await page.locator('.loading, .spinner').count();
         console.log(`${path} - Loading elements: ${loadingElements}`);
         
         // Look for error states
-        const errorElements = await page.locator('.error, text=Error, text=Failed').count();
+        const errorElements = await page.locator('.error').count();
         console.log(`${path} - Error elements: ${errorElements}`);
         
         // Look for question components

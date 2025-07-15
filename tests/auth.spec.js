@@ -2,14 +2,34 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    // Mock Supabase configuration to enable auth testing
+    await page.addInitScript(() => {
+      // Mock the environment variables to simulate configured Supabase
+      window.process = { env: {} };
+
+      // Mock import.meta.env
+      if (!window.import) {
+        window.import = { meta: { env: {} } };
+      }
+      if (!window.import.meta) {
+        window.import.meta = { env: {} };
+      }
+
+      window.import.meta.env.VITE_SUPABASE_URL = 'https://test.supabase.co';
+      window.import.meta.env.VITE_SUPABASE_ANON_KEY = 'test-key';
+      window.import.meta.env.DEV = false; // Disable dev connection test
+    });
+  });
+
   test('should allow a user to log in and log out', async ({ page }) => {
     await page.goto('/login', { timeout: 60000 });
 
-    // Use more reliable selectors based on input type and class attributes
-    await page.fill('input[type="email"]', 'test@example.com');
-    await page.fill('input[type="password"]', 'password123');
+    // Use the actual test IDs from the ValidatedInput components
+    await page.fill('[data-testid="email-input"]', 'test@example.com');
+    await page.fill('[data-testid="password-input"]', 'password123');
 
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="login-submit"]');
 
     // Wait for navigation or a success indicator with a longer timeout
     await page.waitForURL('**/*', { timeout: 60000 }); // Wait for any URL change
@@ -31,15 +51,13 @@ test.describe('Authentication Flow', () => {
   test('should allow a user to sign up', async ({ page }) => {
     await page.goto('/signup', { timeout: 60000 });
 
-    // Fill out sign-up form
-    await page.fill('input[type="email"]', 'newuser@example.com');
-    await page.fill('input[type="password"]', 'newpassword123');
-    // Assuming there might be additional fields like confirm password or name
-    await page.fill('input[type="password"][placeholder*="Confirm"]', 'newpassword123', { timeout: 10000 }).catch(() => {
-      // If confirm password field is not found, proceed anyway
-    });
+    // Fill out sign-up form using correct test IDs
+    await page.fill('[data-testid="fullname-input"]', 'Test User');
+    await page.fill('[data-testid="email-input"]', 'newuser@example.com');
+    await page.fill('[data-testid="password-input"]', 'newpassword123');
+    await page.fill('[data-testid="confirm-password-input"]', 'newpassword123');
 
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="signup-submit"]');
 
     // Wait for navigation or success indicator with a longer timeout
     await page.waitForURL('**/*', { timeout: 60000 }); // Wait for any URL change
@@ -80,10 +98,10 @@ test.describe('Authentication Flow', () => {
   test('should display error for invalid login credentials', async ({ page }) => {
     await page.goto('/login', { timeout: 60000 });
 
-    await page.fill('input[type="email"]', 'invalid@example.com');
-    await page.fill('input[type="password"]', 'wrongpassword');
+    await page.fill('[data-testid="email-input"]', 'invalid@example.com');
+    await page.fill('[data-testid="password-input"]', 'wrongpassword');
 
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="login-submit"]');
 
     // Check for error message with a more flexible match
     await expect(page.locator('text=/invalid|error|wrong|failed|login|credentials|incorrect|try again/i')).toBeVisible({ timeout: 10000 });
@@ -92,10 +110,10 @@ test.describe('Authentication Flow', () => {
   test('should persist authentication state across page refresh', async ({ page }) => {
     await page.goto('/login', { timeout: 60000 });
 
-    await page.fill('input[type="email"]', 'test@example.com');
-    await page.fill('input[type="password"]', 'password123');
+    await page.fill('[data-testid="email-input"]', 'test@example.com');
+    await page.fill('[data-testid="password-input"]', 'password123');
 
-    await page.click('button[type="submit"]');
+    await page.click('[data-testid="login-submit"]');
 
     // Wait for successful login with a longer timeout
     await page.waitForURL('**/*', { timeout: 60000 });

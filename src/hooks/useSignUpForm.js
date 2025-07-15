@@ -70,7 +70,7 @@ export const useSignUpForm = () => {
 
     try {
       // Validate all fields
-      const validation = validator.validateForm(formData)
+      const validation = validator.validateAll(formData)
       
       if (!validation.isValid) {
         setErrors(validation.errors)
@@ -139,7 +139,7 @@ export const useSignUpForm = () => {
 
   // Check if form is valid
   const isFormValid = () => {
-    const validation = validator.validateForm(formData)
+    const validation = validator.validateAll(formData)
     return validation.isValid
   }
 

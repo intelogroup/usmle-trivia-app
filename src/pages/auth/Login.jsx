@@ -107,9 +107,15 @@ const Login = () => {
     }
 
     try {
-      await authService.signIn(formData.email.trim(), formData.password);
+      console.log('🔐 [Login] Attempting login:', { email: formData.email });
+      await authService.signIn({
+        email: formData.email.trim(),
+        password: formData.password
+      });
+      console.log('✅ [Login] Login successful, navigating to home');
       navigate('/');
     } catch (error) {
+      console.error('❌ [Login] Login failed:', error);
       handleSubmitError(error);
     } finally {
       setLoading(false);
@@ -121,7 +127,7 @@ const Login = () => {
                      !errors.email && !errors.password;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 dark:from-expo-950 dark:to-expo-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -133,15 +139,15 @@ const Login = () => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl mb-4 shadow-lg"
+            className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg ring-4 ring-blue-100 dark:ring-blue-900"
           >
             <Stethoscope size={32} className="text-white" />
           </motion.div>
           
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-dark-50 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
             Welcome Back
           </h1>
-          <p className="text-gray-600 dark:text-dark-300">
+          <p className="text-gray-700 dark:text-gray-300 font-medium">
             Continue your USMLE preparation journey
           </p>
         </div>
@@ -151,7 +157,7 @@ const Login = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-expo-850 rounded-2xl p-8 shadow-card dark:shadow-card-dark border border-gray-100 dark:border-expo-700"
+          className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl dark:shadow-2xl border-2 border-gray-200 dark:border-gray-600 backdrop-blur-sm"
         >
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {/* Configuration Error Message */}
@@ -159,7 +165,7 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 p-4 rounded-xl text-sm font-medium border border-yellow-200 dark:border-yellow-800 flex items-center gap-3"
+                className="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 p-4 rounded-xl text-sm font-bold border-2 border-yellow-300 dark:border-yellow-600 flex items-center gap-3 shadow-lg"
               >
                 <AlertTriangle size={20} />
                 <div>
@@ -174,7 +180,7 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium border border-red-200 dark:border-red-800"
+                className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-200 p-4 rounded-xl text-sm font-bold border-2 border-red-300 dark:border-red-600 shadow-lg"
                 data-testid="login-error"
               >
                 {submitError}
@@ -218,9 +224,9 @@ const Login = () => {
 
             {/* Forgot Password Link */}
             <div className="text-right">
-              <Link 
-                to="/forgot-password" 
-                className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
+              <Link
+                to="/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold underline decoration-2 underline-offset-2 hover:decoration-blue-600"
               >
                 Forgot your password?
               </Link>
@@ -233,10 +239,10 @@ const Login = () => {
               whileHover={!loading && isConfigured && isFormValid ? { scale: 1.02 } : {}}
               whileTap={!loading && isConfigured && isFormValid ? { scale: 0.98 } : {}}
               className={`
-                w-full py-3 px-6 rounded-xl font-bold text-white transition-all duration-200
+                w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-200 text-lg
                 ${loading || !isConfigured || !isFormValid
                   ? 'bg-gray-400 cursor-not-allowed opacity-50'
-                  : 'bg-primary-600 hover:bg-primary-700 shadow-lg hover:shadow-xl'
+                  : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 ring-2 ring-blue-200 dark:ring-blue-800'
                 }
               `}
               data-testid="login-submit"
@@ -254,12 +260,12 @@ const Login = () => {
             </motion.button>
 
             {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-gray-200 dark:border-expo-700">
-              <p className="text-sm text-gray-600 dark:text-dark-300">
+            <div className="text-center pt-4 border-t-2 border-gray-200 dark:border-gray-600">
+              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
                 Don't have an account?{' '}
-                <Link 
-                  to="/signup" 
-                  className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-bold"
+                <Link
+                  to="/signup"
+                  className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-bold underline decoration-2 underline-offset-2 hover:decoration-blue-600"
                 >
                   Sign Up
                 </Link>

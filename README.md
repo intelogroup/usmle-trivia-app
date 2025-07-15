@@ -127,14 +127,19 @@ src/
 
 ## 🎨 Design Features
 
-- **Gradient Backgrounds**: Beautiful color gradients throughout the app
-- **Card-Based Layout**: Clean, organized content in cards
-- **Smooth Animations**: Framer Motion for engaging user experience
-- **Responsive Design**: Works perfectly on all screen sizes
-- **Professional Typography**: Clean, readable fonts
-- **Intuitive Navigation**: Easy-to-use bottom navigation
-- **Profile Images**: High-quality placeholder avatars
-- **Country Flags**: Real flag images for global feel
+Our design philosophy emphasizes **dark theme glassmorphism** with **minimalistic, modern aesthetics**:
+
+- **Dark Theme Glassmorphism**: Primary design aesthetic with frosted glass effects, subtle transparency, and backdrop blur
+- **Minimalistic Design**: Clean, uncluttered interfaces with purposeful use of white space
+- **Less Solid Colors**: Preference for gradients, transparency, and layered effects over solid filled colors
+- **Gradient Backgrounds**: Beautiful color gradients throughout the app with emphasis on dark theme variations
+- **Card-Based Layout**: Clean, organized content in cards with glassmorphism effects
+- **Smooth Animations**: Framer Motion for engaging user experience with subtle transitions
+- **Responsive Design**: Works perfectly on all screen sizes with consistent glassmorphism elements
+- **Professional Typography**: Clean, readable fonts optimized for dark theme
+- **Intuitive Navigation**: Easy-to-use bottom navigation with glassmorphism styling
+- **Profile Images**: High-quality placeholder avatars with glassmorphism frames
+- **Country Flags**: Real flag images for global feel with subtle transparency effects
 
 ## 🗃️ Database Schema
 
@@ -173,9 +178,12 @@ VALUES ('Your question?', '["A", "B", "C", "D"]', 0, 'Explanation', 'cardiology'
 ```
 
 ### Styling
-- Colors can be customized in `tailwind.config.js`
-- Global styles are in `src/styles/globals.css`
-- Component-specific styles use Tailwind classes
+- **Dark Theme Glassmorphism**: Primary design philosophy with frosted glass effects and subtle transparency
+- **Minimalistic Approach**: Less solid colors, more gradients and layered effects
+- Colors can be customized in `tailwind.config.js` with emphasis on dark theme variations
+- Global styles are in `src/styles/globals.css` with glassmorphism utilities
+- Component-specific styles use Tailwind classes following glassmorphism patterns
+- Consistent use of backdrop blur, transparency, and layered depth effects
 
 ## 🚀 Deployment
 

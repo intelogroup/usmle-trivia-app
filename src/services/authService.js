@@ -7,7 +7,9 @@ class AuthError extends Error {
   }
 }
 
-const signUp = async (email, password, fullName) => {
+const signUp = async ({ email, password, fullName }) => {
+  console.log('🔐 [AuthService] Attempting signup:', { email, fullName });
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -19,27 +21,34 @@ const signUp = async (email, password, fullName) => {
   });
 
   if (error) {
+    console.error('❌ [AuthService] Signup error:', error);
     throw new AuthError(error.message);
   }
 
   if (data.user && data.user.identities && data.user.identities.length === 0) {
+    console.warn('⚠️ [AuthService] Email already in use:', email);
     throw new AuthError('This email is already in use. Please try another email.');
   }
 
-  return data;
+  console.log('✅ [AuthService] Signup successful:', { userId: data.user?.id });
+  return { user: data.user, error: null };
 };
 
-const signIn = async (email, password) => {
+const signIn = async ({ email, password }) => {
+  console.log('🔐 [AuthService] Attempting signin:', { email });
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
+    console.error('❌ [AuthService] Signin error:', error);
     throw new AuthError(error.message);
   }
 
-  return data;
+  console.log('✅ [AuthService] Signin successful:', { userId: data.user?.id });
+  return { user: data.user, error: null };
 };
 
 const signOut = async () => {

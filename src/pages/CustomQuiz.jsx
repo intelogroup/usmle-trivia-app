@@ -36,6 +36,11 @@ const CustomQuiz = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const config = location.state;
+
+  console.log('🎯 [CustomQuiz] Component mounted');
+  console.log('📍 [CustomQuiz] Location state:', location.state);
+  console.log('👤 [CustomQuiz] User:', user?.id);
+  console.log('⚙️ [CustomQuiz] Config received:', config);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,13 +59,28 @@ const CustomQuiz = () => {
 
   // Fetch questions on mount
   useEffect(() => {
+    console.log('🔄 [CustomQuiz] useEffect triggered');
+    console.log('⚙️ [CustomQuiz] Config check:', config);
+
     if (!config) {
+      console.log('❌ [CustomQuiz] No config found - setting error');
       setError({ code: 'NO_CONFIG', message: 'No quiz configuration found.' });
       setLoading(false);
       return;
     }
+
+    console.log('✅ [CustomQuiz] Config found, proceeding with question fetch');
     setLoading(true);
     const categoryId = config.topicId || config.systemId || config.subjectId || 'mixed';
+
+    console.log('📊 [CustomQuiz] Fetching questions with params:', {
+      userId: user.id,
+      categoryId: categoryId,
+      questionCount: config.questionCount,
+      difficulty: config.difficulty,
+      configKeys: Object.keys(config)
+    });
+
     fetchQuestionsForUser({
       userId: user.id,
       categoryId: categoryId,

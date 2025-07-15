@@ -27,10 +27,12 @@ const SignUpForm = ({
         onBlur={onFieldBlur}
         error={errors.fullName}
         touched={touched.fullName}
+        isValid={!errors.fullName && formData.fullName && touched.fullName}
         icon={User}
         disabled={loading}
         autoComplete="name"
         required
+        data-testid="fullname-input"
       />
 
       {/* Email Field */}
@@ -43,10 +45,12 @@ const SignUpForm = ({
         onBlur={onFieldBlur}
         error={errors.email}
         touched={touched.email}
+        isValid={!errors.email && formData.email && touched.email}
         icon={Mail}
         disabled={loading}
         autoComplete="email"
         required
+        data-testid="email-input"
       />
 
       {/* Password Field */}
@@ -59,10 +63,12 @@ const SignUpForm = ({
         onBlur={onFieldBlur}
         error={errors.password}
         touched={touched.password}
+        isValid={!errors.password && formData.password && touched.password}
         icon={Lock}
         disabled={loading}
         autoComplete="new-password"
         required
+        data-testid="password-input"
       />
 
       {/* Confirm Password Field */}
@@ -75,10 +81,12 @@ const SignUpForm = ({
         onBlur={onFieldBlur}
         error={errors.confirmPassword}
         touched={touched.confirmPassword}
+        isValid={!errors.confirmPassword && formData.confirmPassword && touched.confirmPassword}
         icon={Lock}
         disabled={loading}
         autoComplete="new-password"
         required
+        data-testid="confirm-password-input"
       />
 
       {/* Submit Button */}
@@ -86,6 +94,7 @@ const SignUpForm = ({
         type="submit"
         disabled={loading}
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+        data-testid="signup-submit"
       >
         {loading ? (
           <>

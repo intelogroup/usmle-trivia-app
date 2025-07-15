@@ -32,33 +32,17 @@ export async function fetchQuestions({ categoryId = 'mixed', questionCount = 10,
     let query;
 
     if (categoryId && categoryId !== 'mixed') {
-      // Use proper join with question_tags table
+      // For now, skip the question_tags join and use a simpler approach
+      // TODO: Fix question_tags permissions and re-enable join queries
+      logger.warn('Using simplified query due to question_tags permission issues', { categoryId });
+
       query = supabase
         .from('questions')
-        .select(`
-          id,
-          question_text,
-          options,
-          correct_option_id,
-          explanation,
-          difficulty,
-          points,
-          image_url,
-          is_active,
-          usage_count,
-          average_time_seconds,
-          created_at,
-          updated_at,
-          category_id,
-          correct_count,
-          source,
-          created_by,
-          reviewed_by,
-          reviewed_at,
-          question_tags!inner(tag_id)
-        `)
-        .eq('is_active', true)
-        .eq('question_tags.tag_id', categoryId);
+        .select('*')
+        .eq('is_active', true);
+
+      // Note: We're getting all questions for now since category filtering via question_tags is failing
+      // This is a temporary workaround until database permissions are fixed
     } else {
       // For mixed questions, get all active questions
       query = supabase

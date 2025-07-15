@@ -17,6 +17,7 @@ const ValidatedInput = ({
   icon: Icon,
   error,
   isValid,
+  touched,
   required = false,
   disabled = false,
   className = '',
@@ -48,22 +49,23 @@ const ValidatedInput = ({
 
   const getInputClasses = () => {
     let classes = `
-      w-full px-4 py-3 rounded-xl border transition-all duration-200
-      focus:outline-none focus:ring-2 focus:ring-offset-2
-      dark:bg-gray-800 dark:border-gray-600
+      w-full px-4 py-4 rounded-xl border-2 transition-all duration-200 text-base font-medium
+      focus:outline-none focus:ring-4 focus:ring-offset-2
+      dark:bg-gray-700 dark:border-gray-500 dark:text-white
+      placeholder:text-gray-500 dark:placeholder:text-gray-400
       ${Icon ? 'pl-12' : ''}
       ${showPasswordToggle || showValidation ? 'pr-12' : ''}
       ${className}
     `;
 
     if (error) {
-      classes += ' border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50 dark:bg-red-900/20';
+      classes += ' border-red-400 focus:border-red-500 focus:ring-red-200 bg-red-50 dark:bg-red-900/30 text-red-900 dark:text-red-100';
     } else if (isValid && hasValue) {
-      classes += ' border-green-300 focus:border-green-500 focus:ring-green-500 bg-green-50 dark:bg-green-900/20';
+      classes += ' border-green-400 focus:border-green-500 focus:ring-green-200 bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-100';
     } else if (isFocused) {
-      classes += ' border-blue-300 focus:border-blue-500 focus:ring-blue-500 bg-blue-50 dark:bg-blue-900/20';
+      classes += ' border-blue-400 focus:border-blue-500 focus:ring-blue-200 bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100';
     } else {
-      classes += ' border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white';
+      classes += ' border-gray-400 focus:border-blue-500 focus:ring-blue-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-white';
     }
 
     if (disabled) {
@@ -76,9 +78,9 @@ const ValidatedInput = ({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-bold text-gray-800 dark:text-gray-200">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-600 ml-1 font-bold">*</span>}
         </label>
       )}
       
@@ -86,7 +88,7 @@ const ValidatedInput = ({
         {/* Icon */}
         {Icon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon className="w-5 h-5 text-gray-400" />
+            <Icon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </div>
         )}
         
@@ -137,7 +139,7 @@ const ValidatedInput = ({
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
+            className="text-sm text-red-700 dark:text-red-300 flex items-center space-x-1 font-bold"
           >
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
@@ -153,7 +155,7 @@ const ValidatedInput = ({
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="text-sm text-green-600 dark:text-green-400 flex items-center space-x-1"
+            className="text-sm text-green-700 dark:text-green-300 flex items-center space-x-1 font-bold"
           >
             <CheckCircle className="w-4 h-4 flex-shrink-0" />
             <span>Looks good!</span>

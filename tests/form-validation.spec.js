@@ -119,8 +119,29 @@ test.describe('Form Validation - Real-time', () => {
 
 test.describe('Form Validation - SignUp', () => {
   test.beforeEach(async ({ page }) => {
+    // Mock Supabase configuration to enable form testing
+    await page.addInitScript(() => {
+      // Mock the environment variables to simulate configured Supabase
+      window.process = { env: {} };
+
+      // Mock import.meta.env
+      if (!window.import) {
+        window.import = { meta: { env: {} } };
+      }
+      if (!window.import.meta) {
+        window.import.meta = { env: {} };
+      }
+
+      window.import.meta.env.VITE_SUPABASE_URL = 'https://test.supabase.co';
+      window.import.meta.env.VITE_SUPABASE_ANON_KEY = 'test-key';
+      window.import.meta.env.DEV = false; // Disable dev connection test
+    });
+
     // Navigate to signup page
     await page.goto('/signup');
+
+    // Wait for page to be fully loaded
+    await page.waitForLoadState('networkidle');
   });
 
   test('should show real-time validation for all signup fields', async ({ page }) => {
@@ -168,7 +189,7 @@ test.describe('Form Validation - SignUp', () => {
     await page.getByTestId('confirm-password-input').blur();
     
     // Should show success
-    await expect(page.locator('text=Looks good!')).toBeVisible();
+    await expect(page.locator('text=Looks good!').first()).toBeVisible();
     
     // Change password
     await page.getByTestId('password-input').fill('newpassword');
@@ -192,7 +213,7 @@ test.describe('Form Validation - SignUp', () => {
     
     // Should show success
     await expect(page.locator('text=Password should contain both letters and numbers')).not.toBeVisible();
-    await expect(page.locator('text=Looks good!')).toBeVisible();
+    await expect(page.locator('text=Looks good!').first()).toBeVisible();
   });
 
   test('should handle signup success flow', async ({ page }) => {

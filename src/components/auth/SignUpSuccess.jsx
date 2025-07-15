@@ -49,6 +49,7 @@ const SignUpSuccess = ({ email, onContinue }) => {
         <button
           onClick={onContinue}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+          data-testid="continue-to-dashboard"
         >
           <span>Continue to Dashboard</span>
           <ArrowRight className="w-4 h-4" />
@@ -57,6 +58,7 @@ const SignUpSuccess = ({ email, onContinue }) => {
         <Link
           to="/login"
           className="block w-full text-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2 transition-colors duration-200"
+          data-testid="go-to-login"
         >
           Sign in instead
         </Link>

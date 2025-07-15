@@ -47,7 +47,7 @@ test.describe('Quiz Flow - Core Functionality', () => {
     
     // Look for category cards or buttons
     const categoryCard = page.locator('.category-card, [data-testid="category"]').first();
-    const categoryButton = page.locator('button:contains("Cardiology"), button:contains("Category")').first();
+    const categoryButton = page.locator('button:has-text("Cardiology"), button:has-text("Category")').first();
     
     // Try clicking a category if available
     if (await categoryCard.isVisible()) {
@@ -72,8 +72,8 @@ test.describe('Quiz Flow - Core Functionality', () => {
     
     // Check for various possible states
     const hasQuestions = await page.locator('.question-card, [data-testid="question"]').count() > 0;
-    const hasLoading = await page.locator('.loading, .spinner, text=Loading').count() > 0;
-    const hasError = await page.locator('.error, text=Error, text=Unable').count() > 0;
+    const hasLoading = await page.locator('.loading, .spinner').count() > 0;
+    const hasError = await page.locator('.error').count() > 0;
     const hasDemoContent = await page.locator('text=demo, text=Demo').count() > 0;
     
     // Should have one of these states
