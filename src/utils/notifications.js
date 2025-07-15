@@ -97,6 +97,16 @@ export const subscribeToNotifications = (listener) => {
   return toastManager.subscribe(listener)
 }
 
+// Get active notifications (for backward compatibility)
+export const getActiveNotifications = () => {
+  return toastManager.getToasts()
+}
+
+// Dismiss all notifications (for backward compatibility)
+export const dismissAll = () => {
+  return toastManager.clearAll()
+}
+
 // Default export for backward compatibility
 export default {
   ERROR_TYPES,
@@ -119,5 +129,7 @@ export default {
   withRetry,
   handleError,
   clearAllNotifications,
-  subscribeToNotifications
+  subscribeToNotifications,
+  getActiveNotifications,
+  dismissAll
 }
