@@ -24,16 +24,22 @@
   - **Dependencies**: Supabase setup
 
 #### **Core Feature Enablement (Priority: HIGH)**
-- [x] **Enable Custom Quiz Feature** ✅ COMPLETED
+- [x] **Enable Custom Quiz Feature** 🔄 NEEDS ENHANCEMENT
   - [x] Remove disabled state in `src/components/home/HomeActions.jsx:76`
   - [x] Remove disabled state in `src/components/home/HomeActions.jsx:146`
   - [x] Add Simple Mode with 8 predefined medical categories
   - [x] Implement visual question count slider and difficulty selection
   - [x] Create Zustand store for centralized state management
   - [x] Maintain Advanced Mode for power users
+  - [ ] **ENHANCED REQUIREMENTS FOR CUSTOM QUIZ**:
+    - [ ] Fetch all subjects/systems/topics from Supabase on setup page load
+    - [ ] Display all categories with question counts (even if zero questions)
+    - [ ] Require user to select at least one subject AND one system before creating quiz
+    - [ ] Support questions with multiple tags (subjects/systems/topics)
+    - [ ] Show real-time question count updates based on user selections
   - [ ] Test custom quiz end-to-end flow with real questions
   - [ ] Verify subject/system/topic filtering in Advanced Mode
-  - **Status**: ✅ MVP Ready - Simple Mode functional, Advanced Mode preserved
+  - **Status**: 🔄 Needs Enhancement - Additional Supabase integration required
   - **Completed**: Enhanced with dual-mode approach following MVP principles
 
 - [x] **Authentication Flow Validation** ✅ COMPLETED
@@ -121,8 +127,12 @@
 - [ ] **Enhanced Question Categories**
   - [ ] Add subcategory support
   - [ ] Implement difficulty levels
-  - [ ] Create question tagging system
-  - **Estimated**: 6-8 hours
+  - [ ] **Enhanced question tagging system**:
+    - [ ] Support multiple subjects per question
+    - [ ] Support multiple systems per question
+    - [ ] Support multiple topics per question
+    - [ ] Real-time count updates in Custom Quiz setup
+  - **Estimated**: 8-10 hours (increased due to multi-tag support)
 
 ---
 
@@ -184,6 +194,8 @@
   - [ ] Error handling implemented
   - [ ] Loading states included
   - [ ] Mobile responsive
+  - [ ] **QuickQuiz**: Auto-advances in milliseconds (no next buttons)
+  - [ ] **Custom Quiz**: Fetches all categories from Supabase, requires selection validation
 
 - [ ] **Quality**
   - [ ] Code reviewed

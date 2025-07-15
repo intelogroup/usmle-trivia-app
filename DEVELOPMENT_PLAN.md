@@ -24,9 +24,14 @@ This plan prioritizes **incremental enhancement** over major refactoring to mini
 #### **Day 3-4: Feature Enablement**
 - [ ] **Enable Custom Quiz**
   - Remove UI restrictions in `HomeActions.jsx:76, 146`
+  - Implement Supabase fetching for all subjects/systems/topics with counts
+  - Display all categories even with zero questions
+  - Add validation requiring at least one subject and one system selection
+  - Support questions with multiple tags
+  - Show question counts for user selections
   - Test custom quiz flow end-to-end
   - Verify database tag filtering works
-  - **Risk**: Low - feature is already implemented
+  - **Risk**: Medium - requires database schema updates and UI enhancements
 
 - [ ] **Authentication Flow Testing**
   - Test registration, login, forgot password
@@ -165,6 +170,13 @@ const useEnhancedQuizData = () => {
   const baseData = useQuizData();
   // Add new functionality
   return { ...baseData, newFeature };
+};
+
+// Good: Extend Custom Quiz with Supabase data
+const useCustomQuizCategories = () => {
+  // Fetch all subjects/systems/topics from Supabase
+  // Display counts even for zero questions
+  // Support multiple tags per question
 };
 
 // Bad: Rewrite entire quiz system

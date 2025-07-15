@@ -11,7 +11,7 @@
 - ✅ Basic user profile
 
 #### **Quiz System - Essential Modes**
-- ✅ **Quick Quiz**: 10 questions, auto-advance, timer
+- ✅ **Quick Quiz**: 10 questions, auto-advance in milliseconds (no next buttons), timer
 - ✅ **Timed Test**: 20 questions, 30-minute simulation
 - ✅ Question randomization and history tracking
 - ✅ Sound effects and visual feedback
@@ -32,7 +32,7 @@
 ### **Secondary Features (Post-MVP)**
 
 #### **Phase 2 Features (Next 2-4 weeks)**
-- 🔄 **Custom Quiz**: Enable existing implementation
+- 🔄 **Custom Quiz**: Fetch all subjects/systems/topics from Supabase, display counts even for zero questions, require at least one subject and one system selection, support multiple tags per question, show question counts for user selections
 - 🔄 **Real Leaderboard**: Replace hardcoded data with database
 - 🔄 **Enhanced Profile**: Statistics and achievements
 - 🔄 **Study Materials**: Basic learn section with content
