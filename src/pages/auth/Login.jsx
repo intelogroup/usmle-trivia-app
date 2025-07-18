@@ -1,40 +1,124 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Mail, Lock, ArrowLeft, Stethoscope, AlertTriangle } from 'lucide-react'
+import { Mail, Lock, ArrowLeft, Stethoscope, AlertTriangle } from 'lucide-react'
 import { authService } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
+import ValidatedInput from '../../components/ui/ValidatedInput';
+import { validateEmail, validateRequired, createFormValidation } from '../../utils/formValidation';
+import logger from '../../utils/logger';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const { isConfigured } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+  // Validation rules
+  const validationRules = {
+    email: (email) => validateEmail(email),
+    password: (password) => validateRequired(password, 'Password')
+  };
 
-    if (!email || !password) {
-      setError('Please fill in all fields')
-      setLoading(false)
-      return
+  const validator = createFormValidation(validationRules);
+
+  // Handle real-time field changes
+  const handleChange = (name, value) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setSubmitError(''); // Clear submit error when user types
+    
+    // Validate field if it has been touched or has content
+    if (touched[name] || value) {
+      const validation = validator.validateField(name, value, formData);
+      setErrors(prev => ({ ...prev, [name]: validation.error }));
+    }
+  };
+
+  // Handle field blur (when user leaves the field)
+  const handleBlur = (name) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const validation = validator.validateField(name, formData[name], formData);
+    setErrors(prev => ({ ...prev, [name]: validation.error }));
+  };
+
+  // Enhanced error handling for JSON parsing and network issues
+  const handleSubmitError = (error) => {
+    logger.error('Login error occurred', { formData: { email: formData.email } }, error);
+    
+    // Handle JSON parsing errors
+    if (error.message.includes('JSON') || error.message.includes('Unexpected token')) {
+      setSubmitError('Server communication error. Please try again.');
+      return;
+    }
+    
+    // Handle network errors
+    if (error.message.includes('fetch') || error.message.includes('Network')) {
+      setSubmitError('Network error. Please check your connection and try again.');
+      return;
+    }
+    
+    // Handle specific auth errors
+    if (error.message.includes('Invalid login credentials')) {
+      setSubmitError('Invalid email or password. Please check your credentials.');
+      return;
+    }
+    
+    if (error.message.includes('Email not confirmed')) {
+      setSubmitError('Please verify your email address before signing in.');
+      return;
+    }
+    
+    if (error.message.includes('Too many requests')) {
+      setSubmitError('Too many login attempts. Please wait a moment and try again.');
+      return;
+    }
+    
+    // Default error message
+    setSubmitError(error.message || 'An error occurred during sign in. Please try again.');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSubmitError('');
+
+    // Validate all fields
+    const { isValid, errors: validationErrors } = validator.validateAll(formData);
+    
+    if (!isValid) {
+      setErrors(validationErrors);
+      setTouched({ email: true, password: true });
+      setLoading(false);
+      return;
+    }
+
+    // Additional check for empty fields (final validation)
+    if (!formData.email || !formData.password) {
+      setSubmitError('Please fill in all fields');
+      setLoading(false);
+      return;
     }
 
     try {
-      await authService.signIn(email, password);
+      await authService.signIn(formData.email.trim(), formData.password);
       navigate('/');
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      handleSubmitError(error);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  // Check if form is valid for submit button state
+  const isFormValid = formData.email && formData.password && 
+                     !errors.email && !errors.password;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 dark:from-expo-950 dark:to-expo-900 flex items-center justify-center px-4">
@@ -69,7 +153,7 @@ const Login = () => {
           transition={{ delay: 0.3 }}
           className="bg-white dark:bg-expo-850 rounded-2xl p-8 shadow-card dark:shadow-card-dark border border-gray-100 dark:border-expo-700"
         >
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {/* Configuration Error Message */}
             {!isConfigured && (
               <motion.div
@@ -85,66 +169,58 @@ const Login = () => {
               </motion.div>
             )}
 
-            {/* Error Message */}
-            {error && (
+            {/* Submit Error Message */}
+            {submitError && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl text-sm font-medium border border-red-200 dark:border-red-800"
+                data-testid="login-error"
               >
-                {error}
+                {submitError}
               </motion.div>
             )}
 
             {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Enter your email"
-                  disabled={loading || !isConfigured}
-                />
-              </div>
-            </div>
+            <ValidatedInput
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Enter your email"
+              label="Email Address"
+              icon={Mail}
+              error={touched.email ? errors.email : ''}
+              isValid={!errors.email && formData.email}
+              required
+              autoComplete="email"
+              data-testid="email-input"
+            />
 
             {/* Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-dark-200 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-12 pr-12 py-3 bg-gray-50 dark:bg-expo-800 border border-gray-200 dark:border-expo-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-800 dark:text-dark-50 placeholder-gray-400 dark:placeholder-dark-400 transition-all disabled:opacity-50"
-                  placeholder="Enter your password"
-                  disabled={loading || !isConfigured}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-dark-400 hover:text-gray-600 dark:hover:text-dark-200 transition-colors disabled:opacity-50"
-                  disabled={loading || !isConfigured}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
+            <ValidatedInput
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Enter your password"
+              label="Password"
+              icon={Lock}
+              error={touched.password ? errors.password : ''}
+              isValid={!errors.password && formData.password}
+              required
+              showPasswordToggle={true}
+              autoComplete="current-password"
+              data-testid="password-input"
+            />
 
-            {/* Forgot Password */}
+            {/* Forgot Password Link */}
             <div className="text-right">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
+              <Link 
+                to="/forgot-password" 
+                className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
               >
                 Forgot your password?
               </Link>
@@ -152,52 +228,64 @@ const Login = () => {
 
             {/* Submit Button */}
             <motion.button
-              whileHover={{ scale: !isConfigured || loading ? 1 : 1.02 }}
-              whileTap={{ scale: !isConfigured || loading ? 1 : 0.98 }}
               type="submit"
-              disabled={loading || !isConfigured}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 disabled:opacity-70 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg disabled:cursor-not-allowed"
+              disabled={loading || !isConfigured || !isFormValid}
+              whileHover={!loading && isConfigured && isFormValid ? { scale: 1.02 } : {}}
+              whileTap={!loading && isConfigured && isFormValid ? { scale: 0.98 } : {}}
+              className={`
+                w-full py-3 px-6 rounded-xl font-bold text-white transition-all duration-200
+                ${loading || !isConfigured || !isFormValid
+                  ? 'bg-gray-400 cursor-not-allowed opacity-50'
+                  : 'bg-primary-600 hover:bg-primary-700 shadow-lg hover:shadow-xl'
+                }
+              `}
+              data-testid="login-submit"
             >
-              {loading 
-                ? 'Signing In...' 
-                : !isConfigured 
-                ? 'Configuration Missing'
-                : 'Sign In'}
+              {loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Signing In...</span>
+                </div>
+              ) : !isConfigured ? (
+                'Configuration Missing'
+              ) : (
+                'Sign In'
+              )}
             </motion.button>
-          </form>
 
-          {/* Sign Up Link */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-expo-600 text-center">
-            <p className="text-gray-600 dark:text-dark-300">
-              Don't have an account?{' '}
-              <Link
-                to="/signup"
-                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
-              >
-                Sign up here
-              </Link>
-            </p>
-          </div>
+            {/* Sign Up Link */}
+            <div className="text-center pt-4 border-t border-gray-200 dark:border-expo-700">
+              <p className="text-sm text-gray-600 dark:text-dark-300">
+                Don't have an account?{' '}
+                <Link 
+                  to="/signup" 
+                  className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-bold"
+                >
+                  Sign Up
+                </Link>
+              </p>
+            </div>
+          </form>
         </motion.div>
 
-        {/* Back to Welcome */}
+        {/* Back Link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-6 text-center"
+          className="text-center mt-6"
         >
-          <Link
-            to="/welcome"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-dark-300 hover:text-gray-800 dark:hover:text-dark-100 transition-colors"
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-sm text-gray-600 dark:text-dark-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
           >
-            <ArrowLeft size={16} />
-            <span className="text-sm font-medium">Back to welcome</span>
+            <ArrowLeft size={16} className="mr-2" />
+            Back to Home
           </Link>
         </motion.div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

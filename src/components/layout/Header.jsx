@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../contexts/ThemeContext'
 import { getTransformedUrl } from '../../utils/imageUtils'
 
-const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = false, user }) => {
+const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = false, user, profile }) => {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useTheme()
 
@@ -66,7 +66,7 @@ const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = fals
             >
               <Trophy size={12} className="drop-shadow-sm" />
             </motion.div>
-            <span className="tracking-tight">1,250</span>
+            <span className="tracking-tight">{profile?.total_points?.toLocaleString() || '0'}</span>
           </motion.div>
           
           {/* Notification */}

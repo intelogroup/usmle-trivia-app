@@ -1,5 +1,6 @@
 import React from 'react';
 import { Activity } from 'lucide-react';
+import logger from '../../utils/logger';
 
 /**
  * IconWrapper - A safe wrapper for icons that handles fallbacks gracefully
@@ -22,7 +23,7 @@ const IconWrapper = ({ icon: IconComponent, fallback = Activity, ...props }) => 
   try {
     return <IconComponent {...props} />;
   } catch (error) {
-    console.warn('Icon rendering failed, using fallback:', error);
+    logger.warn('Icon rendering failed, using fallback', { iconComponent: IconComponent?.name }, error);
     const FallbackIcon = fallback;
     return <FallbackIcon {...props} />;
   }

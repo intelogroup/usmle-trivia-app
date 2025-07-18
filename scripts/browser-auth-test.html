@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 USMLE Trivia Authentication Test</h1>
+        <p>Testing authentication flows for terragon branch validation</p>
+
+        <!-- Connection Status -->
+        <div id="connectionStatus" class="test-section info">
+            <h3>📡 Connection Status</h3>
+            <p id="connectionText">Testing connection...</p>
+        </div>
+
+        <!-- Login Test -->
+        <div class="test-section">
+            <h3>🔐 Login Test</h3>
+            <input type="email" id="loginEmail" placeholder="Email" value="jimkalinov@gmail.com">
+            <input type="password" id="loginPassword" placeholder="Password" value="Jimkali90#">
+            <button onclick="testLogin()">Test Login</button>
+            <button onclick="testLogout()">Test Logout</button>
+            <div id="loginResult"></div>
+        </div>
+
+        <!-- Registration Test -->
+        <div class="test-section">
+            <h3>👤 Registration Test</h3>
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="password" id="regPassword" placeholder="Password" value="TestPassword123!">
+            <input type="text" id="regName" placeholder="Full Name" value="Test User">
+            <button onclick="testRegistration()">Test Registration</button>
+            <div id="regResult"></div>
+        </div>
+
+        <!-- Password Reset Test -->
+        <div class="test-section">
+            <h3>🔄 Password Reset Test</h3>
+            <input type="email" id="resetEmail" placeholder="Email" value="jimkalinov@gmail.com">
+            <button onclick="testPasswordReset()">Test Password Reset</button>
+            <div id="resetResult"></div>
+        </div>
+
+        <!-- Profile Test -->
+        <div class="test-section">
+            <h3>👤 Profile Test</h3>
+            <button onclick="testProfile()">Test Profile Access</button>
+            <div id="profileResult"></div>
+        </div>
+
+        <!-- Current User Status -->
+        <div class="test-section">
+            <h3>👤 Current User Status</h3>
+            <button onclick="checkCurrentUser()">Check Current User</button>
+            <div id="userStatus"></div>
+        </div>
+
+        <!-- Test Log -->
+        <div class="test-section">
+            <h3>📝 Test Log</h3>
+            <button onclick="clearLog()">Clear Log</button>
+            <div id="testLog" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://bkuowoowlmwranfoliea.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdW93b293bG13cmFuZm9saWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyMDA4NTQsImV4cCI6MjA2NTc3Njg1NH0.lNbEJRUEOl3nVtRPNqKsJu4w031DHae5bjOxZIFlSpI'
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString()
+            const logDiv = document.getElementById('testLog')
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`
+            logDiv.textContent += logEntry
+            logDiv.scrollTop = logDiv.scrollHeight
+            console.log(logEntry)
+        }
+
+        function setResult(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId)
+            element.innerHTML = `<p>${isSuccess ? '✅' : '❌'} ${message}</p>`
+            element.className = isSuccess ? 'success' : 'error'
+        }
+
+        // Test connection
+        async function testConnection() {
+            try {
+                log('Testing database connection...')
+                const { data, error } = await supabase
+                    .from('tags')
+                    .select('id, name')
+                    .limit(1)
+                
+                if (error) {
+                    throw error
+                }
+                
+                document.getElementById('connectionText').textContent = '✅ Connected to Supabase'
+                document.getElementById('connectionStatus').className = 'test-section success'
+                log('Database connection successful')
+                return true
+            } catch (error) {
+                document.getElementById('connectionText').textContent = '❌ Connection failed: ' + error.message
+                document.getElementById('connectionStatus').className = 'test-section error'
+                log('Database connection failed: ' + error.message, 'error')
+                return false
+            }
+        }
+
+        // Test login
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value
+            const password = document.getElementById('loginPassword').value
+            
+            try {
+                log(`Attempting login with email: ${email}`)
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                })
+                
+                if (error) {
+                    throw error
+                }
+                
+                setResult('loginResult', `Login successful! User ID: ${data.user.id}`, true)
+                log('Login successful')
+                checkCurrentUser()
+            } catch (error) {
+                setResult('loginResult', `Login failed: ${error.message}`, false)
+                log('Login failed: ' + error.message, 'error')
+            }
+        }
+
+        // Test logout
+        async function testLogout() {
+            try {
+                log('Attempting logout...')
+                const { error } = await supabase.auth.signOut()
+                
+                if (error) {
+                    throw error
+                }
+                
+                setResult('loginResult', 'Logout successful!', true)
+                log('Logout successful')
+                checkCurrentUser()
+            } catch (error) {
+                setResult('loginResult', `Logout failed: ${error.message}`, false)
+                log('Logout failed: ' + error.message, 'error')
+            }
+        }
+
+        // Test registration
+        async function testRegistration() {
+            const email = document.getElementById('regEmail').value
+            const password = document.getElementById('regPassword').value
+            const fullName = document.getElementById('regName').value
+            
+            if (!email) {
+                // Generate unique email
+                const timestamp = Date.now()
+                document.getElementById('regEmail').value = `test-${timestamp}@example.com`
+                return
+            }
+            
+            try {
+                log(`Attempting registration with email: ${email}`)
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                        },
+                    },
+                })
+                
+                if (error) {
+                    throw error
+                }
+                
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                    throw new Error('Email already in use')
+                }
+                
+                setResult('regResult', `Registration successful! User ID: ${data.user.id}`, true)
+                log('Registration successful')
+            } catch (error) {
+                setResult('regResult', `Registration failed: ${error.message}`, false)
+                log('Registration failed: ' + error.message, 'error')
+            }
+        }
+
+        // Test password reset
+        async function testPasswordReset() {
+            const email = document.getElementById('resetEmail').value
+            
+            try {
+                log(`Sending password reset to: ${email}`)
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/reset-password',
+                })
+                
+                if (error) {
+                    throw error
+                }
+                
+                setResult('resetResult', 'Password reset email sent successfully!', true)
+                log('Password reset email sent')
+            } catch (error) {
+                setResult('resetResult', `Password reset failed: ${error.message}`, false)
+                log('Password reset failed: ' + error.message, 'error')
+            }
+        }
+
+        // Test profile access
+        async function testProfile() {
+            try {
+                log('Testing profile access...')
+                const { data: { user } } = await supabase.auth.getUser()
+                
+                if (!user) {
+                    throw new Error('No authenticated user')
+                }
+                
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single()
+                
+                if (error) {
+                    throw error
+                }
+                
+                setResult('profileResult', `Profile access successful! Username: ${data.username}`, true)
+                log('Profile access successful')
+            } catch (error) {
+                setResult('profileResult', `Profile access failed: ${error.message}`, false)
+                log('Profile access failed: ' + error.message, 'error')
+            }
+        }
+
+        // Check current user
+        async function checkCurrentUser() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                const { data: { session } } = await supabase.auth.getSession()
+                
+                if (user) {
+                    document.getElementById('userStatus').innerHTML = `
+                        <div class="success">
+                            <p>✅ User authenticated</p>
+                            <p><strong>ID:</strong> ${user.id}</p>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>Session:</strong> ${session ? 'Active' : 'None'}</p>
+                        </div>
+                    `
+                } else {
+                    document.getElementById('userStatus').innerHTML = `
+                        <div class="info">
+                            <p>ℹ️ No authenticated user</p>
+                        </div>
+                    `
+                }
+            } catch (error) {
+                document.getElementById('userStatus').innerHTML = `
+                    <div class="error">
+                        <p>❌ Error checking user: ${error.message}</p>
+                    </div>
+                `
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('testLog').textContent = ''
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            testConnection()
+            checkCurrentUser()
+            log('Authentication test page loaded')
+        }
+    </script>
+</body>
+</html>

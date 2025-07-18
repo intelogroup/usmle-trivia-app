@@ -5,14 +5,16 @@ const LOG_LEVELS = {
   ERROR: 0,
   WARN: 1,
   INFO: 2,
-  DEBUG: 3
+  DEBUG: 3,
+  TRACE: 4
 };
 
 const LOG_COLORS = {
   ERROR: '#ff4444',
   WARN: '#ffaa00',
   INFO: '#4488ff',
-  DEBUG: '#888888'
+  DEBUG: '#888888',
+  TRACE: '#cccccc'
 };
 
 class Logger {
@@ -111,10 +113,45 @@ class Logger {
 
   debug(message, data = {}) {
     if (!this._shouldLog('DEBUG')) return;
-    
+
     const formatted = this._formatMessage('DEBUG', message, data);
     this._logToConsole('DEBUG', formatted);
-    
+
+    return formatted;
+  }
+
+  trace(message, data = {}) {
+    if (!this._shouldLog('TRACE')) return;
+
+    const formatted = this._formatMessage('TRACE', message, data);
+    this._logToConsole('TRACE', formatted);
+
+    // Add stack trace for trace level
+    if (process.env.NODE_ENV === 'development') {
+      console.trace(message);
+    }
+
+    return formatted;
+  }
+
+  success(message, data = {}) {
+    // Success is treated as INFO level with green color
+    if (!this._shouldLog('INFO')) return;
+
+    const formatted = this._formatMessage('INFO', message, data);
+    // Override color for success messages
+    const { timestamp, context } = formatted;
+    const prefix = `%c[SUCCESS] ${timestamp.split('T')[1].split('.')[0]}`;
+    const hasContext = Object.keys(context).length > 0;
+
+    if (hasContext) {
+      console.groupCollapsed(prefix, 'color: #22c55e; font-weight: bold', message);
+      console.table(context);
+      console.groupEnd();
+    } else {
+      console.log(prefix, 'color: #22c55e; font-weight: bold', message);
+    }
+
     return formatted;
   }
 

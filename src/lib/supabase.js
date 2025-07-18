@@ -20,17 +20,18 @@ export const supabase = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true
-    },
-    global: {
-      // Use the proxy path for development to bypass CORS
-      fetch: (url, options) => {
-        if (url.startsWith(supabaseUrl)) {
-          const newUrl = url.replace(supabaseUrl, '/supabase');
-          return fetch(newUrl, options);
-        }
-        return fetch(url, options);
-      }
     }
+    // Temporarily disable proxy to debug authentication issue
+    // global: {
+    //   // Use the proxy path for development to bypass CORS
+    //   fetch: (url, options) => {
+    //     if (url.startsWith(supabaseUrl)) {
+    //       const newUrl = url.replace(supabaseUrl, '/supabase');
+    //       return fetch(newUrl, options);
+    //     }
+    //     return fetch(url, options);
+    //   }
+    // }
   }
 )
 

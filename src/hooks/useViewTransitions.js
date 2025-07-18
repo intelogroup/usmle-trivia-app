@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import logger from '../utils/logger'
 
 /**
  * Hook for smooth view transitions using the View Transition API
@@ -96,7 +97,7 @@ export const useRoutePreloader = () => {
         await preloadData()
       }
     } catch (error) {
-      console.warn('Failed to preload route:', routePath, error)
+      logger.warn('Failed to preload route', { routePath, preloadDataProvided: !!preloadData }, error)
     }
   }, [])
 

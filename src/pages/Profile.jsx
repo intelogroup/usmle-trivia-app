@@ -4,7 +4,7 @@ import UserStats from '../components/profile/UserStats';
 import Achievements from '../components/profile/Achievements';
 import SettingsComponent from '../components/profile/SettingsComponent';
 import AccountInfo from '../components/profile/AccountInfo';
-import DatabaseConnection from '../components/profile/DatabaseConnection';
+
 
 const Profile = () => {
   return (
@@ -18,7 +18,7 @@ const Profile = () => {
       <Achievements />
       <SettingsComponent />
       <AccountInfo />
-      <DatabaseConnection />
+
     </motion.div>
   );
 };

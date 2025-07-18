@@ -90,7 +90,15 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
     };
     setUserAnswers(prev => [...prev, answerData]);
     if (quizSession) {
-      recordQuizResponse(quizSession.id, answerData).catch(() => {});
+      recordQuizResponse({
+        sessionId: quizSession.id,
+        userId: answerData.userId,
+        questionId: answerData.questionId,
+        selectedOptionId: answerData.selectedOptionId,
+        isCorrect: answerData.isCorrect,
+        timeSpent: answerData.timeSpent,
+        responseOrder: answerData.responseOrder
+      }).catch(() => {});
     }
   }, [isAnswered, timedOut, isComplete, questions, currentIndex, timeLeft, timePerQuestion, quizSession]);
 
@@ -111,7 +119,15 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
       setUserAnswers(prev => [...prev, answerData]);
       setIsAnswered(true);
       if (quizSession) {
-        recordQuizResponse(quizSession.id, answerData).catch(() => {});
+        recordQuizResponse({
+          sessionId: quizSession.id,
+          userId: answerData.userId,
+          questionId: answerData.questionId,
+          selectedOptionId: answerData.selectedOptionId,
+          isCorrect: answerData.isCorrect,
+          timeSpent: answerData.timeSpent,
+          responseOrder: answerData.responseOrder
+        }).catch(() => {});
       }
     }
   }, [timedOut, isAnswered, isComplete, questions, currentIndex, timePerQuestion, quizSession]);

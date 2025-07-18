@@ -10,7 +10,7 @@ const noHeaderPaths = [];
 const noBottomNavPaths = [];
 
 const Layout = ({ children }) => {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(true)
   const location = useLocation()
@@ -51,7 +51,7 @@ const Layout = ({ children }) => {
       {/* Mobile Layout (unchanged) */}
       {isMobile ? (
         <div className="flex flex-col min-h-screen">
-          {showHeader && <Header user={user} />}
+          {showHeader && <Header user={user} profile={profile} />}
           <main className="flex-1 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -84,11 +84,12 @@ const Layout = ({ children }) => {
           {/* Main Content Area - Takes remaining width */}
           <div className={`${isSidebarOpen ? 'w-[85%]' : 'w-full'} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
             {showHeader && (
-              <Header 
+              <Header
                 onSidebarToggle={toggleSidebar}
                 showSidebarToggle={window.innerWidth < 1024}
                 isCondensed={false}
                 user={user}
+                profile={profile}
               />
             )}
             

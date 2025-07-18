@@ -18,7 +18,7 @@ const TIMED_TEST_CONFIG = {
   allowReview: false
 };
 
-const QuizActions = ({ onQuickStart, onTimedTest, onCustomQuiz, onBlockTest }) => {
+const QuizActions = ({ onQuickStart, onTimedTest, onCustomQuiz }) => {
   // Use local config for quick and timed quiz
   const quickConfig = QUICK_QUIZ_CONFIG;
   const timedConfig = TIMED_TEST_CONFIG;
@@ -60,22 +60,10 @@ const QuizActions = ({ onQuickStart, onTimedTest, onCustomQuiz, onBlockTest }) =
       action: onCustomQuiz,
       timeEstimate: 'Variable',
       mode: 'custom',
-      status: '🚧 Coming Soon',
+      status: '✅ Live',
       details: '1 min/question or self-paced • Manual advance • Explanations after each answer'
     },
-    {
-      id: 'block-test',
-      title: '🟡 Block Test',
-      subtitle: '20-50 per block × 2-8 blocks',
-      description: 'Full exam simulation',
-      icon: Layers,
-      color: 'bg-yellow-600 hover:bg-yellow-700',
-      action: onBlockTest,
-      timeEstimate: '2-6 hours',
-      mode: 'block',
-      status: '🚧 Coming Soon',
-      details: '1 min/question + 5 min bonus/block • Manual advance within blocks • Explanations after full test only'
-    }
+
   ]
 
   return (
@@ -87,7 +75,7 @@ const QuizActions = ({ onQuickStart, onTimedTest, onCustomQuiz, onBlockTest }) =
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {quickActions.map((action, index) => (
           <motion.button
             key={action.id}

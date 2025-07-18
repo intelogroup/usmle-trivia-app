@@ -6,10 +6,23 @@ import { useAuth } from '../../contexts/AuthContext';
 const UserStats = () => {
   const { profile } = useAuth();
 
+  // Calculate dynamic stats from profile data
+  const calculateAccuracy = () => {
+    if (!profile?.total_questions_answered || profile.total_questions_answered === 0) return '0%';
+    const accuracy = (profile.correct_answers / profile.total_questions_answered) * 100;
+    return `${Math.round(accuracy)}%`;
+  };
+
+  const calculateStudyTime = () => {
+    if (!profile?.total_study_time_seconds) return '0h';
+    const hours = Math.round(profile.total_study_time_seconds / 3600 * 10) / 10;
+    return `${hours}h`;
+  };
+
   const userStats = [
     { icon: Trophy, label: 'Total Points', value: profile?.total_points?.toLocaleString() || '0', color: 'text-yellow-500' },
-    { icon: Target, label: 'Overall Accuracy', value: '78%', color: 'text-blue-500' },
-    { icon: Clock, label: 'Study Time', value: '42h', color: 'text-green-500' },
+    { icon: Target, label: 'Overall Accuracy', value: calculateAccuracy(), color: 'text-blue-500' },
+    { icon: Clock, label: 'Study Time', value: calculateStudyTime(), color: 'text-green-500' },
   ];
 
   return (

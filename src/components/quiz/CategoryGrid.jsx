@@ -4,11 +4,14 @@ import CategoryCard from '../ui/CategoryCard'
 import CategoryListItem from './CategoryListItem'
 import EmptyStateCard from '../ui/EmptyStateCard'
 import { Search, Grid3X3 } from 'lucide-react'
+import logger from '../../utils/logger'
 
 const CategoryGrid = ({ categories = [], filters = {}, onCategorySelect, onClearFilters }) => {
   // Validate required props
   if (!onCategorySelect || typeof onCategorySelect !== 'function') {
-    console.error('CategoryGrid: onCategorySelect prop is required and must be a function');
+    logger.error('CategoryGrid: onCategorySelect prop is required and must be a function', {
+      onCategorySelect: typeof onCategorySelect
+    });
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
@@ -38,7 +41,10 @@ const CategoryGrid = ({ categories = [], filters = {}, onCategorySelect, onClear
     filteredCategories = filterCategories(safeCategories, safeFilters);
     sortedCategories = sortCategories(filteredCategories, 'name');
   } catch (error) {
-    console.error('Error filtering/sorting categories:', error);
+    logger.error('Error filtering/sorting categories', {
+      categoriesCount: safeCategories.length,
+      filters: safeFilters
+    }, error);
     // Fallback to original categories
     sortedCategories = safeCategories;
   }
@@ -91,7 +97,7 @@ const CategoryGrid = ({ categories = [], filters = {}, onCategorySelect, onClear
         {sortedCategories.map((category, index) => {
           // Ensure category has required properties
           if (!category || !category.id) {
-            console.warn('Invalid category data:', category);
+            logger.warn('Invalid category data in grid view', { category, index });
             return null;
           }
 
@@ -126,7 +132,7 @@ const CategoryGrid = ({ categories = [], filters = {}, onCategorySelect, onClear
       {sortedCategories.map((category, index) => {
         // Ensure category has required properties
         if (!category || !category.id) {
-          console.warn('Invalid category data:', category);
+          logger.warn('Invalid category data in list view', { category, index });
           return null;
         }
 
