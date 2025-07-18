@@ -2,13 +2,14 @@ import { createClient } from '@supabase/supabase-js'
 
 // Supabase configuration with validation
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY
 
 // Validate configuration
 if (!supabaseUrl || !supabaseKey) {
   console.error('Supabase environment variables are missing');
   console.error('URL:', supabaseUrl ? 'OK' : 'MISSING');
   console.error('KEY:', supabaseKey ? 'OK' : 'MISSING');
+  console.error('Using publishable key:', import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? 'YES' : 'NO');
 }
 
 // Create Supabase client with fallback values for development
