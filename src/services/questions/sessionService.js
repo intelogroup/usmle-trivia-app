@@ -77,12 +77,14 @@ export async function createQuizSession(sessionConfig) {
 }
 
 // Complete a quiz session
-export async function completeQuizSession(sessionId, completionData) {
+export async function completeQuizSession(sessionId, completionData = {}) {
   const {
     correctAnswers,
     totalTimeSeconds,
-    pointsEarned = 0,
-    completed = true
+    pointsEarned,
+    completed = true,
+    totalQuestions,
+    responses = []
   } = completionData;
 
   logger.info('Completing quiz session', {
@@ -90,14 +92,22 @@ export async function completeQuizSession(sessionId, completionData) {
     correctAnswers,
     totalTimeSeconds,
     pointsEarned,
-    completed
+    completed,
+    totalQuestions
   });
+
+  // Calculate points if not provided (2 points per correct answer)
+  const calculatedPoints = pointsEarned !== undefined ? pointsEarned : (correctAnswers * 2);
+  
+  // Calculate score percentage
+  const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
 
   const updateData = {
     correct_answers: correctAnswers,
     completed_at: new Date().toISOString(),
     total_time_seconds: totalTimeSeconds,
-    points_earned: pointsEarned,
+    points_earned: calculatedPoints,
+    score: score,
     is_completed: completed
   };
 
@@ -113,11 +123,39 @@ export async function completeQuizSession(sessionId, completionData) {
     throw new Error(`COMPLETE_SESSION_ERROR: ${error.message}`);
   }
 
+  // Update user points in profile
+  if (calculatedPoints > 0) {
+    try {
+      const { data: sessionData } = await supabase
+        .from('quiz_sessions')
+        .select('user_id')
+        .eq('id', sessionId)
+        .single();
+
+      if (sessionData?.user_id) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ 
+            total_points: supabase.raw('total_points + ?', [calculatedPoints]),
+            last_active_at: new Date().toISOString()
+          })
+          .eq('id', sessionData.user_id);
+
+        if (profileError) {
+          logger.warn('Failed to update user points', { error: profileError, userId: sessionData.user_id });
+        }
+      }
+    } catch (profileUpdateError) {
+      logger.warn('Error updating user profile points', { error: profileUpdateError });
+    }
+  }
+
   logger.success('Quiz session completed successfully', {
     sessionId: data.id,
     correctAnswers,
     totalTimeSeconds,
-    pointsEarned
+    pointsEarned: calculatedPoints,
+    score
   });
 
   return data;

@@ -2,10 +2,13 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Home } from 'lucide-react';
-import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
+import { fetchQuestionsForUser, createQuizSession, recordQuizResponse } from '../services/questionService';
+import { useQuizCompletion } from '../hooks/useQuizCompletion';
 import QuizProgressBar from '../components/quiz/QuizProgressBar';
 import QuizLoading from '../components/quiz/QuizLoading';
 import QuizError from '../components/quiz/QuizError';
+import MobileQuizHeader from '../components/quiz/MobileQuizHeader';
+import MobileOptionCard from '../components/quiz/MobileOptionCard';
 import { useAuth } from '../contexts/AuthContext';
 
 const ICONS = ['🅰️', '🅱️', '🇨', '🇩'];
@@ -35,6 +38,7 @@ const CustomQuiz = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { completeQuiz } = useQuizCompletion();
   const config = location.state;
 
   console.log('🎯 [CustomQuiz] Component mounted');
@@ -180,8 +184,8 @@ const CustomQuiz = () => {
 
   // Handle next question
   const handleNext = useCallback(() => {
-    setAnswers((prev) => [
-      ...prev,
+    const newAnswers = [
+      ...answers,
       {
         questionId: questions[currentIdx].id,
         selectedOption,
@@ -189,7 +193,8 @@ const CustomQuiz = () => {
         timedOut,
         timeSpent: config?.timing === 'timed' ? 60 - timeLeft : null,
       },
-    ]);
+    ];
+    setAnswers(newAnswers);
     setSelectedOption(null);
     setIsAnswered(false);
     setTimedOut(false);
@@ -197,9 +202,20 @@ const CustomQuiz = () => {
       setCurrentIdx((idx) => idx + 1);
     } else {
       setShowResults(true);
-      completeQuizSession(quizSessionId);
+      // Calculate completion data
+      const correctCount = newAnswers.filter(a => a.isCorrect).length;
+      const totalTime = config?.timing === 'timed' ? (questions.length * 60) - timeLeft : null;
+      const pointsEarned = correctCount * 2;
+      
+      completeQuiz(quizSessionId, {
+        correctAnswers: correctCount,
+        totalTimeSeconds: totalTime,
+        pointsEarned,
+        totalQuestions: questions.length,
+        responses: newAnswers
+      }, user.id);
     }
-  }, [currentIdx, questions, selectedOption, timedOut, config, timeLeft, quizSessionId]);
+  }, [currentIdx, questions, selectedOption, timedOut, config, timeLeft, quizSessionId, answers, completeQuiz, user.id]);
 
   // Mute toggle
   const toggleMute = () => {
@@ -262,24 +278,18 @@ const CustomQuiz = () => {
               <Confetti show={showConfetti} />
               <div className="mb-2 font-semibold">Question {currentIdx + 1} / {questions.length}</div>
               <div className="mb-4 text-lg font-medium">{currentQuestion.question_text}</div>
-              <div className="space-y-2 mb-4">
+              <div className="space-y-3 mb-4">
                 {currentQuestion.options && currentQuestion.options.map((opt, idx) => (
-                  <motion.button
+                  <MobileOptionCard
                     key={opt.id}
-                    className={`w-full flex items-center gap-3 text-left p-3 rounded-xl border transition-all font-semibold text-base focus:outline-none focus:ring-2 focus:ring-cyan-400 ${selectedOption === opt.id
-                      ? (opt.id === currentQuestion.correct_option_id
-                        ? 'bg-green-100 border-green-400 scale-105'
-                        : 'bg-red-100 border-red-400 shake')
-                      : 'border-gray-200 hover:bg-cyan-50'} ${isAnswered ? 'pointer-events-none' : ''}`}
+                    option={opt}
+                    index={idx}
+                    isSelected={selectedOption === opt.id}
+                    isCorrect={opt.id === currentQuestion.correct_option_id}
+                    isAnswered={isAnswered}
+                    onSelect={handleOptionSelect}
                     disabled={isAnswered}
-                    onClick={() => handleOptionSelect(opt.id)}
-                    aria-pressed={selectedOption === opt.id}
-                    tabIndex={0}
-                    aria-label={`Option ${idx + 1}: ${opt.text}`}
-                  >
-                    <span className="text-2xl">{ICONS[idx] || '🔘'}</span>
-                    <span>{opt.text}</span>
-                  </motion.button>
+                  />
                 ))}
               </div>
               <AnimatePresence>

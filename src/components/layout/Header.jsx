@@ -3,10 +3,12 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../contexts/ThemeContext'
 import { getTransformedUrl } from '../../utils/imageUtils'
+import { useUserPoints } from '../../hooks/useUserPoints'
 
 const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = false, user, profile }) => {
   const navigate = useNavigate()
   const { isDarkMode, toggleTheme } = useTheme()
+  const { points, isLoading: pointsLoading } = useUserPoints()
 
   const handleActionPress = (action) => {
     // Add haptic feedback for native feel
@@ -66,7 +68,9 @@ const Header = ({ onSidebarToggle, showSidebarToggle = false, isCondensed = fals
             >
               <Trophy size={12} className="drop-shadow-sm" />
             </motion.div>
-            <span className="tracking-tight">{profile?.total_points?.toLocaleString() || '0'}</span>
+            <span className="tracking-tight">
+              {pointsLoading ? '...' : (points?.toLocaleString() || '0')}
+            </span>
           </motion.div>
           
           {/* Notification */}

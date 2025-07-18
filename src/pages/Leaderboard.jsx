@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 
 // Import custom hooks and components
-import { useLeaderboardData } from '../hooks/useLeaderboardData';
+import { useRealLeaderboardData } from '../hooks/useRealLeaderboardData';
 import LeaderboardPeriodSelector from '../components/leaderboard/LeaderboardPeriodSelector';
 import LeaderboardPodium from '../components/leaderboard/LeaderboardPodium';
 import CurrentUserStats from '../components/leaderboard/CurrentUserStats';
@@ -11,15 +11,15 @@ import LeaderboardTable from '../components/leaderboard/LeaderboardTable';
 const Leaderboard = () => {
   // Use custom hook for data management
   const {
-    selectedPeriod,
-    setSelectedPeriod,
-    periods,
     leaderboardData,
     topThree,
     currentUserData,
-    currentUserRank,
-    totalParticipants
-  } = useLeaderboardData();
+    actualUserRank,
+    totalParticipants,
+    isLoading,
+    error,
+    isEmpty
+  } = useRealLeaderboardData();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-3 pb-20 md:pb-6">
@@ -41,12 +41,13 @@ const Leaderboard = () => {
               </div>
             </div>
 
-            {/* Period Selector */}
-            <LeaderboardPeriodSelector
-              periods={periods}
-              selectedPeriod={selectedPeriod}
-              onPeriodChange={setSelectedPeriod}
-            />
+            {/* Loading/Error States */}
+            {isLoading && (
+              <div className="text-gray-600 dark:text-gray-300 text-sm">Loading...</div>
+            )}
+            {error && (
+              <div className="text-red-600 dark:text-red-400 text-sm">Error loading leaderboard</div>
+            )}
           </div>
         </motion.div>
 
@@ -60,7 +61,7 @@ const Leaderboard = () => {
             {/* Current User Stats - Only on Desktop */}
             <CurrentUserStats 
               currentUserData={currentUserData}
-              currentUserRank={currentUserRank}
+              currentUserRank={actualUserRank}
             />
           </div>
 

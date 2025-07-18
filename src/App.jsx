@@ -24,6 +24,7 @@ const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'))
 const Welcome = lazy(() => import('./pages/auth/Welcome'))
 const Privacy = lazy(() => import('./pages/Privacy'))
 const Terms = lazy(() => import('./pages/Terms'))
+const Analytics = lazy(() => import('./pages/Analytics'))
 
 function App() {
   return (
@@ -82,6 +83,7 @@ function App() {
                   <Route path="/custom-quiz-setup" element={<CustomQuizSetup />} />
                   <Route path="/custom-quiz" element={<CustomQuiz />} />
                   <Route path="/results" element={<Results />} />
+                  <Route path="/analytics" element={<Analytics />} />
                 </Routes>
               </Suspense>
             </Layout>

@@ -6,8 +6,8 @@ import Header from './Header'
 import BottomNav from './BottomNav'
 import Sidebar from './Sidebar'
 
-const noHeaderPaths = [];
-const noBottomNavPaths = [];
+const noHeaderPaths = ['/quick-quiz', '/timed-test', '/custom-quiz'];
+const noBottomNavPaths = ['/quick-quiz', '/timed-test', '/custom-quiz'];
 
 const Layout = ({ children }) => {
   const { user, profile } = useAuth()

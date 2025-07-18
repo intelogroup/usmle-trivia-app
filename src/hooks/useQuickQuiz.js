@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { fetchQuestionsForUser, createQuizSession, recordQuizResponse } from '../services/questionService';
+import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from './queries/queryKeys';
 
 export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10, difficulty = null, timePerQuestion = 60 }) {
   const [questions, setQuestions] = useState([]);
@@ -15,6 +17,7 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
   const [timeLeft, setTimeLeft] = useState(timePerQuestion);
 
   const timerRef = useRef(null);
+  const queryClient = useQueryClient();
 
   // Fetch questions and create session on mount
   useEffect(() => {
@@ -142,10 +145,40 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
   }, [timePerQuestion]);
 
   // Complete quiz
-  const completeQuiz = useCallback(() => {
+  const completeQuiz = useCallback(async () => {
     setIsComplete(true);
     clearInterval(timerRef.current);
-  }, []);
+    
+    // Complete the quiz session with proper data
+    if (quizSession && userId) {
+      const correctCount = userAnswers.filter(a => a.isCorrect).length;
+      const totalTime = questionCount * timePerQuestion;
+      const pointsEarned = correctCount * 2;
+      
+      try {
+        await completeQuizSession(quizSession.id, {
+          correctAnswers: correctCount,
+          totalTimeSeconds: totalTime,
+          pointsEarned,
+          totalQuestions: questions.length,
+          responses: userAnswers
+        });
+        
+        // Refresh user points and stats
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.userPoints(userId)
+        });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.userStats(userId)
+        });
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.userActivity(userId)
+        });
+      } catch (error) {
+        console.warn('Failed to complete quiz session:', error);
+      }
+    }
+  }, [quizSession, userAnswers, questionCount, timePerQuestion, questions.length, userId, queryClient]);
 
   // Auto-advance after answer or timeout
   useEffect(() => {

@@ -2,12 +2,15 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Home, Clock } from 'lucide-react';
-import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
+import { fetchQuestionsForUser, createQuizSession, recordQuizResponse } from '../services/questionService';
 import QuizProgressBar from '../components/quiz/QuizProgressBar';
 import QuizLoading from '../components/quiz/QuizLoading';
 import QuizError from '../components/quiz/QuizError';
 import TimedTestResults from '../components/quiz/TimedTestResults';
+import MobileQuizHeader from '../components/quiz/MobileQuizHeader';
+import MobileOptionCard from '../components/quiz/MobileOptionCard';
 import { useAuth } from '../contexts/AuthContext';
+import { useQuizCompletion } from '../hooks/useQuizCompletion';
 
 const ICONS = ['🅰️', '🅱️', '🇨', '🇩'];
 const Confetti = ({ show }) => show ? (
@@ -36,6 +39,7 @@ const TimedTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { completeQuiz } = useQuizCompletion();
   const config = location.state || {};
   const questionCount = config.questionCount || 20;
   const difficulty = config.difficulty || '';
@@ -104,14 +108,25 @@ const TimedTest = () => {
         if (t <= 1) {
           clearInterval(timerRef.current);
           setShowResults(true);
-          completeQuizSession(quizSessionId);
+          // Calculate completion data for timeout
+          const correctCount = answers.filter(a => a.isCorrect).length;
+          const totalTime = TOTAL_TIME;
+          const pointsEarned = correctCount * 2;
+          
+          completeQuiz(quizSessionId, {
+            correctAnswers: correctCount,
+            totalTimeSeconds: totalTime,
+            pointsEarned,
+            totalQuestions: questions.length,
+            responses: answers
+          }, user.id);
           return 0;
         }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [showResults, loading, quizSessionId]);
+  }, [showResults, loading, quizSessionId, answers, questions.length, TOTAL_TIME, completeQuiz, user.id]);
 
   // Animated feedback
   useEffect(() => {
@@ -168,15 +183,16 @@ const TimedTest = () => {
       setError({ code: 'INVALID_QUESTION', message: 'An internal error occurred: question is missing or invalid. Please restart the quiz.' });
       return;
     }
-    setAnswers((prev) => [
-      ...prev,
+    const newAnswers = [
+      ...answers,
       {
         questionId: currentQ.id,
         selectedOption,
         isCorrect: selectedOption === currentQ.correct_option_id,
         timedOut,
       },
-    ]);
+    ];
+    setAnswers(newAnswers);
     setSelectedOption(null);
     setIsAnswered(false);
     setTimedOut(false);
@@ -184,9 +200,20 @@ const TimedTest = () => {
       setCurrentIdx((idx) => idx + 1);
     } else {
       setShowResults(true);
-      completeQuizSession(quizSessionId);
+      // Calculate completion data
+      const correctCount = newAnswers.filter(a => a.isCorrect).length;
+      const totalTime = TOTAL_TIME - timeLeft;
+      const pointsEarned = correctCount * 2;
+      
+      completeQuiz(quizSessionId, {
+        correctAnswers: correctCount,
+        totalTimeSeconds: totalTime,
+        pointsEarned,
+        totalQuestions: questions.length,
+        responses: newAnswers
+      }, user.id);
     }
-  }, [currentIdx, questions, selectedOption, timedOut, quizSessionId]);
+  }, [currentIdx, questions, selectedOption, timedOut, quizSessionId, answers, timeLeft, TOTAL_TIME, completeQuiz, user.id]);
 
   // Mute toggle
   const toggleMute = () => {
@@ -206,24 +233,33 @@ const TimedTest = () => {
 
   if (showResults) {
     return (
-      <motion.div className="max-w-xl mx-auto mt-8 bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-xl p-8 flex flex-col items-center" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="text-2xl font-bold mb-2">Test Complete!</h2>
-        <div className="mb-4 text-3xl font-extrabold text-green-600">
-          <AnimatePresence>
-            <motion.span key={displayScore} initial={{ scale: 0.7 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300 }}>
-              {displayScore}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-gray-700 font-normal text-xl"> / {questions.length}</span>
-        </div>
-        <TimedTestResults
-          questions={questions}
-          answers={answers}
-          timeLeft={timeLeft}
-          onRestart={() => window.location.reload()}
-          onGoHome={() => navigate('/quiz-tab')}
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20">
+        <MobileQuizHeader 
+          title="Test Complete!"
+          onBack={() => navigate('/timed-test-setup')}
+          onHome={() => navigate('/quiz-tab')}
         />
-      </motion.div>
+        <div className="px-4 py-6">
+          <motion.div className="max-w-xl mx-auto bg-white/95 dark:bg-slate-900/95 rounded-3xl shadow-xl p-6 flex flex-col items-center" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}>
+            <h2 className="text-2xl font-bold mb-2">Test Complete!</h2>
+            <div className="mb-4 text-3xl font-extrabold text-green-600">
+              <AnimatePresence>
+                <motion.span key={displayScore} initial={{ scale: 0.7 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300 }}>
+                  {displayScore}
+                </motion.span>
+              </AnimatePresence>
+              <span className="text-gray-700 font-normal text-xl"> / {questions.length}</span>
+            </div>
+            <TimedTestResults
+              questions={questions}
+              answers={answers}
+              timeLeft={timeLeft}
+              onRestart={() => window.location.reload()}
+              onGoHome={() => navigate('/quiz-tab')}
+            />
+          </motion.div>
+        </div>
+      </div>
     );
   }
 
@@ -315,6 +351,7 @@ const TimedTest = () => {
             )
           )}
         </AnimatePresence>
+        </div>
       </div>
     </div>
   );

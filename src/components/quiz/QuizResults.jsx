@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ResultsHeader from './ResultsHeader';
 import ScoreCard from './ScoreCard';
 import AchievementBadges from './AchievementBadges';
 import DetailedReview from './DetailedReview';
 import ActionButtons from './ActionButtons';
+import QuizFeedback from './QuizFeedback';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useFeedback } from '../../hooks/useFeedback';
 
 function getStreaks(userAnswers) {
   let maxCorrect = 0, maxWrong = 0, curCorrect = 0, curWrong = 0;
@@ -55,6 +57,35 @@ const QuizResults = ({
   onRestart,
   onGoHome 
 }) => {
+  const {
+    showFeedbackModal,
+    currentQuizData,
+    requestFeedback,
+    submitFeedback,
+    closeFeedbackModal,
+    shouldRequestFeedback,
+    isSubmitting
+  } = useFeedback();
+
+  // Request feedback when results are shown
+  useEffect(() => {
+    const quizData = {
+      sessionId: quizSession?.id,
+      score,
+      totalQuestions: questionCount,
+      accuracy,
+      isCompleted: true,
+      quizMode: quizConfig?.quizMode || 'quick',
+      timeSpent
+    };
+
+    if (shouldRequestFeedback(quizData)) {
+      // Delay feedback request to let user see results first
+      setTimeout(() => {
+        requestFeedback(quizData);
+      }, 3000);
+    }
+  }, [score, questionCount, accuracy, quizSession, quizConfig, timeSpent, shouldRequestFeedback, requestFeedback]);
   const performance = (() => {
     if (accuracy >= 80) return { grade: 'A', color: 'text-green-600', bgColor: 'bg-green-100', message: 'Excellent! USMLE ready!' };
     if (accuracy >= 70) return { grade: 'B', color: 'text-blue-600', bgColor: 'bg-blue-100', message: 'Good job! Keep it up!' };
@@ -125,6 +156,14 @@ const QuizResults = ({
           <ActionButtons accuracy={accuracy} onRestart={onRestart} onGoHome={onGoHome} handleShare={handleShare} />
         </motion.div>
       </div>
+      
+      {/* Feedback Modal */}
+      <QuizFeedback
+        isOpen={showFeedbackModal}
+        onClose={closeFeedbackModal}
+        onSubmit={submitFeedback}
+        quizData={currentQuizData}
+      />
     </div>
   );
 };
