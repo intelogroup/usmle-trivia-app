@@ -1,15 +1,18 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* Import Glassmorphism Design System */
+@import "./glassmorphism.css";
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -78,16 +81,17 @@ html::-webkit-scrollbar {
 /* Mobile-Native Improvements */
 @media (max-width: 768px) {
   /* Improve touch targets */
-  button, .btn {
+  button,
+  .btn {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Native scrolling behavior */
   * {
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Remove tap highlights */
   * {
     -webkit-tap-highlight-color: transparent;
@@ -98,26 +102,28 @@ html::-webkit-scrollbar {
     -ms-user-select: none;
     user-select: none;
   }
-  
+
   /* Allow text selection for inputs and content */
-  input, textarea, [contenteditable] {
+  input,
+  textarea,
+  [contenteditable] {
     -webkit-user-select: text;
     -khtml-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
     user-select: text;
   }
-  
+
   /* Native feel for active states */
   .active\:scale-95:active {
     transform: scale(0.95);
   }
-  
+
   /* Safe area for notched devices */
   .safe-top {
     padding-top: env(safe-area-inset-top);
   }
-  
+
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -131,11 +137,15 @@ html::-webkit-scrollbar {
 
 /* Native-style card shadows */
 .card-shadow {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .card-shadow-lg {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Enhanced Native Mobile Styles */
@@ -169,7 +179,9 @@ body {
 
 .native-card {
   @apply bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-gray-200/30 dark:border-gray-700/30;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .native-list-item {
@@ -184,26 +196,37 @@ body {
 
 /* Enhanced animations */
 @keyframes float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-4px) scale(1.02); }
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+  }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
-    opacity: 1; 
+  0%,
+  100% {
+    opacity: 1;
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
   }
-  50% { 
-    opacity: 0.8; 
+  50% {
+    opacity: 0.8;
     box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
   }
 }
 
 @keyframes bounce-gentle {
-  0%, 20%, 53%, 80%, 100% {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
     transform: translateY(0px);
   }
-  40%, 43% {
+  40%,
+  43% {
     transform: translateY(-5px);
   }
   70% {
@@ -244,15 +267,15 @@ body {
   .safe-top {
     padding-top: max(12px, env(safe-area-inset-top));
   }
-  
+
   .safe-bottom {
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
-  
+
   .safe-left {
     padding-left: max(16px, env(safe-area-inset-left));
   }
-  
+
   .safe-right {
     padding-right: max(16px, env(safe-area-inset-right));
   }
@@ -265,13 +288,13 @@ body {
     min-height: 48px;
     min-width: 48px;
   }
-  
+
   /* Native-like active states */
   .mobile-active:active {
     transform: scale(0.95);
     transition: transform 0.1s ease-out;
   }
-  
+
   /* Prevent text selection on UI elements */
   .no-select {
     -webkit-user-select: none;
@@ -279,7 +302,7 @@ body {
     -ms-user-select: none;
     user-select: none;
   }
-  
+
   /* Allow text selection for content */
   .allow-select {
     -webkit-user-select: text;
@@ -287,7 +310,7 @@ body {
     -ms-user-select: text;
     user-select: text;
   }
-  
+
   /* iOS-style momentum scrolling */
   .ios-scroll {
     -webkit-overflow-scrolling: touch;
@@ -301,11 +324,15 @@ body {
 }
 
 .native-shadow {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .native-shadow-dark {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 /* View Transition API styles for smooth page transitions */
@@ -358,43 +385,87 @@ body {
 
 /* Keyframe animations */
 @keyframes fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-out-left {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(-100%); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 }
 
 @keyframes slide-in-right {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slide-out-right {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes slide-in-left {
-  from { transform: translateX(-100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slide-out-up {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-100%); opacity: 0; }
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
 }
 
 @keyframes slide-in-down {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Performance optimizations for smooth transitions */
@@ -411,8 +482,12 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .dark .loading-shimmer {
@@ -435,9 +510,9 @@ html {
   html {
     scroll-behavior: auto;
   }
-  
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;
   }
-} 
+}
