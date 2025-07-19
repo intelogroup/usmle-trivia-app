@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { ChevronRight, Activity } from "lucide-react";
 import { getMedicalIcon, getCategoryColor } from "../../data/medicalIcons";
 import IconWrapper from "./IconWrapper";
+import { memo } from "react";
+import { ARIA_LABELS } from "../../constants/ui";
 
 const CategoryCard = ({
   title,
