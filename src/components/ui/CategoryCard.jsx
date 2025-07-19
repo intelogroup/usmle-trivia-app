@@ -38,6 +38,7 @@ const CategoryCard = memo(
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
         className="w-full glass-card dark:glass-card-dark rounded-2xl p-4 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+        aria-label={ARIA_LABELS.CARD_INTERACTIVE(title)}
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
