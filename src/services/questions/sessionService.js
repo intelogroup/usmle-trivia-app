@@ -1,4 +1,5 @@
 import { supabase } from '../../lib/supabase';
+import { invalidateQueries } from '../../lib/queryClient';
 import logger from '../../utils/logger';
 
 /**
@@ -152,6 +153,18 @@ export async function completeQuizSession(sessionId, completionData) {
     totalTimeSeconds,
     pointsEarned
   });
+
+  // Invalidate user data queries to trigger immediate UI updates
+  try {
+    const userId = data.user_id;
+    if (userId) {
+      invalidateQueries.userData(userId);
+      logger.info('Invalidated user data queries for immediate UI update', { userId });
+    }
+  } catch (error) {
+    logger.warn('Failed to invalidate queries after quiz completion', { error: error.message });
+    // Don't throw error as the session was completed successfully
+  }
 
   return data;
 }

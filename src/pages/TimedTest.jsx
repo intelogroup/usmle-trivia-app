@@ -104,14 +104,28 @@ const TimedTest = () => {
         if (t <= 1) {
           clearInterval(timerRef.current);
           setShowResults(true);
-          completeQuizSession(quizSessionId);
+          // Complete the quiz session with timeout completion data
+          if (quizSessionId) {
+            const correctAnswers = answers.filter(a => a.isCorrect).length;
+            const totalTimeSeconds = TOTAL_TIME; // Full time elapsed
+            const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+            
+            completeQuizSession(quizSessionId, {
+              correctAnswers,
+              totalTimeSeconds,
+              pointsEarned,
+              completed: true
+            }).catch(error => {
+              console.error('Failed to complete Timed Test session (timeout):', error);
+            });
+          }
           return 0;
         }
         return t - 1;
       });
     }, 1000);
     return () => clearInterval(timerRef.current);
-  }, [showResults, loading, quizSessionId]);
+  }, [showResults, loading, quizSessionId, answers, TOTAL_TIME]);
 
   // Animated feedback
   useEffect(() => {
@@ -184,9 +198,23 @@ const TimedTest = () => {
       setCurrentIdx((idx) => idx + 1);
     } else {
       setShowResults(true);
-      completeQuizSession(quizSessionId);
+      // Complete the quiz session with proper completion data
+      if (quizSessionId) {
+        const correctAnswers = answers.filter(a => a.isCorrect).length;
+        const totalTimeSeconds = TOTAL_TIME - timeLeft; // Time actually used
+        const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+        
+        completeQuizSession(quizSessionId, {
+          correctAnswers,
+          totalTimeSeconds,
+          pointsEarned,
+          completed: true
+        }).catch(error => {
+          console.error('Failed to complete Timed Test session:', error);
+        });
+      }
     }
-  }, [currentIdx, questions, selectedOption, timedOut, quizSessionId]);
+  }, [currentIdx, questions, selectedOption, timedOut, quizSessionId, answers, timeLeft, TOTAL_TIME]);
 
   // Mute toggle
   const toggleMute = () => {

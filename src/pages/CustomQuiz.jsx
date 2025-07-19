@@ -177,9 +177,23 @@ const CustomQuiz = () => {
       setCurrentIdx((idx) => idx + 1);
     } else {
       setShowResults(true);
-      completeQuizSession(quizSessionId);
+      // Complete the quiz session with proper completion data
+      if (quizSessionId) {
+        const correctAnswers = answers.filter(a => a.isCorrect).length;
+        const totalTimeSeconds = answers.reduce((sum, answer) => sum + (answer.timeSpent || 0), 0);
+        const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+        
+        completeQuizSession(quizSessionId, {
+          correctAnswers,
+          totalTimeSeconds,
+          pointsEarned,
+          completed: true
+        }).catch(error => {
+          console.error('Failed to complete Custom Quiz session:', error);
+        });
+      }
     }
-  }, [currentIdx, questions, selectedOption, timedOut, config, timeLeft, quizSessionId]);
+  }, [currentIdx, questions, selectedOption, timedOut, config, timeLeft, quizSessionId, answers]);
 
   // Mute toggle
   const toggleMute = () => {

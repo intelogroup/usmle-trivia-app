@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { fetchQuestionsForUser, createQuizSession, recordQuizResponse } from '../services/questionService';
+import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
+import logger from '../utils/logger';
 
 export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10, difficulty = null, timePerQuestion = 60 }) {
   const [questions, setQuestions] = useState([]);
@@ -148,10 +149,39 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
   }, [timePerQuestion]);
 
   // Complete quiz
-  const completeQuiz = useCallback(() => {
+  const completeQuiz = useCallback(async () => {
     setIsComplete(true);
     clearInterval(timerRef.current);
-  }, []);
+    
+    // Complete the quiz session in the database
+    if (quizSession?.id) {
+      try {
+        const correctAnswers = userAnswers.filter(answer => answer.isCorrect).length;
+        const totalTimeSeconds = userAnswers.reduce((sum, answer) => sum + (answer.timeSpent || 0), 0);
+        const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+        
+        await completeQuizSession(quizSession.id, {
+          correctAnswers,
+          totalTimeSeconds,
+          pointsEarned,
+          completed: true
+        });
+        
+        logger.info('QuickQuiz session completed successfully', {
+          sessionId: quizSession.id,
+          correctAnswers,
+          totalTimeSeconds,
+          pointsEarned
+        });
+      } catch (error) {
+        logger.error('Failed to complete QuickQuiz session', { 
+          error: error.message, 
+          sessionId: quizSession?.id 
+        });
+        // Don't block the completion flow, just log the error
+      }
+    }
+  }, [quizSession, userAnswers]);
 
   // Auto-advance after answer or timeout
   useEffect(() => {
