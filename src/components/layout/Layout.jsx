@@ -1,51 +1,51 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { useAuth } from '../../contexts/AuthContext'
-import { useLocation } from 'react-router-dom'
-import Header from './Header'
-import BottomNav from './BottomNav'
-import Sidebar from './Sidebar'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useAuth } from "../../contexts/AuthContext";
+import { useLocation } from "react-router-dom";
+import Header from "./Header";
+import BottomNav from "./BottomNav";
+import Sidebar from "./Sidebar";
 
 const noHeaderPaths = [];
 const noBottomNavPaths = [];
 
 const Layout = ({ children }) => {
-  const { user, profile } = useAuth()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(true)
-  const location = useLocation()
+  const { user, profile } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const location = useLocation();
 
   // Detect screen size
   useEffect(() => {
     const checkScreenSize = () => {
-      const mobile = window.innerWidth < 768
-      setIsMobile(mobile)
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
       // Auto-open sidebar on desktop
       if (!mobile && window.innerWidth >= 1024) {
-        setIsSidebarOpen(true)
+        setIsSidebarOpen(true);
       } else if (mobile) {
-        setIsSidebarOpen(false)
+        setIsSidebarOpen(false);
       }
-    }
+    };
 
-    checkScreenSize()
-    window.addEventListener('resize', checkScreenSize)
-    return () => window.removeEventListener('resize', checkScreenSize)
-  }, [])
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
-  }
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
-  const showHeader = !noHeaderPaths.includes(location.pathname)
-  const showBottomNav = !noBottomNavPaths.includes(location.pathname)
+  const showHeader = !noHeaderPaths.includes(location.pathname);
+  const showBottomNav = !noBottomNavPaths.includes(location.pathname);
 
   return (
-    <div 
-      className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+    <div
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900 transition-all duration-500"
       style={{
-        paddingLeft: 'env(safe-area-inset-left)',
-        paddingRight: 'env(safe-area-inset-right)'
+        paddingLeft: "env(safe-area-inset-left)",
+        paddingRight: "env(safe-area-inset-right)",
       }}
     >
       {/* Mobile Layout (unchanged) */}
@@ -56,9 +56,9 @@ const Layout = ({ children }) => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.4, 
-                ease: [0.25, 0.46, 0.45, 0.94]
+              transition={{
+                duration: 0.4,
+                ease: [0.25, 0.46, 0.45, 0.94],
               }}
               className="container mx-auto px-3 py-2 max-w-full sm:max-w-screen-sm min-h-full"
             >
@@ -73,16 +73,18 @@ const Layout = ({ children }) => {
           {/* Sidebar - Fixed percentage width */}
           {isSidebarOpen && (
             <div className="w-[15%] min-w-[180px] max-w-[200px] flex-shrink-0">
-              <Sidebar 
-                isOpen={isSidebarOpen} 
+              <Sidebar
+                isOpen={isSidebarOpen}
                 onToggle={toggleSidebar}
                 isTablet={window.innerWidth < 1024}
               />
             </div>
           )}
-          
+
           {/* Main Content Area - Takes remaining width */}
-          <div className={`${isSidebarOpen ? 'w-[85%]' : 'w-full'} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
+          <div
+            className={`${isSidebarOpen ? "w-[85%]" : "w-full"} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}
+          >
             {showHeader && (
               <Header
                 onSidebarToggle={toggleSidebar}
@@ -92,21 +94,19 @@ const Layout = ({ children }) => {
                 profile={profile}
               />
             )}
-            
+
             {/* Main content area - theater of the app */}
             <main className="flex-1 overflow-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.4, 
-                  ease: [0.25, 0.46, 0.45, 0.94]
+                transition={{
+                  duration: 0.4,
+                  ease: [0.25, 0.46, 0.45, 0.94],
                 }}
                 className="h-full px-4 py-4"
               >
-                <div className="max-w-full h-full">
-                  {children}
-                </div>
+                <div className="max-w-full h-full">{children}</div>
               </motion.div>
             </main>
           </div>
@@ -124,7 +124,7 @@ const Layout = ({ children }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Layout 
+export default Layout;
