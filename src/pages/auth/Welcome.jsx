@@ -107,7 +107,7 @@ const Welcome = () => {
           </Link>
           <Link
             to="/login"
-            className="block w-full bg-white/20 text-white rounded-xl py-4 px-6 font-semibold hover:bg-white/30 transition-colors backdrop-blur-sm border border-white/30"
+            className="block w-full glass-button text-white rounded-xl py-4 px-6 font-semibold transition-all duration-300 border border-white/30"
           >
             Sign In
           </Link>
