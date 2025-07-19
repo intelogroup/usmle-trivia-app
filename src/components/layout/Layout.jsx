@@ -48,6 +48,12 @@ const Layout = ({ children }) => {
         paddingRight: "env(safe-area-inset-right)",
       }}
     >
+      {/* Glassmorphism Background Pattern */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-blue-200/20 via-purple-200/20 to-pink-200/20 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-pink-900/20 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-l from-indigo-200/20 via-cyan-200/20 to-teal-200/20 dark:from-indigo-900/20 dark:via-cyan-900/20 dark:to-teal-900/20 rounded-full blur-3xl animate-float" />
+      </div>
+
       {/* Mobile Layout (unchanged) */}
       {isMobile ? (
         <div className="flex flex-col min-h-screen">
