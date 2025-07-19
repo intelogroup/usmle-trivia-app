@@ -119,6 +119,17 @@ export async function completeQuizSession(sessionId, completionData) {
     completed = true
   } = completionData;
 
+  // Validate required parameters
+  if (!sessionId) {
+    logger.error('Cannot complete quiz session: sessionId is required');
+    throw new Error('Session ID is required to complete quiz session');
+  }
+
+  if (typeof correctAnswers !== 'number' || correctAnswers < 0) {
+    logger.error('Cannot complete quiz session: correctAnswers must be a non-negative number');
+    throw new Error('Correct answers must be a non-negative number');
+  }
+
   logger.info('Completing quiz session', {
     sessionId,
     correctAnswers,
@@ -130,9 +141,9 @@ export async function completeQuizSession(sessionId, completionData) {
   const updateData = {
     correct_answers: correctAnswers,
     completed_at: new Date().toISOString(),
-    total_time_seconds: totalTimeSeconds,
-    points_earned: pointsEarned,
-    is_completed: completed
+    time_spent_seconds: totalTimeSeconds,
+    score: pointsEarned,
+    status: completed ? 'completed' : 'incomplete'
   };
 
   const { data, error } = await supabase
