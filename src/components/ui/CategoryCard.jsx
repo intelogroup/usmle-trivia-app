@@ -74,7 +74,7 @@ const CategoryCard = ({
 
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <div className="bg-gray-200 dark:bg-expo-700 rounded-full h-2 mr-2 overflow-hidden">
+          <div className="glass-subtle dark:glass-subtle-dark rounded-full h-2.5 mr-2 overflow-hidden border border-white/20 dark:border-white/10">
             <motion.div
               className={`h-2 rounded-full transition-all duration-500 ${getProgressColor(progress)}`}
               initial={{ width: 0 }}
