@@ -1,5 +1,6 @@
 import { supabase } from '../../supabase';
 import { AuthenticationManager } from './AuthenticationManager';
+import { onQuizCompleted } from '../../../services/leaderboard/statsService';
 
 /**
  * Quiz Session Manager
@@ -98,13 +99,15 @@ export class QuizSessionManager extends AuthenticationManager {
     await this.verifyUserAuth();
     await this.verifySessionOwnership(sessionId);
 
+    // Update the quiz session with completion data
     const { data, error } = await supabase
       .from('quiz_sessions')
       .update({
         correct_answers: completionData.correct_answers,
-        completed_at: new Date().toISOString(),
-        total_time_seconds: completionData.total_time_seconds,
-        points_earned: completionData.points_earned || 0
+        score: completionData.points_earned || 0,
+        time_spent_seconds: completionData.total_time_seconds || 0,
+        status: 'completed',
+        completed_at: new Date().toISOString()
       })
       .eq('id', sessionId)
       .eq('user_id', this.userId)
@@ -114,6 +117,15 @@ export class QuizSessionManager extends AuthenticationManager {
     if (error) {
       console.error('Error completing quiz session:', error);
       throw new Error(`Failed to complete quiz session: ${error.message}`);
+    }
+
+    // Trigger leaderboard stats update asynchronously
+    try {
+      await onQuizCompleted(this.userId, sessionId);
+      console.log('Leaderboard stats updated after quiz completion');
+    } catch (statsError) {
+      console.warn('Failed to update leaderboard stats (non-critical):', statsError);
+      // Don't throw - this is supplementary functionality
     }
 
     return data;

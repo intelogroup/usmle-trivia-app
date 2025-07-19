@@ -14,7 +14,8 @@
     "test:report": "playwright show-report",
     "test:auth": "playwright test tests/auth-flow.spec.js",
     "test:routes": "playwright test tests/protected-routes.spec.js",
-    "test:ui-tests": "playwright test tests/ui-interactions.spec.js"
+    "test:ui-tests": "playwright test tests/ui-interactions.spec.js",
+    "reset:user-data": "node scripts/reset-user-data.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
