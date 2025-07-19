@@ -47,7 +47,7 @@ const Header = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onSidebarToggle}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200"
+              className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300"
             >
               <Menu size={20} className="text-gray-600 dark:text-gray-300" />
             </motion.button>
