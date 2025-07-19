@@ -119,6 +119,7 @@ const Header = ({
             whileTap={{ scale: 0.9 }}
             onClick={() => handleActionPress(toggleTheme)}
             className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300"
+            aria-label={ARIA_LABELS.THEME_TOGGLE}
           >
             <motion.div
               animate={{ rotate: isDarkMode ? 180 : 0 }}
