@@ -66,7 +66,7 @@ const Layout = ({ children }) => {
                 duration: 0.4,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
-              className="container mx-auto px-3 py-2 max-w-full sm:max-w-screen-sm min-h-full"
+              className="container mx-auto px-3 py-2 max-w-full sm:max-w-screen-sm min-h-full relative z-10"
             >
               {children}
             </motion.div>
