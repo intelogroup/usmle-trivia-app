@@ -147,6 +147,7 @@ const Header = ({
             whileTap={{ scale: 0.95 }}
             onClick={() => handleActionPress(() => navigate("/profile"))}
             className="relative"
+            aria-label={ARIA_LABELS.PROFILE_MENU}
           >
             <div className="w-8 h-8 rounded-full overflow-hidden shadow-lg ring-2 ring-white/50 dark:ring-gray-700/50 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
               {user?.avatar_url ? (
