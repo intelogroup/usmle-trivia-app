@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Session Test</title>
+    <script type="module">
+        import { runAllDatabaseTests, testQuizSessionCreation } from './src/utils/databaseTestFunctions.js';
+        
+        async function runTest() {
+            const output = document.getElementById('output');
+            
+            function log(message) {
+                output.innerHTML += message + '\n';
+                console.log(message);
+            }
+            
+            log('🚀 Starting Quiz Session Creation Test');
+            log('');
+            
+            try {
+                // Test with known user IDs
+                const testUserIds = [
+                    'ae428e9d-4700-42da-b0d1-37fba5e28c94', // jimkalinov@gmail.com
+                    '02998230-6a6e-48b4-9549-5f7fbfbd4c83'  // test@usmletrivia.com
+                ];
+                
+                for (const userId of testUserIds) {
+                    log(`Testing with user ID: ${userId}`);
+                    
+                    const result = await testQuizSessionCreation(userId, 'mixed');
+                    
+                    if (result.success) {
+                        log('✅ Quiz session creation successful!');
+                        log(`   Session details: ${JSON.stringify(result.data, null, 2)}`);
+                    } else {
+                        log(`❌ Quiz session creation failed: ${result.error}`);
+                    }
+                    log('');
+                }
+                
+                // Run comprehensive database tests
+                log('🔍 Running comprehensive database tests...');
+                const dbResults = await runAllDatabaseTests(testUserIds[0]);
+                
+                log('📊 Database test results:');
+                for (const [test, result] of Object.entries(dbResults)) {
+                    if (result.success) {
+                        log(`✅ ${test}: ${result.message || 'Success'}`);
+                    } else if (result.skipped) {
+                        log(`⏭️  ${test}: Skipped`);
+                    } else {
+                        log(`❌ ${test}: ${result.error}`);
+                    }
+                }
+                
+                log('');
+                log('🎉 Test completed!');
+                
+            } catch (error) {
+                log(`💥 Test failed: ${error.message}`);
+                log(`Stack: ${error.stack}`);
+            }
+        }
+        
+        // Run test when page loads
+        window.addEventListener('load', runTest);
+    </script>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        #output { 
+            white-space: pre-line; 
+            background: #f5f5f5; 
+            padding: 20px; 
+            border-radius: 5px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Session Creation Test</h1>
+    <div id="output">Loading...</div>
+</body>
+</html>

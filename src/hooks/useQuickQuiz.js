@@ -98,7 +98,10 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
         isCorrect: answerData.isCorrect,
         timeSpent: answerData.timeSpent,
         responseOrder: answerData.responseOrder
-      }).catch(() => {});
+      }).catch((error) => {
+        console.error('Failed to record quiz response:', error);
+        // Don't break the quiz flow, but log the error for debugging
+      });
     }
   }, [isAnswered, timedOut, isComplete, questions, currentIndex, timeLeft, timePerQuestion, quizSession]);
 
@@ -127,7 +130,10 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
           isCorrect: answerData.isCorrect,
           timeSpent: answerData.timeSpent,
           responseOrder: answerData.responseOrder
-        }).catch(() => {});
+        }).catch((error) => {
+          console.error('Failed to record timeout response:', error);
+          // Don't break the quiz flow, but log the error for debugging
+        });
       }
     }
   }, [timedOut, isAnswered, isComplete, questions, currentIndex, timePerQuestion, quizSession]);

@@ -2,12 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { startChatWithUser } from '../../services/chatService';
 
 const ProfileHeader = () => {
   const { user, profile } = useAuth();
-  const navigate = useNavigate();
   const isOwnProfile = user?.id === profile?.id;
 
   return (
@@ -51,17 +48,6 @@ const ProfileHeader = () => {
             {profile.countries.name}
           </span>
         </div>
-      )}
-      {!isOwnProfile && profile?.id && (
-        <button
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
-          onClick={async () => {
-            const chatId = await startChatWithUser(profile.id);
-            navigate(`/chat?chatId=${chatId}`);
-          }}
-        >
-          Chat
-        </button>
       )}
     </motion.div>
   );

@@ -29,6 +29,33 @@ export async function createQuizSession(sessionConfig) {
     settings = {}
   } = sessionConfig;
 
+  // Validate required parameters
+  if (!userId) {
+    logger.error('Cannot create quiz session: userId is required');
+    throw new Error('User ID is required to create a quiz session');
+  }
+
+  if (!totalQuestions || totalQuestions <= 0) {
+    logger.error('Cannot create quiz session: totalQuestions must be positive');
+    throw new Error('Total questions must be a positive number');
+  }
+
+  // Verify authentication state
+  try {
+    const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !currentUser || currentUser.id !== userId) {
+      logger.error('Authentication verification failed', { 
+        authError, 
+        currentUserId: currentUser?.id, 
+        requestedUserId: userId 
+      });
+      throw new Error('Authentication required to create quiz session');
+    }
+  } catch (error) {
+    logger.error('Failed to verify authentication', { error: error.message, userId });
+    throw new Error('Please log in to create a quiz session');
+  }
+
   logger.info('Creating quiz session', {
     userId,
     sessionType,
@@ -63,7 +90,13 @@ export async function createQuizSession(sessionConfig) {
     .single();
 
   if (error) {
-    logger.error('Error creating quiz session', { error, sessionData });
+    logger.error('Database error creating quiz session', { 
+      error: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      sessionData 
+    });
     throw new Error(`CREATE_SESSION_ERROR: ${error.message}`);
   }
 

@@ -75,9 +75,26 @@ export const useQuizController = (config) => {
 
   // Session creation helper
   const createQuizSession = useCallback(async (sessionConfig) => {
-    if (!user) return null;
+    if (!user?.id) {
+      logger.warn('Cannot create quiz session: user not authenticated', { user });
+      return null;
+    }
 
     try {
+      // Verify current authentication state
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      if (authError || !currentUser) {
+        logger.error('Authentication verification failed during quiz session creation', { authError, currentUser });
+        throw new Error('Please log in to start a quiz session');
+      }
+
+      logger.info('Creating quiz session', {
+        userId: user.id,
+        quizMode,
+        categoryId,
+        questionCount: questionCount || quizConfig.questionCount
+      });
+
       const { data, error } = await supabase
         .from('quiz_sessions')
         .insert({
@@ -94,7 +111,17 @@ export const useQuizController = (config) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Database error creating quiz session', { 
+          error: error.message, 
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+          userId: user.id,
+          sessionConfig 
+        });
+        throw error;
+      }
       
       logger.event('quiz_session_created', {
         userId: user.id,
@@ -106,7 +133,12 @@ export const useQuizController = (config) => {
 
       return data;
     } catch (error) {
-      logger.error('Failed to create quiz session', error);
+      logger.error('Failed to create quiz session', { 
+        error: error.message,
+        userId: user?.id,
+        quizMode,
+        categoryId
+      });
       throw error;
     }
   }, [user, quizMode, categoryId, questionCount, quizConfig]);

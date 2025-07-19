@@ -18,6 +18,38 @@ export async function recordQuizResponse(responseData) {
     userId
   } = responseData;
 
+  // Validate required parameters
+  if (!sessionId) {
+    logger.error('Cannot record quiz response: sessionId is required');
+    throw new Error('Session ID is required to record quiz response');
+  }
+  
+  if (!questionId) {
+    logger.error('Cannot record quiz response: questionId is required');
+    throw new Error('Question ID is required to record quiz response');
+  }
+
+  // Verify authentication state
+  try {
+    const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+    if (authError || !currentUser) {
+      logger.error('Authentication verification failed during response recording', { 
+        authError, 
+        currentUserId: currentUser?.id, 
+        sessionId,
+        questionId 
+      });
+      throw new Error('Authentication required to record quiz response');
+    }
+  } catch (error) {
+    logger.error('Failed to verify authentication for response recording', { 
+      error: error.message, 
+      sessionId, 
+      questionId 
+    });
+    throw new Error('Please log in to record quiz responses');
+  }
+
   logger.info('Recording quiz response', {
     sessionId,
     questionId,
