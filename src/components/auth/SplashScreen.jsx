@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion'
-import { Trophy, Heart, Stethoscope, BookOpen } from 'lucide-react'
+import { motion } from "framer-motion";
+import { Trophy, Heart, Stethoscope, BookOpen } from "lucide-react";
 
 const SplashScreen = () => {
   return (
@@ -9,15 +9,15 @@ const SplashScreen = () => {
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 260, 
+          transition={{
+            type: "spring",
+            stiffness: 260,
             damping: 20,
-            duration: 1.2 
+            duration: 1.2,
           }}
           className="mb-8"
         >
-          <div className="relative mx-auto w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
+          <div className="relative mx-auto w-24 h-24 glass-strong rounded-full flex items-center justify-center border border-white/30 shadow-2xl">
             <Stethoscope className="w-12 h-12 text-white" />
             <div className="absolute -top-2 -right-2">
               <div className="w-6 h-6 bg-accent-400 rounded-full flex items-center justify-center">
@@ -34,9 +34,7 @@ const SplashScreen = () => {
           transition={{ delay: 0.5, duration: 0.6 }}
           className="mb-4"
         >
-          <h1 className="text-4xl font-bold text-white mb-2">
-            USMLE Trivia
-          </h1>
+          <h1 className="text-4xl font-bold text-white mb-2">USMLE Trivia</h1>
           <p className="text-white/80 text-lg">
             Master Medicine, One Question at a Time
           </p>
@@ -55,7 +53,9 @@ const SplashScreen = () => {
           </div>
           <div className="flex items-center space-x-2 bg-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
             <Trophy className="w-4 h-4 text-white" />
-            <span className="text-white text-sm font-medium">Track Progress</span>
+            <span className="text-white text-sm font-medium">
+              Track Progress
+            </span>
           </div>
         </motion.div>
 
@@ -89,25 +89,25 @@ const SplashScreen = () => {
       {/* Background Pattern */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ 
+          animate={{
             backgroundPosition: ["0% 0%", "100% 100%"],
           }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
+          transition={{
+            duration: 20,
+            repeat: Infinity,
             repeatType: "reverse",
-            ease: "linear"
+            ease: "linear",
           }}
           className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: `radial-gradient(circle at 25% 25%, white 2px, transparent 2px),
                              radial-gradient(circle at 75% 75%, white 2px, transparent 2px)`,
-            backgroundSize: "40px 40px"
+            backgroundSize: "40px 40px",
           }}
         />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SplashScreen 
+export default SplashScreen;
