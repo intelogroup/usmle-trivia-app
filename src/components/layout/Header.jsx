@@ -49,6 +49,7 @@ const Header = ({
               whileTap={{ scale: 0.95 }}
               onClick={onSidebarToggle}
               className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300"
+              aria-label={ARIA_LABELS.MENU_TOGGLE}
             >
               <Menu size={20} className="text-gray-600 dark:text-gray-300" />
             </motion.button>
