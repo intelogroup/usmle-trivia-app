@@ -47,11 +47,11 @@ const SplashScreen = () => {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="flex flex-wrap justify-center gap-4 mb-8"
         >
-          <div className="flex items-center space-x-2 bg-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
+          <div className="flex items-center space-x-2 glass-subtle rounded-full px-4 py-2.5 border border-white/20">
             <BookOpen className="w-4 h-4 text-white" />
             <span className="text-white text-sm font-medium">Study Smart</span>
           </div>
-          <div className="flex items-center space-x-2 bg-white/20 rounded-full px-4 py-2 backdrop-blur-sm">
+          <div className="flex items-center space-x-2 glass-subtle rounded-full px-4 py-2.5 border border-white/20">
             <Trophy className="w-4 h-4 text-white" />
             <span className="text-white text-sm font-medium">
               Track Progress
