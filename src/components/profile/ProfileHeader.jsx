@@ -53,17 +53,7 @@ const ProfileHeader = () => {
           </span>
         </div>
       )}
-      {!isOwnProfile && profile?.id && (
-        <button
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
-          onClick={async () => {
-            const chatId = await startChatWithUser(profile.id);
-            navigate(`/chat?chatId=${chatId}`);
-          }}
-        >
-          Chat
-        </button>
-      )}
+      {/* Chat functionality temporarily disabled */}
     </motion.div>
   );
 };
