@@ -62,6 +62,7 @@ const Header = ({
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
             className="flex items-center gap-1 bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 text-white px-2.5 py-1 rounded-full text-xs font-bold shadow-lg shadow-orange-500/25"
+            aria-label={ARIA_LABELS.CURRENT_POINTS(profile?.total_points || 0)}
           >
             <motion.div
               animate={{
