@@ -114,7 +114,7 @@ const Header = ({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleActionPress(toggleTheme)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 active:bg-gray-200 dark:active:bg-gray-700"
+            className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300"
           >
             <motion.div
               animate={{ rotate: isDarkMode ? 180 : 0 }}
