@@ -38,7 +38,9 @@ const CategoryCard = ({
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-xl ${cardColor}`}>
+          <div
+            className={`p-3 rounded-xl ${cardColor} glass-subtle dark:glass-subtle-dark`}
+          >
             <IconWrapper
               icon={IconComponent}
               fallback={Activity}
