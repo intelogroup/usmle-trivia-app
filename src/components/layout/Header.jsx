@@ -92,6 +92,7 @@ const Header = ({
               })
             }
             className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300 relative"
+            aria-label={ARIA_LABELS.NOTIFICATIONS}
           >
             <Bell
               size={16}
