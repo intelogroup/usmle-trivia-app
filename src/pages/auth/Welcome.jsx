@@ -78,7 +78,7 @@ const Welcome = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1 + index * 0.2 }}
-                className="flex items-center space-x-4 bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20"
+                className="flex items-center space-x-4 glass-subtle rounded-xl p-4 border border-white/20"
               >
                 <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
                   <Icon className="w-5 h-5 text-white" />
