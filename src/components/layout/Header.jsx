@@ -88,7 +88,7 @@ const Header = ({
                 /* TODO: Implement notifications */
               })
             }
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-200 relative active:bg-gray-200 dark:active:bg-gray-700"
+            className="p-2 glass-button dark:glass-button-dark rounded-xl transition-all duration-300 relative"
           >
             <Bell
               size={16}
