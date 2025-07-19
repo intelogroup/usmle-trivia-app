@@ -9,6 +9,7 @@ import {
   Swords,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { ARIA_LABELS } from "../../constants/ui";
 
 const BottomNav = () => {
   const location = useLocation();
