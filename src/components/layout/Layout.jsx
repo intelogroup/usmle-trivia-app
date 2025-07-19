@@ -110,7 +110,7 @@ const Layout = ({ children }) => {
                   duration: 0.4,
                   ease: [0.25, 0.46, 0.45, 0.94],
                 }}
-                className="h-full px-4 py-4"
+                className="h-full px-4 py-4 relative z-10"
               >
                 <div className="max-w-full h-full">{children}</div>
               </motion.div>
