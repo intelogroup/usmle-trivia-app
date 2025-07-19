@@ -4,9 +4,9 @@
  * Follows the 250-line rule from augment-code-rules.md
  */
 
-// Re-export everything from the modular structure
-export { ERROR_TYPES, SEVERITY_LEVELS, ACTION_CONFIGS } from './notifications/errorTypes'
-export { 
+// Import everything from the modular structure
+import { ERROR_TYPES, SEVERITY_LEVELS, ACTION_CONFIGS } from './notifications/errorTypes'
+import { 
   parseError, 
   createErrorMessage, 
   isRetryableError, 
@@ -14,8 +14,7 @@ export {
   getRetryDelay, 
   formatErrorForDisplay 
 } from './notifications/errorParser'
-export { 
-  default as toastManager,
+import toastManager, { 
   success,
   error,
   warning,
@@ -28,6 +27,31 @@ export {
   authSuccess,
   networkError
 } from './notifications/toastManager'
+
+// Re-export everything
+export { ERROR_TYPES, SEVERITY_LEVELS, ACTION_CONFIGS }
+export { 
+  parseError, 
+  createErrorMessage, 
+  isRetryableError, 
+  requiresAuth, 
+  getRetryDelay, 
+  formatErrorForDisplay 
+}
+export { 
+  toastManager,
+  success,
+  error,
+  warning,
+  info,
+  loading,
+  quizError,
+  quizSuccess,
+  quizWarning,
+  authError,
+  authSuccess,
+  networkError
+}
 
 // Convenience functions for common use cases
 export const showQuizError = (error, context = {}) => {
