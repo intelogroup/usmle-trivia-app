@@ -73,7 +73,9 @@ const BottomNav = () => {
             >
               {/* Icon container */}
               <motion.div
-                className="p-1 rounded-md transition-all duration-200"
+                className={`p-2.5 rounded-xl transition-all duration-300 ${
+                  active ? "glass-button dark:glass-button-dark shadow-lg" : ""
+                }`}
                 animate={{
                   scale: active ? 1.05 : 1,
                   y: active ? -1 : 0,
