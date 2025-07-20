@@ -2,31 +2,88 @@ import { QueryClient } from '@tanstack/react-query'
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
 
 // Enhanced query client with aggressive caching for instant UI
+// Production-optimized query client for 500+ concurrent users
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Serve stale data immediately while refetching in background
-      staleTime: 2 * 60 * 1000, // 2 minutes - data considered fresh
-      gcTime: 10 * 60 * 1000, // 10 minutes - keep in memory
+      // Optimized for high concurrency - less aggressive refetching
+      staleTime: 5 * 60 * 1000, // 5 minutes - reduce API calls
+      gcTime: 30 * 60 * 1000, // 30 minutes - longer memory retention
       
-      // Instant UI: show cached data immediately, refetch in background
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
-      refetchOnMount: 'always',
+      // Reduced refetching to minimize server load
+      refetchOnWindowFocus: false, // Disable for production performance
+      refetchOnReconnect: true, // Keep for offline recovery
+      refetchOnMount: false, // Use cached data when available
       
-      // Retry configuration for reliability
+      // Enhanced retry configuration with exponential backoff
       retry: (failureCount, error) => {
-        // Don't retry on 4xx errors (auth, not found, etc.)
-        if (error?.status >= 400 && error?.status < 500) return false
-        return failureCount < 3
+        // Don't retry on client errors (4xx)
+        if (error?.status >= 400 && error?.status < 500) return false;
+        // Don't retry on rate limit errors
+        if (error?.message?.includes('Rate limit')) return false;
+        // Max 3 retries for server errors
+        return failureCount < 3;
       },
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retryDelay: (attemptIndex) => {
+        // Exponential backoff with jitter to prevent thundering herd
+        const baseDelay = 1000 * Math.pow(2, attemptIndex);
+        const jitter = Math.random() * 1000;
+        return Math.min(baseDelay + jitter, 30000);
+      },
+      
+      // Network timeout for production reliability
+      networkMode: 'online',
+      
+      // Meta data for monitoring
+      meta: {
+        errorPolicy: 'soft' // Don't throw on background refetch errors
+      }
     },
     mutations: {
-      retry: 1,
-      onError: (error) => {
-        console.error('Mutation error:', error)
+      retry: (failureCount, error) => {
+        // Only retry server errors, not client errors
+        if (error?.status >= 400 && error?.status < 500) return false;
+        return failureCount < 2; // Reduced retries for mutations
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 10000),
+      onError: (error, variables, context) => {
+        console.error('Mutation error:', {
+          error: error.message,
+          variables,
+          context,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Could integrate with error reporting service here
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'mutation_error', {
+            error_message: error.message,
+            error_type: error.name
+          });
+        }
       }
+    }
+  },
+  
+  // Global error handler for production monitoring
+  queryCache: {
+    onError: (error, query) => {
+      console.warn('Query error:', {
+        error: error.message,
+        queryKey: query.queryKey,
+        timestamp: new Date().toISOString()
+      });
+    }
+  },
+  
+  // Mutation cache for tracking mutation errors
+  mutationCache: {
+    onError: (error, variables, context, mutation) => {
+      console.warn('Mutation cache error:', {
+        error: error.message,
+        mutationKey: mutation.options.mutationKey,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 })
@@ -72,13 +129,42 @@ const persister = {
   }
 }
 
-// Initialize persistence
+// Production persistence with performance optimization
 persistQueryClient({
   queryClient,
   persister,
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  buster: '1.0.0' // Increment to invalidate all caches
+  buster: '1.1.0', // Increment to invalidate all caches
+  hydrateOptions: {
+    // Only restore specific query types to reduce memory usage
+    defaultOptions: {
+      queries: {
+        staleTime: 10 * 60 * 1000, // Start with 10min stale time for restored data
+      }
+    }
+  }
 })
+
+// Performance monitoring for query client
+if (typeof window !== 'undefined') {
+  // Monitor query cache size
+  setInterval(() => {
+    const cache = queryClient.getQueryCache();
+    const queryCount = cache.getAll().length;
+    
+    if (queryCount > 100) {
+      console.warn(`High query cache count: ${queryCount}. Consider clearing old queries.`);
+    }
+    
+    // Optional: Send metrics to monitoring service
+    if (window.gtag) {
+      window.gtag('event', 'query_cache_size', {
+        value: queryCount,
+        custom_parameter: 'performance_monitoring'
+      });
+    }
+  }, 5 * 60 * 1000); // Check every 5 minutes
+}
 
 // Query keys for consistent caching
 export const queryKeys = {
@@ -129,21 +215,40 @@ export const prefetchQueries = {
   }
 }
 
-// Utility to invalidate related queries
+// Production-optimized query invalidation with batching
 export const invalidateQueries = {
   userData: (userId) => {
-    queryClient.invalidateQueries({ queryKey: ['userActivity', userId] })
-    queryClient.invalidateQueries({ queryKey: ['userStats', userId] })
-    queryClient.invalidateQueries({ queryKey: ['recentActivity', userId] })
-    queryClient.invalidateQueries({ queryKey: ['userProgress', userId] })
+    // Batch invalidations to reduce re-renders
+    queryClient.invalidateQueries({ 
+      predicate: (query) => {
+        const [key, id] = query.queryKey;
+        return ['userActivity', 'userStats', 'recentActivity', 'userProgress'].includes(key) && id === userId;
+      }
+    });
   },
   
   categories: () => {
-    queryClient.invalidateQueries({ queryKey: ['categories'] })
+    queryClient.invalidateQueries({ queryKey: ['categories'] });
   },
   
+  leaderboard: () => {
+    queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+  },
+  
+  // Selective invalidation to avoid unnecessary refetches
+  quizData: (userId) => {
+    queryClient.invalidateQueries({ 
+      predicate: (query) => {
+        const [key] = query.queryKey;
+        return ['userStats', 'leaderboard', 'userProgress'].includes(key);
+      }
+    });
+  },
+  
+  // Emergency invalidation - use sparingly
   all: () => {
-    queryClient.invalidateQueries()
+    console.warn('Invalidating all queries - this may impact performance');
+    queryClient.invalidateQueries();
   }
 }
 

@@ -5,7 +5,12 @@ import { useNavigate } from 'react-router-dom';
 
 const LeaderboardTable = ({ leaderboardData, totalParticipants }) => {
   const navigate = useNavigate();
-  const currentUserId = leaderboardData.find(u => u.isCurrentUser)?.id;
+  const currentUserId = leaderboardData?.find(u => u.isCurrentUser)?.id;
+
+  // Don't render table if no data
+  if (!leaderboardData || leaderboardData.length === 0) {
+    return null;
+  }
 
   return (
     <motion.div
@@ -29,7 +34,7 @@ const LeaderboardTable = ({ leaderboardData, totalParticipants }) => {
       </div>
       
       <div className="space-y-2">
-        {leaderboardData.map((user, index) => (
+        {leaderboardData?.map((user, index) => (
           <motion.div
             key={user.id}
             initial={{ x: -20, opacity: 0 }}

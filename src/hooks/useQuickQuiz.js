@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
+import { onQuizCompleted } from '../services/leaderboard/statsService';
 import logger from '../utils/logger';
 
 export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10, difficulty = null, timePerQuestion = 60 }) {
@@ -19,10 +20,17 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
 
   // Fetch questions and create session on mount
   useEffect(() => {
+    // Don't start if userId is not provided
+    if (!userId) {
+      setLoading(false);
+      setError(new Error('User authentication required to start quiz'));
+      return;
+    }
+
     let isMounted = true;
     setLoading(true);
     setError(null);
-    console.log('Fetching questions with params:', { categoryId, questionCount, difficulty });
+    console.log('Fetching questions with params:', { userId, categoryId, questionCount, difficulty });
     
     // Use the new smart function instead of fetchQuestions
     fetchQuestionsForUser({ userId, categoryId, questionCount, difficulty })
@@ -158,7 +166,14 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
       try {
         const correctAnswers = userAnswers.filter(answer => answer.isCorrect).length;
         const totalTimeSeconds = userAnswers.reduce((sum, answer) => sum + (answer.timeSpent || 0), 0);
-        const pointsEarned = correctAnswers * 10; // 10 points per correct answer
+        
+        // Calculate points based on actual question point values and correctness
+        const pointsEarned = userAnswers.reduce((sum, answer) => {
+          if (answer.isCorrect && answer.question?.points) {
+            return sum + answer.question.points;
+          }
+          return sum;
+        }, 0);
         
         await completeQuizSession(quizSession.id, {
           correctAnswers,
@@ -166,6 +181,15 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
           pointsEarned,
           completed: true
         });
+        
+        // Update leaderboard stats
+        try {
+          await onQuizCompleted(userId, quizSession.id);
+          logger.info('Leaderboard stats updated after quiz completion');
+        } catch (statsError) {
+          logger.warn('Failed to update leaderboard stats (non-critical):', statsError);
+          // Don't block completion flow
+        }
         
         logger.info('QuickQuiz session completed successfully', {
           sessionId: quizSession.id,
@@ -181,7 +205,7 @@ export function useQuickQuiz({ userId, categoryId = 'mixed', questionCount = 10,
         // Don't block the completion flow, just log the error
       }
     }
-  }, [quizSession, userAnswers]);
+  }, [quizSession, userAnswers, userId]);
 
   // Auto-advance after answer or timeout
   useEffect(() => {
