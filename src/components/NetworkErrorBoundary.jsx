@@ -14,7 +14,10 @@ class NetworkErrorBoundary extends React.Component {
       error: null,
       errorInfo: null,
       retryCount: 0,
-      isRetrying: false
+      isRetrying: false,
+      hasMaxRetries: false,
+      networkOffline: false,
+      retryCountdown: null
     };
   }
 
@@ -48,22 +51,54 @@ class NetworkErrorBoundary extends React.Component {
     const { retryCount } = this.state;
     
     if (retryCount >= 3) {
-      alert('Maximum retry attempts reached. Please refresh the page or check your internet connection.');
+      // Instead of alert, show inline message
+      this.setState({ 
+        hasMaxRetries: true,
+        isRetrying: false 
+      });
       return;
     }
 
-    this.setState({ isRetrying: true });
+    this.setState({ isRetrying: true, hasMaxRetries: false });
 
-    // Wait with exponential backoff
-    const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
+    // Enhanced exponential backoff with jitter
+    const baseDelay = 1000 * Math.pow(2, retryCount);
+    const jitter = Math.random() * 500; // Add randomness to prevent thundering herd
+    const delay = Math.min(baseDelay + jitter, 10000);
+    
+    // Show countdown to user
+    let countdown = Math.ceil(delay / 1000);
+    const countdownInterval = setInterval(() => {
+      if (countdown > 0) {
+        this.setState({ retryCountdown: countdown });
+        countdown--;
+      } else {
+        clearInterval(countdownInterval);
+        this.setState({ retryCountdown: null });
+      }
+    }, 1000);
+
     await new Promise(resolve => setTimeout(resolve, delay));
+    clearInterval(countdownInterval);
+
+    // Check network connectivity before retry
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      this.setState({
+        isRetrying: false,
+        networkOffline: true,
+        retryCountdown: null
+      });
+      return;
+    }
 
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
       retryCount: retryCount + 1,
-      isRetrying: false
+      isRetrying: false,
+      networkOffline: false,
+      retryCountdown: null
     });
 
     // Call parent retry function if provided
@@ -160,7 +195,7 @@ class NetworkErrorBoundary extends React.Component {
             </p>
           </div>
 
-          {retryCount > 0 && (
+          {retryCount > 0 && !this.state.hasMaxRetries && (
             <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
                 Retry attempt {retryCount}/3
@@ -168,24 +203,67 @@ class NetworkErrorBoundary extends React.Component {
             </div>
           )}
 
+          {this.state.hasMaxRetries && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200 font-medium">
+                Maximum retry attempts reached
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-300 mt-1">
+                Please check your internet connection or try refreshing the page
+              </p>
+            </div>
+          )}
+
+          {this.state.networkOffline && (
+            <div className="mb-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
+                No internet connection detected
+              </p>
+              <p className="text-xs text-orange-600 dark:text-orange-300 mt-1">
+                Please check your network connection and try again
+              </p>
+            </div>
+          )}
+
+          {this.state.retryCountdown && (
+            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                Retrying in {this.state.retryCountdown} second{this.state.retryCountdown !== 1 ? 's' : ''}...
+              </p>
+            </div>
+          )}
+
           <div className="space-y-3">
-            {config.canRetry && retryCount < 3 && (
+            {config.canRetry && !this.state.hasMaxRetries && !this.state.networkOffline && (
               <button
                 onClick={this.handleRetry}
-                disabled={this.state.isRetrying}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={this.state.isRetrying || this.state.retryCountdown}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all duration-200"
               >
                 {this.state.isRetrying ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Retrying...
+                    {this.state.retryCountdown ? `Retrying in ${this.state.retryCountdown}s` : 'Retrying...'}
                   </>
                 ) : (
                   <>
                     <RefreshCw className="w-4 h-4" />
-                    Try Again
+                    Try Again {retryCount > 0 ? `(${retryCount + 1}/3)` : ''}
                   </>
                 )}
+              </button>
+            )}
+
+            {this.state.networkOffline && (
+              <button
+                onClick={() => {
+                  this.setState({ networkOffline: false });
+                  this.handleRetry();
+                }}
+                className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-700 flex items-center justify-center gap-2"
+              >
+                <Wifi className="w-4 h-4" />
+                Check Connection & Retry
               </button>
             )}
             

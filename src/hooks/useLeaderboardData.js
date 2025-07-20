@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { enhancedSupabase } from '../lib/supabase';
+import { gracefulDegradation } from '../utils/retryUtils';
 
 // Helper function to generate country flags
 const getCountryFlag = (countryCode) => {
@@ -54,39 +55,38 @@ const transformLeaderboardData = async (profiles) => {
   });
 };
 
-// Optimized leaderboard data fetching for production
+// Enhanced leaderboard data fetching with graceful degradation
 const fetchLeaderboardData = async (period = 'all') => {
   try {
-    // Use optimized query with proper indexing
-    const { data: profiles, error } = await supabase
-      .from('profiles')
-      .select(`
-        id,
-        display_name,
-        total_points,
-        current_streak,
-        avatar_url,
-        grade_id,
-        user_stats (
-          total_quizzes_completed,
-          total_questions_answered,
-          overall_accuracy
-        )
-      `)
-      .not('display_name', 'is', null)
-      .order('total_points', { ascending: false })
-      .order('created_at', { ascending: true }) // Tie breaker
-      .limit(50); // Reasonable limit for UI
-
-    if (error) {
-      console.error('Error fetching leaderboard:', error);
-      return [];
+    // Use enhanced Supabase with built-in retry and fallback mechanisms
+    const result = await enhancedSupabase.getLeaderboard(period, 50);
+    
+    if (result.data) {
+      // Cache successful results for fallback
+      localStorage.setItem('leaderboard_cache', JSON.stringify(result.data));
+      return await transformLeaderboardData(result.data);
     }
-
-    return await transformLeaderboardData(profiles || []);
-  } catch (error) {
-    console.error('Error in fetchLeaderboardData:', error);
+    
     return [];
+  } catch (error) {
+    console.warn('Primary leaderboard fetch failed, attempting fallback:', error.message);
+    
+    // Use graceful degradation fallback
+    return await gracefulDegradation.executeWithFallback(
+      'leaderboard',
+      async () => {
+        throw error; // Force fallback
+      },
+      { period }
+    ).then(async (fallbackResult) => {
+      if (fallbackResult.data) {
+        return await transformLeaderboardData(fallbackResult.data);
+      }
+      return [];
+    }).catch(() => {
+      console.error('Both primary and fallback leaderboard fetch failed');
+      return [];
+    });
   }
 };
 
