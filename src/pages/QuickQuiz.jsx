@@ -15,7 +15,24 @@ import QuizError from '../components/quiz/QuizError';
 const QuickQuiz = () => {
   const { state: config } = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+
+  // Don't start quiz if auth is still loading or user is not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/auth/login');
+    return null;
+  }
 
   const {
     questions,
@@ -32,7 +49,7 @@ const QuickQuiz = () => {
     handleOptionSelect,
     quizSession
   } = useQuickQuiz({
-    userId: user?.id,
+    userId: user.id, // Now guaranteed to be non-null
     categoryId: config?.categoryId || 'mixed',
     questionCount: config?.questionCount || 10,
     difficulty: config?.difficulty || null,

@@ -48,7 +48,7 @@ async function testQuestionFetching() {
     // First, get some tag IDs
     const { data: tags, error: tagsError } = await supabase
       .from('tags')
-      .select('id, name, tag_type')
+      .select('id, name, type')
       .limit(5);
 
     if (tagsError) {
@@ -56,7 +56,7 @@ async function testQuestionFetching() {
       return false;
     }
 
-    console.log(`Found ${tags.length} tags:`, tags.map(t => ({ name: t.name, type: t.tag_type })));
+    console.log(`Found ${tags.length} tags:`, tags.map(t => ({ name: t.name, type: t.type })));
 
     if (tags.length > 0) {
       const testTag = tags[0];

@@ -64,9 +64,16 @@ export const createUserProfile = async (userId) => {
 
     const profileData = {
       id: userId,
-      username: `user_${userId.slice(0, 8)}`,
-      full_name: user?.user_metadata?.full_name || user?.user_metadata?.name || 'User',
       email: user?.email,
+      display_name: user?.user_metadata?.full_name || user?.user_metadata?.name || user?.user_metadata?.display_name || 'New User',
+      full_name: user?.user_metadata?.full_name || user?.user_metadata?.name || '',
+      avatar_url: user?.user_metadata?.avatar_url || null,
+      grade_id: user?.user_metadata?.grade_id || 1, // Default to 1st year
+      total_points: 0,
+      current_streak: 0,
+      best_streak: 0,
+      onboarding_completed: false, // They'll need to complete onboarding
+      email_verified: user?.email_confirmed_at ? true : false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }

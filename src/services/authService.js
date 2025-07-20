@@ -7,13 +7,18 @@ class AuthError extends Error {
   }
 }
 
-const signUp = async (email, password, fullName) => {
+const signUp = async (credentials) => {
+  // Handle both object and individual parameter formats
+  const { email, password, fullName } = typeof credentials === 'object' ? credentials : { email: arguments[0], password: arguments[1], fullName: arguments[2] };
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         full_name: fullName,
+        display_name: fullName,
+        name: fullName
       },
     },
   });
