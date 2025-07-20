@@ -43,6 +43,7 @@ const CustomQuizSetup = () => {
     questionCounts,
     availableQuestions,
     simpleCategories,
+    simpleCategoryCounts,
     canStart,
     
     // Actions
@@ -99,6 +100,7 @@ const CustomQuizSetup = () => {
             difficulty={difficulty}
             onDifficultyChange={setDifficulty}
             difficultyOptions={DIFFICULTY_OPTIONS}
+            simpleCategoryCounts={simpleCategoryCounts}
           />
         ) : (
           <AdvancedModeSetup

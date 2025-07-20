@@ -37,6 +37,7 @@ export const useCustomQuizSetup = () => {
     systems: {},
     topics: {}
   })
+  const [simpleCategoryCounts, setSimpleCategoryCounts] = useState({})
   const [availableQuestions, setAvailableQuestions] = useState(0)
 
   // Load initial data
@@ -61,6 +62,51 @@ export const useCustomQuizSetup = () => {
         // Load question counts
         const counts = await getAllQuestionCounts()
         setQuestionCounts(counts)
+
+        // Load simple category counts
+        const simpleCounts = {}
+        for (const category of simpleCategories) {
+          if (category.id === 'mixed') {
+            // For mixed category, get total count of all active questions
+            const { count, error: countError } = await supabase
+              .from('questions')
+              .select('id', { count: 'exact', head: true })
+              .eq('is_active', true)
+            
+            if (!countError) {
+              simpleCounts[category.id] = count || 0
+            }
+          } else {
+            // For specific categories, find the corresponding subject tag
+            const { data: categoryTag, error: tagError } = await supabase
+              .from('tags')
+              .select('id')
+              .eq('slug', category.id)
+              .eq('type', 'subject')
+              .eq('is_active', true)
+              .single()
+            
+            if (!tagError && categoryTag) {
+              simpleCounts[category.id] = counts.subjects[categoryTag.id] || 0
+            } else {
+              // Fallback: count by name
+              const { data: nameTag, error: nameError } = await supabase
+                .from('tags')
+                .select('id')
+                .ilike('name', `%${category.name}%`)
+                .eq('type', 'subject')
+                .eq('is_active', true)
+                .single()
+              
+              if (!nameError && nameTag) {
+                simpleCounts[category.id] = counts.subjects[nameTag.id] || 0
+              } else {
+                simpleCounts[category.id] = 0
+              }
+            }
+          }
+        }
+        setSimpleCategoryCounts(simpleCounts)
       } catch (err) {
         console.error('Error loading quiz setup data:', err)
         setError(err.message)
@@ -144,12 +190,11 @@ export const useCustomQuizSetup = () => {
       }
 
       try {
-        const count = await getAvailableQuestionCount({
-          subjectId: selectedSubject,
-          systemId: selectedSystem,
-          topicId: selectedTopic || null,
-          difficulty: difficulty || null
-        })
+        const count = await getAvailableQuestionCount(
+          selectedSubject,
+          selectedSystem,
+          selectedTopic || null
+        )
         setAvailableQuestions(count)
       } catch (err) {
         console.error('Error getting available question count:', err)
@@ -207,6 +252,7 @@ export const useCustomQuizSetup = () => {
     questionCounts,
     availableQuestions,
     simpleCategories,
+    simpleCategoryCounts,
     canStart,
 
     // Actions

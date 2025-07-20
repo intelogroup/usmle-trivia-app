@@ -13,7 +13,8 @@ const SimpleModeSetup = ({
   onQuestionCountChange,
   difficulty,
   onDifficultyChange,
-  difficultyOptions
+  difficultyOptions,
+  simpleCategoryCounts
 }) => {
   return (
     <div className="space-y-6">
@@ -36,10 +37,15 @@ const SimpleModeSetup = ({
                   : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
-              <div className="flex items-center mb-2">
-                <span className="text-2xl mr-3">{cat.icon}</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {cat.name}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center">
+                  <span className="text-2xl mr-3">{cat.icon}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {cat.name}
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                  {simpleCategoryCounts?.[cat.id] || 0} questions
                 </span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">

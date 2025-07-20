@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, Volume2, VolumeX } from 'lucide-react';
 import { fetchQuestionsForUser, createQuizSession, recordQuizResponse, completeQuizSession } from '../services/questionService';
 import QuizProgressBar from '../components/quiz/QuizProgressBar';
 import QuizLoading from '../components/quiz/QuizLoading';
 import QuizError from '../components/quiz/QuizError';
 import { useAuth } from '../contexts/AuthContext';
+import { useQuizSounds } from '../hooks/useQuizSounds';
 
 const ICONS = ['🅰️', '🅱️', '🇨', '🇩'];
 const Confetti = ({ show }) => show ? (
@@ -51,6 +52,7 @@ const CustomQuiz = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [displayScore, setDisplayScore] = useState(0);
   const timerRef = useRef();
+  const { playCorrect, playWrong, playTimesUp, playNext, playComplete } = useQuizSounds(isMuted);
 
   // Fetch questions on mount
   useEffect(() => {
@@ -109,19 +111,24 @@ const CustomQuiz = () => {
     return () => clearInterval(timerRef.current);
   }, [currentIdx, showResults, loading, config]);
 
-  // Animated feedback
+  // Sound effects and animated feedback
   useEffect(() => {
     if (isAnswered && !timedOut) {
       if (selectedOption === questions[currentIdx]?.correct_option_id) {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 1200);
+        playCorrect();
+      } else {
+        playWrong();
       }
     }
-  }, [isAnswered, timedOut, selectedOption, questions, currentIdx]);
+    if (timedOut) playTimesUp();
+  }, [isAnswered, timedOut, selectedOption, questions, currentIdx, playCorrect, playWrong, playTimesUp]);
 
-  // Animated score reveal
+  // Animated score reveal with completion sound
   useEffect(() => {
     if (showResults) {
+      playComplete();
       let n = 0;
       const correct = answers.filter(a => a.isCorrect).length;
       const interval = setInterval(() => {
@@ -131,7 +138,7 @@ const CustomQuiz = () => {
       }, 20);
       return () => clearInterval(interval);
     }
-  }, [showResults, answers]);
+  }, [showResults, answers, playComplete]);
 
   // Handle answer selection
   const handleOptionSelect = useCallback(
@@ -239,9 +246,14 @@ const CustomQuiz = () => {
           <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Previous Question">
             <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </button>
-          <button onClick={() => navigate('/quiz-tab')} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Home">
-            <Home className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleMute} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" title={isMuted ? 'Unmute' : 'Mute'}>
+              {isMuted ? <VolumeX className="w-6 h-6 text-gray-600 dark:text-gray-300" /> : <Volume2 className="w-6 h-6 text-gray-600 dark:text-gray-300" />}
+            </button>
+            <button onClick={() => navigate('/quiz-tab')} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Home">
+              <Home className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+            </button>
+          </div>
         </div>
         <AnimatePresence mode="wait">
           {currentQuestion ? (
