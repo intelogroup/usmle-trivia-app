@@ -4,6 +4,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import AuthErrorBoundary from './components/auth/AuthErrorBoundary'
 import QueryErrorBoundary from './components/ui/QueryErrorBoundary'
 import QuizErrorBoundary from './components/quiz/QuizErrorBoundary'
+import { ProductionErrorBoundary } from './components/NetworkErrorBoundary'
 import Layout from './components/layout/Layout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import SplashScreen from './components/auth/SplashScreen'
@@ -31,8 +32,9 @@ const Terms = lazy(() => import('./pages/Terms'))
 
 function App() {
   return (
-    <ErrorBoundary>
-      <NotificationToast />
+    <ProductionErrorBoundary>
+      <ErrorBoundary>
+        <NotificationToast />
       <Routes>
         {/* Auth routes */}
         <Route path="/login" element={
@@ -148,7 +150,8 @@ function App() {
           </ProtectedRoute>
         } />
       </Routes>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </ProductionErrorBoundary>
   )
 }
 

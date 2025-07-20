@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { getLeaderboardData } from '../services/leaderboard/statsService';
+import { supabase } from '../lib/supabase';
 
 // Helper function to generate country flags
 const getCountryFlag = (countryCode) => {
@@ -54,11 +54,36 @@ const transformLeaderboardData = async (profiles) => {
   });
 };
 
-// Fetch leaderboard data using the stats service
+// Optimized leaderboard data fetching for production
 const fetchLeaderboardData = async (period = 'all') => {
   try {
-    const profiles = await getLeaderboardData(period, 50);
-    return await transformLeaderboardData(profiles);
+    // Use optimized query with proper indexing
+    const { data: profiles, error } = await supabase
+      .from('profiles')
+      .select(`
+        id,
+        display_name,
+        total_points,
+        current_streak,
+        avatar_url,
+        grade_id,
+        user_stats (
+          total_quizzes_completed,
+          total_questions_answered,
+          overall_accuracy
+        )
+      `)
+      .not('display_name', 'is', null)
+      .order('total_points', { ascending: false })
+      .order('created_at', { ascending: true }) // Tie breaker
+      .limit(50); // Reasonable limit for UI
+
+    if (error) {
+      console.error('Error fetching leaderboard:', error);
+      return [];
+    }
+
+    return await transformLeaderboardData(profiles || []);
   } catch (error) {
     console.error('Error in fetchLeaderboardData:', error);
     return [];
@@ -77,13 +102,17 @@ export const useLeaderboardData = () => {
     { value: 'all', label: 'All Time' }
   ];
 
-  // Fetch leaderboard data using React Query
+  // Optimized React Query for production performance
   const { data: rawLeaderboardData = [], isLoading, error } = useQuery({
     queryKey: ['leaderboard', selectedPeriod],
     queryFn: () => fetchLeaderboardData(selectedPeriod),
-    staleTime: 10000, // 10 seconds - more frequent updates for real-time feel
-    cacheTime: 300000, // 5 minutes
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    staleTime: 30000, // 30 seconds - reduce API calls for leaderboard
+    cacheTime: 600000, // 10 minutes - longer cache for static-ish data
+    refetchOnWindowFocus: false, // Disable for production performance
+    refetchOnMount: false, // Use cached data when available
+    keepPreviousData: true, // Smooth transitions
+    retry: 2, // Reduced retries
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 
   // Processed data based on selected period
