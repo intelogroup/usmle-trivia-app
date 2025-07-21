@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, onToggle, isTablet }) => {
     { 
       icon: BarChart3, 
       label: 'Statistics', 
-      path: '/stats', 
+      path: '/profile', 
       color: 'text-green-600 dark:text-green-400', 
       bgColor: 'bg-green-500', 
       gradient: 'from-green-500 to-green-600' 

@@ -1,8 +1,8 @@
 import { ArrowLeft, Wifi, WifiOff, Clock, Zap, Timer as TimerIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useContextualNavigation } from '../../hooks/useContextualNavigation';
 
 const QuizHeader = ({ categoryName, currentQuestionIndex, totalQuestions, score, isOffline, isFetching, timeLeft, isTimed, quizMode, quizType }) => {
-  const navigate = useNavigate();
+  const { contextualBack } = useContextualNavigation();
 
   const formatTime = (seconds) => {
     if (seconds === null || seconds === undefined) return '--:--';
@@ -33,7 +33,7 @@ const QuizHeader = ({ categoryName, currentQuestionIndex, totalQuestions, score,
   return (
     <div className="flex items-center justify-between mb-3">
       <button
-        onClick={() => navigate(-1)}
+        onClick={contextualBack}
         className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
         aria-label="Go back"
       >

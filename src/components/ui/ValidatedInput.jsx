@@ -76,9 +76,9 @@ const ValidatedInput = ({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
         </label>
       )}
       
@@ -94,6 +94,7 @@ const ValidatedInput = ({
         <input
           type={inputType}
           name={name}
+          id={name}
           value={value}
           onChange={(e) => onChange(name, e.target.value)}
           onBlur={() => {
@@ -105,6 +106,9 @@ const ValidatedInput = ({
           disabled={disabled}
           autoComplete={autoComplete}
           className={getInputClasses()}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${name}-error` : undefined}
+          aria-required={required}
           {...props}
         />
         
@@ -133,13 +137,16 @@ const ValidatedInput = ({
       <AnimatePresence>
         {error && (
           <motion.div
+            id={`${name}-error`}
+            role="alert"
+            aria-live="polite"
             initial={{ opacity: 0, y: -10, height: 0 }}
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -10, height: 0 }}
             transition={{ duration: 0.2 }}
             className="text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
           >
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <AlertCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             <span>{error}</span>
           </motion.div>
         )}

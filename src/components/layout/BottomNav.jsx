@@ -34,6 +34,8 @@ const BottomNav = () => {
               className="relative flex flex-col items-center justify-center px-1.5 py-1 min-w-0 flex-1"
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              aria-label={`${item.label}${active ? ' (current page)' : ''}`}
+              aria-current={active ? 'page' : undefined}
             >
               {/* Icon container */}
               <motion.div
@@ -48,6 +50,7 @@ const BottomNav = () => {
                   className={`w-4 h-4 transition-colors duration-200 ${
                     active ? item.color : 'text-gray-500 dark:text-gray-400'
                   }`}
+                  aria-hidden="true"
                 />
               </motion.div>
               

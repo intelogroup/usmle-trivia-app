@@ -48,11 +48,15 @@ const Layout = ({ children }) => {
         paddingRight: 'env(safe-area-inset-right)'
       }}
     >
-      {/* Mobile Layout (unchanged) */}
+      {/* Mobile Layout */}
       {isMobile ? (
         <div className="flex flex-col min-h-screen">
-          {showHeader && <Header user={user} profile={profile} />}
-          <main className="flex-1 relative">
+          {showHeader && (
+            <header role="banner">
+              <Header user={user} profile={profile} />
+            </header>
+          )}
+          <main role="main" aria-label="Main content" className="flex-1 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -65,36 +69,42 @@ const Layout = ({ children }) => {
               {children}
             </motion.div>
           </main>
-          {showBottomNav && <BottomNav />}
+          {showBottomNav && (
+            <nav role="navigation" aria-label="Main navigation">
+              <BottomNav />
+            </nav>
+          )}
         </div>
       ) : (
         /* Desktop/Tablet Layout */
         <div className="flex min-h-screen w-full overflow-hidden">
           {/* Sidebar - Fixed percentage width */}
           {isSidebarOpen && (
-            <div className="w-[15%] min-w-[180px] max-w-[200px] flex-shrink-0">
+            <aside role="navigation" aria-label="Sidebar navigation" className="w-[15%] min-w-[180px] max-w-[200px] flex-shrink-0">
               <Sidebar 
                 isOpen={isSidebarOpen} 
                 onToggle={toggleSidebar}
                 isTablet={window.innerWidth < 1024}
               />
-            </div>
+            </aside>
           )}
           
           {/* Main Content Area - Takes remaining width */}
           <div className={`${isSidebarOpen ? 'w-[85%]' : 'w-full'} flex flex-col min-h-screen overflow-hidden transition-all duration-300`}>
             {showHeader && (
-              <Header
-                onSidebarToggle={toggleSidebar}
-                showSidebarToggle={window.innerWidth < 1024}
-                isCondensed={false}
-                user={user}
-                profile={profile}
-              />
+              <header role="banner">
+                <Header
+                  onSidebarToggle={toggleSidebar}
+                  showSidebarToggle={window.innerWidth < 1024}
+                  isCondensed={false}
+                  user={user}
+                  profile={profile}
+                />
+              </header>
             )}
             
             {/* Main content area - theater of the app */}
-            <main className="flex-1 overflow-auto">
+            <main role="main" aria-label="Main content" className="flex-1 overflow-auto">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

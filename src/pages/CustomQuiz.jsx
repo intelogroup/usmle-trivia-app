@@ -8,6 +8,7 @@ import QuizLoading from '../components/quiz/QuizLoading';
 import QuizError from '../components/quiz/QuizError';
 import { useAuth } from '../contexts/AuthContext';
 import { useQuizSounds } from '../hooks/useQuizSounds';
+import { useContextualNavigation } from '../hooks/useContextualNavigation';
 
 const ICONS = ['🅰️', '🅱️', '🇨', '🇩'];
 const Confetti = ({ show }) => show ? (
@@ -36,6 +37,7 @@ const CustomQuiz = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { contextualBack, navigateToHome } = useContextualNavigation();
   const config = location.state;
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -243,14 +245,14 @@ const CustomQuiz = () => {
         {config?.timing === 'timed' && <TimerBar timeLeft={timeLeft} total={60} />}
         <QuizProgressBar current={currentIdx + 1} total={questions.length} secondsLeft={config?.timing === 'timed' ? timeLeft : null} />
         <div className="flex justify-between items-center mb-4">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Previous Question">
+          <button onClick={contextualBack} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go back to quiz setup">
             <ArrowLeft className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </button>
           <div className="flex items-center gap-2">
             <button onClick={toggleMute} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" title={isMuted ? 'Unmute' : 'Mute'}>
               {isMuted ? <VolumeX className="w-6 h-6 text-gray-600 dark:text-gray-300" /> : <Volume2 className="w-6 h-6 text-gray-600 dark:text-gray-300" />}
             </button>
-            <button onClick={() => navigate('/quiz-tab')} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Home">
+            <button onClick={navigateToHome} className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700 transition-colors" aria-label="Go to Home">
               <Home className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </button>
           </div>
