@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useUserActivityQuery } from '../hooks/useOptimizedQueries'
 import { useViewTransitions } from '../hooks/useViewTransitions'
@@ -62,6 +62,7 @@ const ErrorDisplay = ({ error, onRetry }) => (
 const Home = () => {
   const { user, profile } = useAuth()
   const { transitionTo } = useViewTransitions()
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
   
   // Use optimized query hook for instant rendering
   const {
@@ -71,6 +72,23 @@ const Home = () => {
     error,
     refetch
   } = useUserActivityQuery(user?.id)
+
+  // Add loading timeout to prevent infinite loading
+  useEffect(() => {
+    let timeoutId
+    if (isLoading) {
+      timeoutId = setTimeout(() => {
+        console.warn('Home loading timeout - forcing display with default data')
+        setLoadingTimeout(true)
+      }, 10000) // 10 second timeout
+    } else {
+      setLoadingTimeout(false)
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [isLoading])
 
   // Extract data with safe defaults
   const {
@@ -86,13 +104,42 @@ const Home = () => {
 
   if (isError) return <ErrorDisplay error={error} onRetry={refetch} />
 
+  // Show loading indicator only if still loading and timeout hasn't occurred
+  if (isLoading && !loadingTimeout) {
+    return <LoadingIndicator />
+  }
+
+  // If loading timed out, show warning but continue with default data
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-0">
       <CacheStatusIndicators isRefreshing={false} isFromCache={false} />
+      
+      {/* Show timeout warning */}
+      {loadingTimeout && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 p-4 mb-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-yellow-400" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Loading took longer than expected. Showing dashboard with limited data.
+                <button 
+                  onClick={refetch}
+                  className="ml-2 underline hover:no-underline"
+                >
+                  Try refreshing
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="px-3 md:px-6 lg:px-8 pt-2 pb-3 max-w-4xl mx-auto">
         <Suspense fallback={<LoadingIndicator />}>
           <WelcomeSection user={user} profile={profile} isNewUser={isNewUser} />
-          <HomeStats userStats={userStats} isNewUser={isNewUser} isLoading={isLoading} />
+          <HomeStats userStats={userStats} isNewUser={isNewUser} isLoading={isLoading && !loadingTimeout} />
           <HomeActions isNewUser={isNewUser} onNavigate={transitionTo} />
           <StudyTipsSection />
           <ProgressOverview userStats={userStats} isNewUser={isNewUser} />
