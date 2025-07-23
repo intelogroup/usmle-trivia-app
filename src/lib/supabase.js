@@ -165,10 +165,10 @@ export const testConnection = async () => {
     console.log('🌐 [Supabase] URL:', supabaseUrl);
     console.log('🔑 [Supabase] Key present:', !!supabaseKey);
     
-    // Simple test query
+    // Simple test query - use questions table which we know exists and has proper access
     const { data, error } = await supabase
-      .from('tags')
-      .select('id, name')
+      .from('questions')
+      .select('id')
       .limit(1);
     
     if (error) {
