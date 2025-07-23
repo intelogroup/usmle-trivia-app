@@ -1,0 +1,3328 @@
+{
+  "config": {
+    "configFile": "/root/repo/playwright.config.js",
+    "rootDir": "/root/repo/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/root/repo/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/root/repo/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 60000
+    }
+  },
+  "suites": [
+    {
+      "title": "real-world-app-testing.spec.js",
+      "file": "real-world-app-testing.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "USMLE Trivia App - Real World Testing",
+          "file": "real-world-app-testing.spec.js",
+          "line": 8,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Initial Load and Landing Experience",
+              "file": "real-world-app-testing.spec.js",
+              "line": 20,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should load the homepage within 3 seconds",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1494,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:35 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:35 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 955.781327460497ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 955.781327460497ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Page load time: 677ms\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:34.376Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-af432b439c773849a70b",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 22,
+                  "column": 5
+                },
+                {
+                  "title": "should display main navigation elements",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 5769,
+                          "error": {
+                            "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('nav, [role=\"navigation\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('nav, [role=\"navigation\"]')\u001b[22m\n",
+                            "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('nav, [role=\"navigation\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('nav, [role=\"navigation\"]')\u001b[22m\n\n    at /root/repo/tests/real-world-app-testing.spec.js:34:32",
+                            "location": {
+                              "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                              "column": 32,
+                              "line": 34
+                            },
+                            "snippet": "  32 |       // Check for main navigation\n  33 |       const navigation = page.locator('nav, [role=\"navigation\"]');\n> 34 |       await expect(navigation).toBeVisible({ timeout: 5000 });\n     |                                ^\n  35 |       \n  36 |       // Check for key action buttons\n  37 |       const getStartedBtn = page.locator('text=Get Started');"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                                "column": 32,
+                                "line": 34
+                              },
+                              "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('nav, [role=\"navigation\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('nav, [role=\"navigation\"]')\u001b[22m\n\n\n  32 |       // Check for main navigation\n  33 |       const navigation = page.locator('nav, [role=\"navigation\"]');\n> 34 |       await expect(navigation).toBeVisible({ timeout: 5000 });\n     |                                ^\n  35 |       \n  36 |       // Check for key action buttons\n  37 |       const getStartedBtn = page.locator('text=Get Started');\n    at /root/repo/tests/real-world-app-testing.spec.js:34:32"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:36 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:36 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 578.8219545052247ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 578.8219545052247ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 2/4), retrying in 1108.9645698606737ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 2 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 1108.9645698606737ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 3/4), retrying in 3749.6034915579335ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 3 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 3749.6034915579335ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:36.075Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/root/repo/test-results/real-world-app-testing-USM-1c4ba-ay-main-navigation-elements-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                            "column": 32,
+                            "line": 34
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-a52eb1ce1b618e7b1c78",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 31,
+                  "column": 5
+                },
+                {
+                  "title": "should have proper semantic HTML structure",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 5676,
+                          "error": {
+                            "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('header, [role=\"banner\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('header, [role=\"banner\"]')\u001b[22m\n",
+                            "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('header, [role=\"banner\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('header, [role=\"banner\"]')\u001b[22m\n\n    at /root/repo/tests/real-world-app-testing.spec.js:53:28",
+                            "location": {
+                              "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                              "column": 28,
+                              "line": 53
+                            },
+                            "snippet": "  51 |       const nav = page.locator('nav, [role=\"navigation\"]');\n  52 |       \n> 53 |       await expect(header).toBeVisible();\n     |                            ^\n  54 |       await expect(main).toBeVisible();\n  55 |       await expect(nav).toBeVisible();\n  56 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                                "column": 28,
+                                "line": 53
+                              },
+                              "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('header, [role=\"banner\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('header, [role=\"banner\"]')\u001b[22m\n\n\n  51 |       const nav = page.locator('nav, [role=\"navigation\"]');\n  52 |       \n> 53 |       await expect(header).toBeVisible();\n     |                            ^\n  54 |       await expect(main).toBeVisible();\n  55 |       await expect(nav).toBeVisible();\n  56 |     });\n    at /root/repo/tests/real-world-app-testing.spec.js:53:28"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:43 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:43 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 505.069919099956ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 505.069919099956ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 2/4), retrying in 1326.6127394821879ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 2 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 1326.6127394821879ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 3/4), retrying in 2947.2594635864057ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 3 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 2947.2594635864057ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ❌ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed after 3 attempts: Error: Network error - please check your internet connection\n    at retryWithBackoff.operationName (http://localhost:5173/src/lib/supabase.js:86:38)\n    at async retryWithBackoff (http://localhost:5173/src/utils/retryUtils.js:111:22)\n    at async fetch (http://localhost:5173/src/lib/supabase.js:37:16)\n    at async testConnection (http://localhost:5173/src/lib/supabase.js:169:29)\n    at async testConnectionWithRetry (http://localhost:5173/src/lib/supabase.js:205:22)\n"
+                            },
+                            {
+                              "text": "Console: 💥 Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed after 3 attempts: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: ❌ [Supabase] Connection test failed: {message: Error: Operation failed after 3 retries: Network error - please check your internet connection, details: Error: Operation failed after 3 retries: Network e…http://localhost:5173/src/lib/supabase.js:205:22), hint: , code: }\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 804.8697539387533ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 804.8697539387533ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:42.956Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/root/repo/test-results/real-world-app-testing-USM-c2f5b-per-semantic-HTML-structure-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                            "column": 28,
+                            "line": 53
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-042b1b251e694fc0cd3c",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 47,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Authentication Flow Testing",
+              "file": "real-world-app-testing.spec.js",
+              "line": 60,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should navigate to signup/login from homepage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 958,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:50 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:50 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 559.9202413214513ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 559.9202413214513ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "No authentication entry points found\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:49.935Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-4fd6478e54f1fc9ddcb5",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 62,
+                  "column": 5
+                },
+                {
+                  "title": "should display login form when accessed",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5853,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:51 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:51 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:51 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:51 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 717.787553833275ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 717.787553833275ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 2/4), retrying in 1766.925399106884ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 2 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 1766.925399106884ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 3/4), retrying in 2234.4507480404163ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 3 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 2234.4507480404163ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ❌ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed after 3 attempts: Error: Network error - please check your internet connection\n    at retryWithBackoff.operationName (http://localhost:5173/src/lib/supabase.js:86:38)\n    at async retryWithBackoff (http://localhost:5173/src/utils/retryUtils.js:111:22)\n    at async fetch (http://localhost:5173/src/lib/supabase.js:37:16)\n    at async testConnection (http://localhost:5173/src/lib/supabase.js:169:29)\n    at async testConnectionWithRetry (http://localhost:5173/src/lib/supabase.js:205:22)\n"
+                            },
+                            {
+                              "text": "Console: 💥 Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed after 3 attempts: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: ❌ [Supabase] Connection test failed: {message: Error: Operation failed after 3 retries: Network error - please check your internet connection, details: Error: Operation failed after 3 retries: Network e…http://localhost:5173/src/lib/supabase.js:205:22), hint: , code: }\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 715.6818332686834ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 715.6818332686834ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Login page not accessible: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('input[type=\"email\"], input[name=\"email\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('input[type=\"email\"], input[name=\"email\"]')\u001b[22m\n\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:51.059Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-9a59ddd1777d5461b749",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 92,
+                  "column": 5
+                },
+                {
+                  "title": "should validate form inputs",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1098,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:57 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:57 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:57 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:57 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:56.924Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-a07ae4dd8ae2f111b2a3",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 112,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Quiz Navigation and Setup",
+              "file": "real-world-app-testing.spec.js",
+              "line": 137,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should access quiz section from main navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1684,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:58 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:58 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 680.0046202698677ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 680.0046202698677ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Quiz section URL: http://localhost:5173/quiz\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:59 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:00:59 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Quiz options not found\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:58.030Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-ceceeee73d6f0bc94479",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 139,
+                  "column": 5
+                },
+                {
+                  "title": "should display different quiz types",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1114,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:00 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:00 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:00 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:00 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Found quiz types: \n"
+                            },
+                            {
+                              "text": "Quiz types test failed: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 760.7173384902405ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 760.7173384902405ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:00:59.722Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-0f3ae33a0c1c5f6f679b",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 178,
+                  "column": 5
+                },
+                {
+                  "title": "should access custom quiz setup",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1400,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:01 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:01 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 632.9079722557155ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 632.9079722557155ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:01 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:01 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 987.656033206855ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 987.656033206855ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Quiz setup elements found: 0/6\n"
+                            },
+                            {
+                              "text": "Question count display: missing\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:00.856Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-d14fd311e5a6a4401f3c",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 206,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Quiz Execution Testing",
+              "file": "real-world-app-testing.spec.js",
+              "line": 241,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should start a quiz and display questions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 962,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:02 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:02 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:03 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:03 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:02.269Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-18397d8846c6bd81c2b4",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 243,
+                  "column": 5
+                },
+                {
+                  "title": "should handle quiz interactions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3920,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:03 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:03 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:04 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:04 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 758.5823659865897ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 758.5823659865897ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 2/4), retrying in 1465.508144944405ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 2 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 1465.508144944405ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Found 1 answer options\n"
+                            },
+                            {
+                              "text": "Page Error: queryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 3/4), retrying in 3356.9413116178434ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 3 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 3356.9413116178434ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Quiz interaction test failed: locator.count: Unexpected token \"=\" while parsing css selector \".correct, .wrong, .feedback, text=Correct, text=Incorrect\". Did you mean to CSS.escape it?\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:03.246Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-96cec57213b11e1e6c20",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 288,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Responsive Design Testing",
+              "file": "real-world-app-testing.spec.js",
+              "line": 328,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1217,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:07 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:07 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:08 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:08 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 675.0357001880252ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 675.0357001880252ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Mobile - Body width: 375, Viewport: 375\n"
+                            },
+                            {
+                              "text": "Mobile navigation: missing\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:07.174Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-23df9619b7eefa7bf2b1",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 330,
+                  "column": 5
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1018,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:09 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:09 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 776.5682380302077ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 776.5682380302077ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:09 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:09 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:08.399Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-9720966f222228935ac6",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 349,
+                  "column": 5
+                },
+                {
+                  "title": "should work on desktop viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1125,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:10 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:10 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 660.5680404423453ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 660.5680404423453ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:10 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:10 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Desktop sidebar: missing\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 594.9374976081006ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 594.9374976081006ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:09.430Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-8f3bb2fd98e537f4cf5e",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 363,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Accessibility Testing",
+              "file": "real-world-app-testing.spec.js",
+              "line": 386,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have proper heading structure",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1186,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:11 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:11 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 658.304818855734ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 658.304818855734ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:11 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:11 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "H1 elements: 1\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 689.9483465840993ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 689.9483465840993ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "H1 text: \"Welcome toUSMLE Trivia\"\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:10.563Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-6fe3468426464df3ba54",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 388,
+                  "column": 5
+                },
+                {
+                  "title": "should have keyboard navigation support",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 1181,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /root/repo/tests/real-world-app-testing.spec.js:410:93",
+                            "location": {
+                              "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                              "column": 93,
+                              "line": 410
+                            },
+                            "snippet": "  408 |       \n  409 |       console.log(`First focused element: ${focusedElement}`);\n> 410 |       expect(['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(focusedElement || '')).toBe(true);\n      |                                                                                             ^\n  411 |     });\n  412 |\n  413 |     test('should have alt text for images', async ({ page }) => {"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                                "column": 93,
+                                "line": 410
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  408 |       \n  409 |       console.log(`First focused element: ${focusedElement}`);\n> 410 |       expect(['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(focusedElement || '')).toBe(true);\n      |                                                                                             ^\n  411 |     });\n  412 |\n  413 |     test('should have alt text for images', async ({ page }) => {\n    at /root/repo/tests/real-world-app-testing.spec.js:410:93"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:12 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:12 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 619.4188848452221ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 619.4188848452221ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:12 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:12 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "First focused element: BODY\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 621.5784011072541ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 621.5784011072541ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:11.770Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/root/repo/test-results/real-world-app-testing-USM-76022-keyboard-navigation-support-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                            "column": 93,
+                            "line": 410
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-58eb7fa64699d33156d0",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 402,
+                  "column": 5
+                },
+                {
+                  "title": "should have alt text for images",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1038,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:14 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:14 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:15 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:15 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Images: 0, Missing alt: 0\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 714.2621867506906ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 714.2621867506906ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:14.043Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-71e02250d25f8a925860",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 413,
+                  "column": 5
+                },
+                {
+                  "title": "should have proper form labels",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 991,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:15 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:15 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 743.8016833131156ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 743.8016833131156ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:16 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:16 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Form inputs: 0, Unlabeled: 0\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:15.258Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-9f529659ce836a3ee86c",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 431,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "file": "real-world-app-testing.spec.js",
+              "line": 467,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle 404 pages gracefully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 1275,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /root/repo/tests/real-world-app-testing.spec.js:486:34",
+                            "location": {
+                              "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                              "column": 34,
+                              "line": 486
+                            },
+                            "snippet": "  484 |       console.log(`Final URL: ${currentUrl}`);\n  485 |       \n> 486 |       expect(handles404Properly).toBe(true);\n      |                                  ^\n  487 |     });\n  488 |\n  489 |     test('should handle network errors', async ({ page }) => {"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                                "column": 34,
+                                "line": 486
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n  484 |       console.log(`Final URL: ${currentUrl}`);\n  485 |       \n> 486 |       expect(handles404Properly).toBe(true);\n      |                                  ^\n  487 |     });\n  488 |\n  489 |     test('should handle network errors', async ({ page }) => {\n    at /root/repo/tests/real-world-app-testing.spec.js:486:34"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:16 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:16 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 695.7562253017053ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 695.7562253017053ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:17 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:17 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "404 handling: needs improvement\n"
+                            },
+                            {
+                              "text": "Final URL: http://localhost:5173/non-existent-page-12345\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 507.02532790529176ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 507.02532790529176ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:16.274Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/root/repo/test-results/real-world-app-testing-USM-7aabe-handle-404-pages-gracefully-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                            "column": 34,
+                            "line": 486
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-189279ea257c5050bf5b",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 469,
+                  "column": 5
+                },
+                {
+                  "title": "should handle network errors",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 747,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:19 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:19 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_FAILED\n"
+                            },
+                            {
+                              "text": "Page Error: Failed to fetch dynamically imported module: http://localhost:5173/src/pages/auth/Welcome.jsx\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_FAILED\n"
+                            },
+                            {
+                              "text": "Page Error: Failed to fetch dynamically imported module: http://localhost:5173/src/pages/auth/Welcome.jsx\n"
+                            },
+                            {
+                              "text": "Console: The above error occurred in one of your React components:\n\n    at Lazy\n    at Suspense\n    at AuthErrorBoundary (http://localhost:5173/src/components/auth/AuthErrorBoundary.jsx:9:5)\n    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=3694849a:4088:5)\n    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=3694849a:4558:5)\n    at ErrorBoundary (http://localhost:5173/src/components/ErrorBoundary.jsx:9:5)\n    at NetworkErrorBoundary (http://localhost:5173/src/components/NetworkErrorBoundary.jsx:23:5)\n    at QueryErrorResetBoundary (http://localhost:5173/node_modules/.vite/deps/chunk-BYEB7RYY.js?v=3694849a:2971:3)\n    at ProductionErrorBoundary (http://localhost:5173/src/components/NetworkErrorBoundary.jsx:372:43)\n    at App\n    at ThemeProvider (http://localhost:5173/src/contexts/ThemeContext.jsx:29:33)\n    at AuthProvider (http://localhost:5173/src/contexts/AuthContext.jsx:33:32)\n    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=3694849a:4501:15)\n    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=3694849a:5247:5)\n    at QueryClientProvider (http://localhost:5173/node_modules/.vite/deps/chunk-BYEB7RYY.js?v=3694849a:2933:3)\n\nReact will try to recreate this component tree from scratch using the error boundary you provided, AuthErrorBoundary.\n"
+                            },
+                            {
+                              "text": "Console: %c[ERROR] 18:01:19 color: #ff4444; font-weight: bold Authentication error boundary triggered\n"
+                            },
+                            {
+                              "text": "Console: {errorInfo: Object, authFlow: welcome, userAgent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb…L, like Gecko) Chrome/138.0.7204.23 Safari/537.36, errorName: TypeError, errorMessage: Failed to fetch dynamically imported module: http://localhost:5173/src/pages/auth/Welcome.jsx, errorStack: TypeError: Failed to fetch dynamically imported mo… http://localhost:5173/src/pages/auth/Welcome.jsx}\n"
+                            },
+                            {
+                              "text": "Console: console.groupEnd\n"
+                            },
+                            {
+                              "text": "Page Error: Failed to fetch dynamically imported module: http://localhost:5173/node_modules/.vite/deps/HH7B3BHX-Z72QSRLZ.js?v=3694849a\n"
+                            },
+                            {
+                              "text": "Expected network error: page.goto: net::ERR_FAILED at http://localhost:5173/\nCall log:\n\u001b[2m  - navigating to \"http://localhost:5173/\", waiting until \"load\"\u001b[22m\n\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:18.610Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-031ff07f6e08d28cdd5f",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 489,
+                  "column": 5
+                },
+                {
+                  "title": "should handle slow loading gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8165,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:20 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:20 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 513.6669349920082ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 513.6669349920082ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:26 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:26 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Loading indicator: missing\n"
+                            },
+                            {
+                              "text": "Slow load time: 7511ms\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 936.1560459011913ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 936.1560459011913ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:19.564Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-3536183ffc0beaa0c2a3",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 509,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Performance Testing",
+              "file": "real-world-app-testing.spec.js",
+              "line": 531,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have reasonable bundle sizes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1582,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:28 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:28 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:28 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:28 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 571.6655839875535ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 571.6655839875535ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Asset sizes:\n"
+                            },
+                            {
+                              "text": "  main.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  react_jsx-dev-runtime.js?v=3694849a: 36KB\n"
+                            },
+                            {
+                              "text": "  react.js?v=3694849a: 0KB\n"
+                            },
+                            {
+                              "text": "  react-dom_client.js?v=3694849a: 1KB\n"
+                            },
+                            {
+                              "text": "  react-router-dom.js?v=3694849a: 204KB\n"
+                            },
+                            {
+                              "text": "  @tanstack_react-query.js?v=3694849a: 2KB\n"
+                            },
+                            {
+                              "text": "  @tanstack_react-query-devtools.js?v=3694849a: 13KB\n"
+                            },
+                            {
+                              "text": "  chunk-ZMLY2J2T.js?v=3694849a: 76KB\n"
+                            },
+                            {
+                              "text": "  chunk-4B2QHNJT.js?v=3694849a: 3KB\n"
+                            },
+                            {
+                              "text": "  chunk-276SZO74.js?v=3694849a: 906KB\n"
+                            },
+                            {
+                              "text": "  chunk-BYEB7RYY.js?v=3694849a: 119KB\n"
+                            },
+                            {
+                              "text": "  chunk-CRNJR6QK.js?v=3694849a: 36KB\n"
+                            },
+                            {
+                              "text": "  chunk-UQB3IAMY.js?v=3694849a: 86KB\n"
+                            },
+                            {
+                              "text": "  queryClient.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  @tanstack_react-query-persist-client.js?v=3694849a: 10KB\n"
+                            },
+                            {
+                              "text": "  AuthContext.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  ThemeContext.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  App.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  globals.css: unknownKB\n"
+                            },
+                            {
+                              "text": "  supabase.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  @supabase_supabase-js.js?v=3694849a: 267KB\n"
+                            },
+                            {
+                              "text": "  chunk-HWMC2YUY.js?v=3694849a: 1KB\n"
+                            },
+                            {
+                              "text": "  authStateManager.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  profileService.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  logger.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  ErrorBoundary.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  lucide-react.js?v=3694849a: 1130KB\n"
+                            },
+                            {
+                              "text": "  AuthErrorBoundary.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  QueryErrorBoundary.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  QuizErrorBoundary.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  NetworkErrorBoundary.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  Layout.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  framer-motion.js?v=3694849a: 355KB\n"
+                            },
+                            {
+                              "text": "  ProtectedRoute.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  SplashScreen.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  LoadingIndicator.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  NotificationToast.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  retryUtils.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  queryTimeout.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  Header.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  BottomNav.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  Sidebar.jsx: unknownKB\n"
+                            },
+                            {
+                              "text": "  notifications.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  imageUtils.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  errorTypes.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  errorParser.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  toastManager.js: unknownKB\n"
+                            },
+                            {
+                              "text": "  HH7B3BHX-Z72QSRLZ.js?v=3694849a: 1KB\n"
+                            },
+                            {
+                              "text": "  Welcome.jsx: 22KB\n"
+                            },
+                            {
+                              "text": "  chunk-DERXUTWC.js?v=3694849a: 437KB\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:27.740Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-355d07b26a4b5fb705d6",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 533,
+                  "column": 5
+                },
+                {
+                  "title": "should not have console errors",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 1655,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m5\u001b[39m\nReceived:   \u001b[31m6\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m5\u001b[39m\nReceived:   \u001b[31m6\u001b[39m\n    at /root/repo/tests/real-world-app-testing.spec.js:584:29",
+                            "location": {
+                              "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                              "column": 29,
+                              "line": 584
+                            },
+                            "snippet": "  582 |       \n  583 |       // Allow some errors but not too many\n> 584 |       expect(errors.length).toBeLessThan(5);\n      |                             ^\n  585 |     });\n  586 |\n  587 |   });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                                "column": 29,
+                                "line": 584
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m5\u001b[39m\nReceived:   \u001b[31m6\u001b[39m\n\n  582 |       \n  583 |       // Allow some errors but not too many\n> 584 |       expect(errors.length).toBeLessThan(5);\n      |                             ^\n  585 |     });\n  586 |\n  587 |   });\n    at /root/repo/tests/real-world-app-testing.spec.js:584:29"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: [vite] connecting...\n"
+                            },
+                            {
+                              "text": "Console: [vite] connected.\n"
+                            },
+                            {
+                              "text": "Console: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold\n"
+                            },
+                            {
+                              "text": "Console: Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "Console: URL: MISSING\n"
+                            },
+                            {
+                              "text": "Console: KEY: MISSING\n"
+                            },
+                            {
+                              "text": "Console: Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "Console: 🔍 [Supabase] Testing database connection...\n"
+                            },
+                            {
+                              "text": "Console: 🌐 [Supabase] URL: undefined\n"
+                            },
+                            {
+                              "text": "Console: 🔑 [Supabase] Key present: false\n"
+                            },
+                            {
+                              "text": "Page Error: props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:30 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: %c[WARN] 18:01:30 color: #ffaa00; font-weight: bold [AuthStateManager] Supabase not configured. Authentication will not work.\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 1/4), retrying in 600.1090314897164ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 1 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 600.1090314897164ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console errors found:\n"
+                            },
+                            {
+                              "text": "  - Supabase environment variables are missing\n"
+                            },
+                            {
+                              "text": "  - URL: MISSING\n"
+                            },
+                            {
+                              "text": "  - KEY: MISSING\n"
+                            },
+                            {
+                              "text": "  - Using publishable key: NO\n"
+                            },
+                            {
+                              "text": "  - props.queryClient.getQueryCache(...).subscribe is not a function\n"
+                            },
+                            {
+                              "text": "  - Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: Failed to load resource: net::ERR_NAME_NOT_RESOLVED\n"
+                            },
+                            {
+                              "text": "Console: ⚠️ Supabase request to https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 failed (attempt 2/4), retrying in 1698.212940159653ms: Network error - please check your internet connection\n"
+                            },
+                            {
+                              "text": "Console: 🔄 Supabase retry 2 for https://placeholder.supabase.co/rest/v1/tags?select=id%2Cname&limit=1 in 1698.212940159653ms: Network error - please check your internet connection\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-07-21T18:01:29.341Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "/root/repo/test-results/real-world-app-testing-USM-4792c-uld-not-have-console-errors-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/root/repo/tests/real-world-app-testing.spec.js",
+                            "column": 29,
+                            "line": 584
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "65c93d706bd62e4a47ef-7e4443c0b05df711d066",
+                  "file": "real-world-app-testing.spec.js",
+                  "line": 563,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-07-21T18:00:33.113Z",
+    "duration": 57989.926,
+    "expected": 18,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  }
+}
