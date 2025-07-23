@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Loading Debug Console</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            margin: 0;
+        }
+        .debug-console {
+            background: #000;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .debug-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+        .debug-title {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .debug-result {
+            margin-left: 20px;
+            color: #00ffff;
+        }
+        .debug-error {
+            color: #ff4444;
+        }
+        .debug-success {
+            color: #44ff44;
+        }
+        .debug-warning {
+            color: #ffaa00;
+        }
+        button {
+            background: #333;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #555;
+        }
+        .timestamp {
+            color: #888;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 USMLE Trivia - Home Loading Debug Console</h1>
+    
+    <div class="debug-console" id="debugConsole">
+        <div class="debug-section">
+            <div class="debug-title">Debug Tools</div>
+            <button onclick="runAllTests()">🧪 Run All Tests</button>
+            <button onclick="testEnvironment()">🌍 Test Environment</button>
+            <button onclick="testSupabaseConnection()">🔗 Test Supabase</button>
+            <button onclick="testReactQuery()">⚛️ Test React Query</button>
+            <button onclick="testLocalStorage()">💾 Test Local Storage</button>
+            <button onclick="clearAll()">🧹 Clear Console</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'debug-error' : 
+                             type === 'success' ? 'debug-success' :
+                             type === 'warning' ? 'debug-warning' : 'debug-result';
+            
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span class="timestamp">[${timestamp}]</span> <span class="${className}">${message}</span>`;
+            results.appendChild(entry);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearAll() {
+            results.innerHTML = '';
+        }
+        
+        async function testEnvironment() {
+            log('🌍 Testing Environment Variables...', 'info');
+            
+            // Check if running in development
+            const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            log(`Environment: ${isDev ? 'Development' : 'Production'}`, isDev ? 'success' : 'warning');
+            
+            // Check current URL
+            log(`Current URL: ${window.location.href}`, 'info');
+            
+            // Check if main app elements exist
+            const rootElement = document.getElementById('root');
+            log(`Root element exists: ${rootElement ? '✅' : '❌'}`, rootElement ? 'success' : 'error');
+            
+            // Check for React
+            const hasReact = window.React || document.querySelector('[data-reactroot]');
+            log(`React detected: ${hasReact ? '✅' : '❌'}`, hasReact ? 'success' : 'error');
+            
+            // Check console for errors
+            const originalError = console.error;
+            let errorCount = 0;
+            console.error = (...args) => {
+                errorCount++;
+                originalError.apply(console, args);
+            };
+            
+            setTimeout(() => {
+                log(`Console errors detected: ${errorCount}`, errorCount > 0 ? 'error' : 'success');
+                console.error = originalError;
+            }, 1000);
+            
+            log('Environment test completed', 'success');
+        }
+        
+        async function testSupabaseConnection() {
+            log('🔗 Testing Supabase Connection...', 'info');
+            
+            try {
+                // Check if Supabase is loaded
+                if (typeof window.supabase === 'undefined') {
+                    log('Supabase client not found in window object', 'warning');
+                    log('Attempting to test via fetch...', 'info');
+                    
+                    // Try a basic fetch to Supabase
+                    const response = await fetch('/api/health');
+                    if (response.ok) {
+                        log('API health check passed', 'success');
+                    } else {
+                        log(`API health check failed: ${response.status}`, 'error');
+                    }
+                } else {
+                    log('Supabase client found', 'success');
+                }
+                
+                // Test basic connectivity (if possible)
+                const testUrl = 'https://bkuowoowlmwranfoliea.supabase.co/rest/v1/categories?select=count&is_active=eq.true';
+                
+                try {
+                    const response = await fetch(testUrl, {
+                        headers: {
+                            'apikey': 'sb_publishable_bZkq0HoXxYxAHoaU3mDk0Q_iWsw7zCC',
+                            'Authorization': 'Bearer sb_publishable_bZkq0HoXxYxAHoaU3mDk0Q_iWsw7zCC'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        log(`Database connectivity: ✅ (${data.length} categories)`, 'success');
+                    } else {
+                        log(`Database connectivity: ❌ (${response.status})`, 'error');
+                    }
+                } catch (fetchError) {
+                    log(`Database fetch error: ${fetchError.message}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`Supabase test error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testReactQuery() {
+            log('⚛️ Testing React Query State...', 'info');
+            
+            // Check if React Query DevTools are available
+            if (typeof window.__REACT_QUERY_DEVTOOLS_STORE__ !== 'undefined') {
+                log('React Query DevTools detected', 'success');
+                
+                // Try to get query cache info
+                try {
+                    const devtools = window.__REACT_QUERY_DEVTOOLS_STORE__;
+                    log('React Query DevTools store available', 'success');
+                } catch (e) {
+                    log('Could not access React Query DevTools store', 'warning');
+                }
+            } else {
+                log('React Query DevTools not found', 'warning');
+            }
+            
+            // Check for QueryClient in window
+            if (typeof window.queryClient !== 'undefined') {
+                log('QueryClient found in window', 'success');
+                
+                try {
+                    const cache = window.queryClient.getQueryCache();
+                    const queries = cache.getAll();
+                    log(`Active queries: ${queries.length}`, 'info');
+                    
+                    // Log query states
+                    queries.forEach((query, index) => {
+                        const state = query.state;
+                        const status = state.status || 'unknown';
+                        const key = JSON.stringify(query.queryKey);
+                        log(`Query ${index + 1}: ${key} - Status: ${status}`, status === 'error' ? 'error' : 'info');
+                        
+                        if (state.error) {
+                            log(`  Error: ${state.error.message}`, 'error');
+                        }
+                    });
+                } catch (e) {
+                    log(`QueryClient error: ${e.message}`, 'error');
+                }
+            } else {
+                log('QueryClient not found in window', 'error');
+            }
+        }
+        
+        async function testLocalStorage() {
+            log('💾 Testing Local Storage...', 'info');
+            
+            try {
+                // Check localStorage availability
+                const testKey = 'debug_test';
+                localStorage.setItem(testKey, 'test');
+                const testValue = localStorage.getItem(testKey);
+                localStorage.removeItem(testKey);
+                
+                if (testValue === 'test') {
+                    log('Local Storage: ✅ Working', 'success');
+                } else {
+                    log('Local Storage: ❌ Not working', 'error');
+                }
+                
+                // Check for React Query cache
+                const queryCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE');
+                if (queryCache) {
+                    try {
+                        const parsed = JSON.parse(queryCache);
+                        const age = Date.now() - parsed.timestamp;
+                        const ageMinutes = Math.round(age / 60000);
+                        log(`React Query cache found (${ageMinutes} minutes old)`, 'info');
+                    } catch (e) {
+                        log('React Query cache corrupted', 'warning');
+                    }
+                } else {
+                    log('No React Query cache found', 'info');
+                }
+                
+                // Check for auth tokens
+                const authKeys = Object.keys(localStorage).filter(key => 
+                    key.includes('supabase') || key.includes('auth') || key.includes('session')
+                );
+                
+                if (authKeys.length > 0) {
+                    log(`Auth-related keys found: ${authKeys.length}`, 'info');
+                    authKeys.forEach(key => {
+                        log(`  ${key}`, 'info');
+                    });
+                } else {
+                    log('No auth-related localStorage keys found', 'warning');
+                }
+                
+                // Check storage size
+                let totalSize = 0;
+                for (let key in localStorage) {
+                    if (localStorage.hasOwnProperty(key)) {
+                        totalSize += localStorage[key].length;
+                    }
+                }
+                
+                const sizeKB = Math.round(totalSize / 1024);
+                log(`Total localStorage size: ${sizeKB}KB`, sizeKB > 5000 ? 'warning' : 'info');
+                
+            } catch (error) {
+                log(`Local Storage test error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function runAllTests() {
+            log('🧪 Starting comprehensive debugging...', 'info');
+            log('================================================', 'info');
+            
+            await testEnvironment();
+            log('================================================', 'info');
+            
+            await testSupabaseConnection();
+            log('================================================', 'info');
+            
+            await testReactQuery();
+            log('================================================', 'info');
+            
+            await testLocalStorage();
+            log('================================================', 'info');
+            
+            log('🏁 All tests completed!', 'success');
+            
+            // Additional debugging tips
+            log('', 'info');
+            log('💡 DEBUGGING TIPS:', 'warning');
+            log('1. Open browser DevTools (F12)', 'info');
+            log('2. Check Console tab for JavaScript errors', 'info');
+            log('3. Check Network tab for failed requests', 'info');
+            log('4. Check Application > Local Storage', 'info');
+            log('5. Try hard refresh (Ctrl+Shift+R)', 'info');
+            log('6. Try incognito/private mode', 'info');
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            log('🔍 Debug console loaded. Click "Run All Tests" to start debugging.', 'success');
+        });
+        
+        // Capture and display console errors
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            log(`Console Error: ${args.join(' ')}`, 'error');
+            originalConsoleError.apply(console, arguments);
+        };
+        
+        // Capture and display console warnings
+        const originalConsoleWarn = console.warn;
+        console.warn = function(...args) {
+            log(`Console Warning: ${args.join(' ')}`, 'warning');
+            originalConsoleWarn.apply(console, arguments);
+        };
+    </script>
+</body>
+</html>
