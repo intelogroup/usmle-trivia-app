@@ -189,7 +189,7 @@ test.describe('Custom Quiz - Complete Flow Testing', () => {
       }
       
       // Look for available question count display
-      const questionCountDisplay = page.locator('text=/\\d+ questions available/, text=/Available:/, .question-count, [data-testid*="count"]');
+      const questionCountDisplay = page.locator('.question-count, [data-testid*="count"]');
       const displayCount = await questionCountDisplay.count();
       
       if (displayCount > 0) {
@@ -361,7 +361,7 @@ test.describe('Custom Quiz - Complete Flow Testing', () => {
           
           // Check for results elements
           const resultsElements = {
-            scores: await page.locator('.score, [data-testid*="score"], text=/score/i').count(),
+            scores: await page.locator('.score, [data-testid*="score"]').count(),
             stats: await page.locator('.stats, .statistics, [data-testid*="stat"]').count(),
             feedback: await page.locator('.feedback, .result-message, [data-testid*="feedback"]').count(),
             actions: await page.locator('button:has-text("Retake"), button:has-text("New Quiz"), button:has-text("Home")').count()
