@@ -200,19 +200,19 @@ export const runComprehensiveTest = async () => {
 // Environment setup check
 export const checkEnvironmentSetup = () => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   
   const setup = {
     configured: Boolean(supabaseUrl && supabaseKey),
     url: supabaseUrl ? '✅ Set' : '❌ Missing',
-    key: supabaseKey ? '✅ Set' : '❌ Missing'
+    publishableKey: supabaseKey ? '✅ Set' : '❌ Missing'
   };
 
   if (!setup.configured) {
     setup.instructions = [
-      '1. Create a .env.local file in your project root',
+      '1. Create a .env file in your project root',
       '2. Add your Supabase URL: VITE_SUPABASE_URL=https://your-project.supabase.co',
-      '3. Add your Supabase anon key: VITE_SUPABASE_ANON_KEY=your-anon-key',
+      '3. Add your Supabase publishable key: VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key',
       '4. Restart your development server'
     ];
   }

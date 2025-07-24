@@ -1,16 +1,20 @@
 import { createClient } from '@supabase/supabase-js'
 import { retryWithBackoff, circuitBreakers, gracefulDegradation } from '../utils/retryUtils.js'
 
-// Supabase configuration with validation
+// Supabase configuration with validation - Using Publishable Keys Only
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
 // Validate configuration
 if (!supabaseUrl || !supabaseKey) {
   console.error('Supabase environment variables are missing');
   console.error('URL:', supabaseUrl ? 'OK' : 'MISSING');
-  console.error('KEY:', supabaseKey ? 'OK' : 'MISSING');
-  console.error('Using publishable key:', import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? 'YES' : 'NO');
+  console.error('PUBLISHABLE_KEY:', supabaseKey ? 'OK' : 'MISSING');
+  console.log('✅ Using publishable key configuration');
+} else {
+  console.log('✅ Supabase configuration loaded successfully');
+  console.log('🌐 URL:', supabaseUrl);
+  console.log('🔑 Publishable key loaded');
 }
 
 // Production-ready Supabase client configuration
